@@ -8,7 +8,7 @@ permalink:        pretty
 # Setup
 title:            Minhuan Li <br>(李黾奂)
 tagline:          'Minhuan Li'
-description:      'And i am floating in a most perculiar way'
+description:      'And i am floating in a <br>most perculiar way'
 url:              http://minhuanli.github.io
 
 author:
@@ -28,7 +28,8 @@ github:
 tags:
 
 github_username:  minhuanli
-#facebook_username: joe.qian
-#linkedin_username: long-qian
+google_scholar_url: https://scholar.google.com/citations?user=zls7LKwAAAAJ&hl=en
+#facebook_username:
+#linkedin_username:
 
 
