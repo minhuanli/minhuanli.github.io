@@ -1,0 +1,34 @@
+# Dependencies
+markdown:         kramdown
+highlighter:      rouge
+
+# Permalinks
+permalink:        pretty
+
+# Setup
+title:            Long Qian
+tagline:          'Long Qian'
+description:      'Reality augmented.<br>My personal blog of tech and life.'
+url:              http://longqian.me/
+
+author:
+  name:           'Long Qian'
+  url:            http://longqian.me/
+
+paginate:         2
+google_analytics: 'UA-91425204-3'
+bing_seo:		  'ECA8D4503D79297E7BB223666F18CAF8'
+emailme:          mailto:lqian8@jhu.edu
+
+gems:             [jekyll-paginate, jekyll-seo-tag, jekyll-sitemap]
+
+github:
+  repo:           https://github.com/qian256/qian256.github.io/
+
+tags:
+
+github_username:  qian256
+facebook_username: joe.qian
+linkedin_username: long-qian
+
+
