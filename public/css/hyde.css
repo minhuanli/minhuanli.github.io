@@ -57,7 +57,7 @@ html {
  */
 
 .sidebar {
-  text-align: right;
+  text-align: center;
   padding: 2rem 1rem 1rem 2rem;
   color: rgba(255,255,255,.5);
   background-color: #202020;
@@ -123,9 +123,11 @@ a.sidebar-nav-item:focus {
   font-weight: bold;
 }
 
-.side-bar-claim {
-  position: fixed;
-  bottom: 1rem;
+@media (min-width: 48rem) {
+  .side-bar-claim {
+    position: absolute;
+    bottom: 1rem;
+  }
 }
 
 /* Sticky sidebar
