@@ -1,6 +1,6 @@
 
 # Ignore some log cache files
-.jeykll-cache/
+.jekyll-cache/
 
 # Ignore Gemfile.lock
 Gemfile.lock
