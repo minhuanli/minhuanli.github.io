@@ -16,4 +16,4 @@ I have also worked with Prof. [Cengiz Pehlevan](https://pehlevan.seas.harvard.ed
 Based on my research experiences, I would rather call myself an 'Interdisciplinary Researcher' than a pure 'Physics Researcher'.
 
 Outside academics, I am a cinephilia (or a film lover). I enjoy literary films, or so-called [Le film d'auteur](https://en.wikipedia.org/wiki/Film_d%27auteur). My favourite directors include Yasujirō Ozu(小津安二郎), Emir Kusturica(库斯图里卡), Woody Allen(伍迪艾伦) and 姜文. 
-I also enjoy rock music, soccer, ping-pong. I find it great when people devote into something and dig out some tiny ambiguous emotions generated from their glorious spiritual world.
+I also enjoy rock music, soccer, ping-pong. I find it great when people devote themselves into something and dig out tiny ambiguous emotions generated from their glorious spiritual world.
