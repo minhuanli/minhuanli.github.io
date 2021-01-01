@@ -221,13 +221,13 @@ a.sidebar-nav-item:focus {
 
 /* Base16 (http://chriskempson.github.io/base16/#default) */
 
-/* Red */
+/* Harvard Crimson color*/
 .theme-base-08 .sidebar {
-  background-color: #ac4142;
+  background-color: #A51C30;
 }
 .theme-base-08 .content a,
 .theme-base-08 .related-posts li a:hover {
-  color: #ac4142;
+  color: #A51C30;
 }
 
 /* Orange */
