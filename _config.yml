@@ -15,7 +15,7 @@ author:
   name:           'Minhuan Li'
   #url:            http://minhuanli.github.io
 
-#paginate:         2
+paginate:         5
 #google_analytics: 'UA-91425204-3'
 #bing_seo:		  'ECA8D4503D79297E7BB223666F18CAF8'
 emailme:          mailto:minhuanli@g.harvard.edu
