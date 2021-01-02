@@ -21,7 +21,7 @@ My system version is macOS Catalina 10.15.7
 
 1. Prepare command line tools and `Homebrew`, you might have already done the two things:
     ```shell
-   #Step 0, make sure the command line tool is installed
+   # Step0, make sure the command line tool is installed
    xcode-select --install
 
    # Step1: Install Homebrew
