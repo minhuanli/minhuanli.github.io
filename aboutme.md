@@ -8,7 +8,7 @@ lang: zh
 My name is Minhuan Li (李黾奂), currently a second-year PhD student of Applied Physics at Harvard University. 
 I am fortunate to be advised by Professor [Doeke Hekstra](https://hekstralab.fas.harvard.edu/).
 In Doeke's lab, I try to use statistical physics framework plus machine learning tools to construct models of protein dynamics. 
-Besides direct medical applications, proteins could serve as a great model system to study evolution and statistical sampling principles.
+Besides direct biomedical applications, proteins could serve as a great model system to study evolution and statistical sampling principles.
 
 I am broadly interested in understanding complex systems with statistical physics. Generally speaking, I am an advocate of Anderson's ['More is Different'](https://science.sciencemag.org/content/177/4047/393) philosophy. 
 Before coming to Harvard, I graduated from the [Physics Department Fudan University](http://phys.fudan.edu.cn/). I did research about phase transitions in colloids under supervision of Prof. Peng Tan, which provides me ample intuitions about system statistics. 
