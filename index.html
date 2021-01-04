@@ -14,7 +14,12 @@ title: Home
         {% else %}
         <div class="post">
         {% endif %}
-          <h1 class="post-title"><i class="em em-round_pushpin"></i>&nbsp;<a href="{{ post.url }}">{{ post.title }}</a></h1>
+          <h1 class="post-title">
+            <i class="em em-pushpin" style="font-size: 1.3rem;"></i>
+            <a href="{{ post.url }}">
+              {{ post.title }}
+            </a>
+          </h1>
 
           <span class="post-tags">
             [&nbsp;
@@ -37,6 +42,7 @@ title: Home
   <!-- Normal posts listed in the order of time -->
 
   {% for post in paginator.posts %}
+  {% if post.pined == False %}
   {% if post.lang %}
   <div class="post" lang="{{post.lang}}">
   {% else %}
@@ -62,6 +68,7 @@ title: Home
     {{ post.description }}
   </div>
   <hr>
+  {% endif %}
   {% endfor %}
 </div>
 
