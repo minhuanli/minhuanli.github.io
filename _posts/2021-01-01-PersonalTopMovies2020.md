@@ -68,4 +68,6 @@ LGBTQ的设定其实可有可无，多了之后给电影加了一层社会枷锁
 
 ### 5. [春梦](https://movie.douban.com/subject/26752337/) (2016, 춘몽, A Quiet Dream)
 
-<center><img src="/public/image/a_quite_dream.jpg" alt="" width="500"/></center>
+<center><img src="/public/image/a_quite_dream.jpg" alt="春梦" width="500"/></center>
+
+这部电影是16年釜山电影节的开幕片，是一部像梦一样的电影，也是大闷片，讲述的是脱北者的故事，或者说是三个有缺陷的男人和一个社会边缘的女性的暧昧故事。
