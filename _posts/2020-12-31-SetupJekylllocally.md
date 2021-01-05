@@ -72,6 +72,8 @@ My system version is macOS Catalina 10.15.7
 4. Then you can run the website locally:
    ```shell
    bundle exec jekyll serve
+   # or 
+   jekyll serve
    ```
 
 ### Through docker
