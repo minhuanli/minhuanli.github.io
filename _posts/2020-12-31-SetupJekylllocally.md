@@ -50,8 +50,11 @@ My system version is macOS Catalina 10.15.7
    echo 'export PATH="$HOME/.gem/ruby/X.X.0/bin:$PATH"' >> ~/.zshrc
    # If you're using Bash
    echo 'export PATH="$HOME/.gem/ruby/X.X.0/bin:$PATH"' >> ~/.bash_profile
+   ## The above path might change on different computers, for example, is can be like
+   echo 'export PATH="$HOME/.local/share/gem/ruby/X.X.0/bin:$PATH"' >> ~/.zshrc
 
    ## Again, source the setting file .zshrc or .bash_profile
+   ## Make sure `jekyll` is executable after source
    ## You can check the GEM PATH with following commands
    gem env
    ```
