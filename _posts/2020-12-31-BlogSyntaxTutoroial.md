@@ -2,7 +2,7 @@
 layout: post
 title: Blog Content Syntax
 description: My first blog here! A demo about how to write different contents with this blog framework.
-tags: markdown blog 
+tags: blog 
 katex: True
 ---
 
