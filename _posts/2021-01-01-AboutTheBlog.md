@@ -15,4 +15,4 @@ You can check them with <a href="https://minhuanli.github.io/">Home</a> or <a hr
 
 I have also constructed another notes site, which hosts more specific and systematic notes about academic topics I learned from courses, talks or discussions. 
 I choose a <a href="https://github.com/clayh53/tufte-jekyll">Tufte</a> theme for that site, as I think a side note format is more than helpful to illustrate complex theoretic conceptions. 
-You can go there through the <a href="https://minhuanli.github.io/research-notes/">Notes</a> tab on sidebar.  
+You can go there through the <a href="https://minhuanli.github.io/notes/">Notes</a> tab on sidebar.  
