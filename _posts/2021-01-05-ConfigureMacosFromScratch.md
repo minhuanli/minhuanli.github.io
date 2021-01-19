@@ -44,6 +44,14 @@ Check all configs:
 git config --list
 ```
 For a convenient password-free manner, you can use HTTP token (preferred) or SSH token:<br>
+
+---
+*Update on Jan 18, 2021*
+
+Github makes a safety update that requires all personal user to use a personal access token for command line git access. See [ref](https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/). Previous password access will be no longer supported after August 13, 2021.
+How to update can be found [here](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) and [here](https://docs.github.com/en/github/using-git/updating-credentials-from-the-macos-keychain)
+
+---
 - **Set HTTP Token**<br>
   Change to Home Directory
   ```shell
@@ -72,6 +80,8 @@ For a convenient password-free manner, you can use HTTP token (preferred) or SSH
   ```
 
 With either one of the above 2 methods, you can interact with Github in a password-free manner.
+
+
 ### 3. Install Miniconda
 As I am mostly working with `python`, I use miniconda to manage python packages and virtual envs. Check [here](https://medium.com/dunder-data/anaconda-is-bloated-set-up-a-lean-robust-data-science-environment-with-miniconda-and-conda-forge-b48e1ac11646) to see why I choose Miniconda over standard Anaconda. 
 
