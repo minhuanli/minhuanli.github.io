@@ -45,13 +45,11 @@ git config --list
 ```
 For a convenient password-free manner, you can use HTTP token (preferred) or SSH token:<br>
 
----
-*Update on Jan 18, 2021*
+<p class="orangebox">
+<i class='ge'>Update on Jan 18, 2021:</i><br>
+Github makes a safety update that requires all personal user to use a personal access token for command line git access. See <a href="https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/">ref</a>. Previous password access will be no longer supported after August 13, 2021. How to update can be found <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">here</a> and <a href="https://docs.github.com/en/github/using-git/updating-credentials-from-the-macos-keychain">here</a>
+</p>
 
-Github makes a safety update that requires all personal user to use a personal access token for command line git access. See [ref](https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/). Previous password access will be no longer supported after August 13, 2021.
-How to update can be found [here](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) and [here](https://docs.github.com/en/github/using-git/updating-credentials-from-the-macos-keychain)
-
----
 - **Set HTTP Token**<br>
   Change to Home Directory
   ```shell

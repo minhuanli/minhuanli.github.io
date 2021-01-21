@@ -1,3 +1,9 @@
+
+/*-- special syntax setting --*/
+.greybox { padding-left: 0.3rem; padding-right: 0.3rem; padding-top: 0.3rem; padding-bottom: 0.3rem; background-color: #f2f2f2; border: 1px dashed #328c0b} /* example */
+.orangebox { padding-left: 0.3rem; padding-right: 0.3rem; padding-top: 0.3rem; padding-bottom: 0.3rem; background-color: #fbfcf2; border: 1px dashed #c27e17}  /* pset */
+.bluebox { padding-left: 0.3rem; padding-right: 0.3rem; padding-top: 0.3rem; padding-bottom: 0.3rem; background-color: #f5f7ff; border: 1px dashed #2037a8} /* discussion */
+
 .hll { background-color: #ffffcc }
  /*{ background: #f0f3f3; }*/
 .c { color: #999; } /* Comment */
