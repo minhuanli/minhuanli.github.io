@@ -16,7 +16,14 @@ layout: default
     {% endfor %}
     ]
   </span>
-  <span class="post-date">{{ page.date | date_to_string }}</span>
+  <span class="post-date">{{ page.date | date_to_string }}{% if page.progress %}
+  <div class="progress" data-label="{{ page.progress }} Complete">
+    <span class="value" style="width:{{ page.progress }};"></span>
+  </div>
+  {% endif %}</span>
+
+  
+  
   {{ content }}
 </div>
 

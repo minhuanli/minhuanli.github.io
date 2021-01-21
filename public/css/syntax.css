@@ -1,8 +1,46 @@
 
 /*-- special syntax setting --*/
-.greybox { padding-left: 0.3rem; padding-right: 0.3rem; padding-top: 0.3rem; padding-bottom: 0.3rem; background-color: #f2f2f2; border: 1px dashed #328c0b} /* example */
-.orangebox { padding-left: 0.3rem; padding-right: 0.3rem; padding-top: 0.3rem; padding-bottom: 0.3rem; background-color: #fbfcf2; border: 1px dashed #c27e17}  /* pset */
-.bluebox { padding-left: 0.3rem; padding-right: 0.3rem; padding-top: 0.3rem; padding-bottom: 0.3rem; background-color: #f5f7ff; border: 1px dashed #2037a8} /* discussion */
+.greenbox { padding-left: 0.5rem; padding-right: 0.5rem; padding-top: 0.4rem; padding-bottom: 0.4rem; background-color: #faf7f7; 
+    border-width: 5px 1px 1px 1px;
+    border-style: solid dashed dashed;
+    border-color: #328c0b}
+.redbox { padding-left: 0.5rem; padding-right: 0.5rem; padding-top: 0.4rem; padding-bottom: 0.4rem; background-color: #faf7f7; 
+    border-width: 5px 1px 1px 1px;
+    border-style: solid dashed dashed;
+    border-color: #b51d34}
+.orangebox { padding-left: 0.5rem; padding-right: 0.5rem; padding-top: 0.4rem; padding-bottom: 0.4rem; background-color: #fbfcf2; 
+    border-width: 5px 1px 1px 1px;
+    border-style: solid dashed dashed;
+    border-color: #ff9100} /* pset */
+.bluebox { padding-left: 0.5rem; padding-right: 0.5rem; padding-top: 0.4rem; padding-bottom: 0.4rem; background-color: #f5f7ff; 
+    border-width: 5px 1px 1px 1px;
+    border-style: solid dashed dashed;
+    border-color: #2037a8} /* discussion */
+
+/*-- Progress bar setting --*/
+.progress {
+  height: 1.2rem;
+  width: 100%;
+  background-color: #e0dfdf;
+  position: relative;
+}
+.progress:before {
+  content: attr(data-label);
+  font-size: 0.8rem;
+  font-weight: bold;
+  position: absolute;
+  text-align: center;
+  top: 0.1rem;
+  left: 0;
+  right: 0;
+}
+.progress .value {
+  background-color: #ecabb4;
+  display: inline-block;
+  height: 100%;
+}
+
+/*-- others --*/
 
 .hll { background-color: #ffffcc }
  /*{ background: #f0f3f3; }*/

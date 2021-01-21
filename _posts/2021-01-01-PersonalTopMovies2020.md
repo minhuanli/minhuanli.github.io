@@ -14,7 +14,7 @@ katex: True
 
 ### 1. [那山那人那狗](https://movie.douban.com/subject/1307766/) (1999, Postmen In The Mountains)
 
-<center><img src='/public/image/postmen_in_mountains.jpg' alt="那山那人那狗" width="500"/></center>
+<center><img src='/public/image/postmen_in_mountains.jpg' alt="那山那人那狗" width="70%"/></center>
 
 这部电影在高中时候就躺在我的想看列表里了，拖了这么多年才第一次看，确实相见恨晚。电影讲了一个平静的故事，一个往大山里送信的老乡邮员要退休了，把工作传给儿子，在儿子正式接班前，父亲决定带他走一次走了20多年的大山里的邮路。
 这是一个很典型的公路片设计，这一路既是对于山里沿路风土人情的介绍，也见证父子俩共同的精神成长和矛盾的弥合。
@@ -32,7 +32,7 @@ katex: True
 
 ### 2. [阳光普照](https://movie.douban.com/subject/30292777/) (2019, A Sun)
 
-<center><img src="/public/image/a_sun.jpg" alt="阳光普照" width="500"/></center>
+<center><img src="/public/image/a_sun.jpg" alt="阳光普照" width="70%"/></center>
 
 这是一部主题非常丧的电影，讨论父子，讨论家庭，讨论人生。很难描述电影到底讲了一个什么故事，不过电影也从不是剧本和讲故事的艺术，导演的情绪传达到的很到位。
 我觉得台湾电影普遍有种很特别的影像气质，像是热带给人的那种充满活力生机的印象，即使这部电影的故事是非常致郁的，我看的时候也总觉得能从哪里得到一些力量，完全不煎熬地看完接近三个小时的长片，甚至对温吞吞的文艺电影不太感冒的RM，也饶有兴致地和我一起看完了全片。可能这就是创作者的魔力吧。
@@ -43,7 +43,7 @@ katex: True
 
 ### 3. [谁先爱上他的](https://movie.douban.com/subject/27119586/) (2018, Dear EX)
 
-<center><img src="/public/image/dear_ex.jpg" alt="谁先爱上他的" width="500"/></center>
+<center><img src="/public/image/dear_ex.jpg" alt="谁先爱上他的" width="70%"/></center>
 
 这部电影讲了一个戏剧冲突很强的LGBTQ故事，一个同性恋的男人若干年前抛弃了自己的同性伴侣"小王"，选择去结婚生子当一个正常人。
 之后他罹患癌症，在生命的最后阶段却选择和"小王"一起度过直到死去，甚至把保险金也全部留给了他，男人的妻子陷入被夺夫夺金的痛苦中，对小王开始了一场没有赢家的崩溃式的"反击"。
@@ -58,7 +58,7 @@ LGBTQ的设定可有可无，多了之后给电影加了一层社会枷锁，男
 
 ### 4. [到阜阳六百里](https://movie.douban.com/subject/4291275/) (2011, Return Ticket)
 
-<center><img src="/public/image/return_ticket.jpg" alt="到阜阳六百里" width="500"/></center>
+<center><img src="/public/image/return_ticket.jpg" alt="到阜阳六百里" width="70%"/></center>
 
 这是一部伪纪录片形式的电影，讲述的是一群在上海打工的阜阳人，年末了要买票回家过年的故事。这个故事本身现实主义气息很强，镜头里我看到了读书期间从未见过的上海，破旧的棚户区，狭小潮湿的商业区后巷，但是其中改装大巴车的主线桥段又给这个故事添上了很浓的荒诞的超现实的色彩，融合的很好。
 摄影整体偏冷，但是对于冬日里的阳光捕捉的很好，秦海璐在逼仄的破旧出租屋里打开天窗的时候，阳光洒在她的脸上，洒在黑暗的房间里，很温暖。唐群饰演的女配角太出彩了，可以说是一己之力奠定本片伪纪录片风格，当年金马最佳女配实至名归。电影结束的很突然，我以为会有更多的展开，突然就结束了，不过仔细想想，也差不多了。
@@ -69,7 +69,7 @@ LGBTQ的设定可有可无，多了之后给电影加了一层社会枷锁，男
 
 ### 5. [春梦](https://movie.douban.com/subject/26752337/) (2016, 춘몽, A Quiet Dream)
 
-<center><img src="/public/image/a_quite_dream.jpg" alt="春梦" width="500"/></center>
+<center><img src="/public/image/a_quite_dream.jpg" alt="春梦" width="70%"/></center>
 
 这部电影是16年釜山电影节的开幕片，是一部像梦一样的电影，也是大闷片，讲述的是脱北者的故事，或者说是三个有缺陷的男人和一个社会边缘的女性的暧昧故事。
 电影的画面和剪辑手法完全是诗一样的，即兴，美妙，轻灵，像进入了一个白日梦境。叙事？我已经完全忘了这部片子讲了什么故事，但是好像也无所谓了。
