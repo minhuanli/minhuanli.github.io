@@ -31,8 +31,11 @@ title: Home
           </span>
 
           <span class="post-date">{{ post.date | date_to_string }}</span>
-
-          {{ post.description }}
+          {% if post.description %}
+            {{ post.description }}
+          {% else %}
+            {{ post.excerpt }}
+          {% endif %}
         </div>
         <hr>
       {% endif %}
@@ -65,7 +68,11 @@ title: Home
 
     <span class="post-date">{{ post.date | date_to_string }}</span>
 
-    {{ post.description }}
+    {% if post.description %}
+        {{ post.description }}
+    {% else %}
+        {{ post.excerpt }}
+    {% endif %}
   </div>
   <hr>
   {% endif %}

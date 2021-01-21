@@ -11,6 +11,7 @@ tagline:          'Minhuan Li'
 description:      'And i am floating in a <br>most perculiar way'
 #url:              http://minhuanli.github.io
 
+excerpt_separator: <!--more-->  # you can specify your own separator, of course.
 author:
   name:           'Minhuan Li'
   #url:            http://minhuanli.github.io
