@@ -3,19 +3,23 @@
 .greenbox { padding-left: 0.5rem; padding-right: 0.5rem; padding-top: 0.4rem; padding-bottom: 0.4rem; background-color: #faf7f7; 
     border-width: 5px 1px 1px 1px;
     border-style: solid dashed dashed;
-    border-color: #328c0b}
-.redbox { padding-left: 0.5rem; padding-right: 0.5rem; padding-top: 0.4rem; padding-bottom: 0.4rem; background-color: #faf7f7; 
+    border-color: #328c0b;
+    font-size: 0.9rem;}
+.redbox { padding-left: 0.5rem; padding-right: 0.5rem; padding-top: 0.4rem; padding-bottom: 0.4rem; background-color: #faf7f7;
     border-width: 5px 1px 1px 1px;
     border-style: solid dashed dashed;
-    border-color: #b51d34}
-.orangebox { padding-left: 0.5rem; padding-right: 0.5rem; padding-top: 0.4rem; padding-bottom: 0.4rem; background-color: #fbfcf2; 
+    border-color: #b51d34;
+    font-size: 0.9rem;}
+.orangebox { padding-left: 0.5rem; padding-right: 0.5rem; padding-top: 0.4rem; padding-bottom: 0.4rem; background-color: #fbfcf2;
     border-width: 5px 1px 1px 1px;
     border-style: solid dashed dashed;
-    border-color: #ff9100} /* pset */
-.bluebox { padding-left: 0.5rem; padding-right: 0.5rem; padding-top: 0.4rem; padding-bottom: 0.4rem; background-color: #f5f7ff; 
+    border-color: #ff9100;
+    font-size: 0.9rem;} /* pset */
+.bluebox { padding-left: 0.5rem; padding-right: 0.5rem; padding-top: 0.4rem; padding-bottom: 0.4rem; background-color: #f5f7ff;
     border-width: 5px 1px 1px 1px;
     border-style: solid dashed dashed;
-    border-color: #2037a8} /* discussion */
+    border-color: #2037a8;
+    font-size: 0.9rem;} /* discussion */
 
 /*-- Progress bar setting --*/
 .progress {
