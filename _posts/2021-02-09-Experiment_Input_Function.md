@@ -1,14 +1,15 @@
 ---
 layout: post
-title: Experiemnts on Input Functions
+title: Experiments on Input Functions
 tags: Biological_Complexity 
 katex: True
 progress: 100%
 ---
 
-This is a summary of papers on experimental investigations of gene's input function, especially about [*Diverse Two-Dimensional Input Functions Control Bacterial Sugar Genes (2008)*](https://pubmed.ncbi.nlm.nih.gov/18374652/) and [*Plasticity of the cis-Regulatory Input Function of a Gene (2006)*](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.0040045). <!--more-->
+This is a summary of papers on experimental investigations of gene's input function, especially about [*Diverse Two-Dimensional Input Functions Control Bacterial Sugar Genes (2008)*](https://pubmed.ncbi.nlm.nih.gov/18374652/) and [*Plasticity of the cis-Regulatory Input Function of a Gene (2006)*](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.0040045). 
 
 Living cells are capable of responding to the environment conditions, or signals, in various ways. One important choice is regulating gene expression. The relation between the level of input signals and the transcription rate of the gene is called the gene’s input function. Clarifying the form of input functions is crucial in understanding the gene regulation and further evolution. As most genes are regulated by multiple signals, these papers reported well-designed experimental platforms to present the diversity of two-dimensional input functions, providing solid background for further theoretical abstrction. 
+<!--more-->
 
 Generally speaking, the Gene's input function is biological computation circuits that take in multiple signals and output some gene expression levels. Intuitively, we can sketch those input functions by simultaneously recording their taking-in signals and output levels. The bio-flourescent tools developed after 2000s[^1] made the experimental accurate measurement of gene expression level in living cells possible, while the signal levels as external conditions can be measured accordingly. Thus, we can see how those input functions look like in real living cells. 
 
