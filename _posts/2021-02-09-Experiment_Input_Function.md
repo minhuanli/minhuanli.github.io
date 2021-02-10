@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Experiments on Input Functions
-tags: Biological_Complexity 
+tags: BiologicalComplexity 
 katex: True
 progress: 100%
 ---
