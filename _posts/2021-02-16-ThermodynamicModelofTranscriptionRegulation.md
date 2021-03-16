@@ -75,4 +75,4 @@ The model result itself is beautiful, but we have to review all its assumption t
 
    Not true! Lots of cooperativity (positive and negative) in factor binding and recruitment
 
-Given nearly all the assumptions are not questionable, can this model still be considered informative? Even though it might correspond with some experiemental data. 
+Given nearly all the assumptions are questionable, can this model still be considered informative? Even though it might correspond with some experiemental data. 
