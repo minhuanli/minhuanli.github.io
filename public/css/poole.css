@@ -49,19 +49,19 @@ body {
 
 html {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1.5;
 }
 @media (min-width: 38rem) {
   html {
-    font-size: 16px;
+    font-size: 14px;
   }
 }
 
 body {
-  color: #515151;
-  background-color: #fff;
-  -webkit-text-size-adjust: 100%;
+  color: #414141;
+  background-color: #fffff8;
+  -webkit-text-size-adjust: 10%;
       -ms-text-size-adjust: 100%;
 }
 
@@ -83,7 +83,7 @@ h1, h2, h1 a, h2 a:lang(zh) {
   font-family: sans-serif, "cwTeXMing", serif;
 }
 h3, h4, h5, h6, p, table, img, a, ul, li:lang(zh) {
-  font-family: "PT Sans", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  font-family: ETBembo, "Chronicle Text G2", Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
 }
 blockquote p:lang(zh){
   font-family: "PT Sans", "STKaiti", "Kaiti", "cwTeXKai", "Microsoft YaHei", sans-serif;
@@ -98,11 +98,11 @@ h1, h2, h3, h4, h5, h6 {
   text-rendering: optimizeLegibility;
 }
 h1 {
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 h2 {
   margin-top: 1rem;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
 }
 h3 {
   margin-top: 1.5rem;
@@ -176,24 +176,24 @@ pre {
   font-family: Menlo, Monaco, "Courier New", monospace;
 }
 code {
-  padding: .25em .5em;
-  font-size: 85%;
-  color: #bf616a;
-  background-color: #f9f9f9;
+  padding: .15em .15em;
+  font-size: 75%;
+  color: #305da0;
+  background-color: #f6f6fc;
   border-radius: 3px;
 }
 pre {
   display: block;
   margin-top: 0;
   margin-bottom: 1rem;
-  padding: 1rem;
+  padding: 0.5rem;
   font-size: .8rem;
   line-height: 1.4;
   white-space: pre;
   white-space: pre-wrap;
   word-break: break-all;
   word-wrap: break-word;
-  background-color: #f9f9f9;
+  background-color: #e9e9e9;
 }
 pre code {
   padding: 0;
@@ -211,7 +211,7 @@ pre code {
 
 /* Quotes */
 blockquote {
-  padding: .5rem 1rem;
+  padding: .15rem 1rem;
   margin: .8rem 0;
   color: #7a7a7a;
   border-left: .25rem solid #e5e5e5;

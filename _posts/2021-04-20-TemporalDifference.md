@@ -5,7 +5,7 @@ tags: BiologicalComplexity
 katex: True
 progress: 100%
 ---
-This is a summary about paper "Sutton, R.S., 1988. Learning to predict by the methods of temporal differences. *Machine learning*, *3*(1), pp.9-44.". This paper provided a complete discussion about the temporal difference methods in the learning to predict task, which takes observations and try to predict outcomes from those observations like classification problem. This summary borrowed a lot of ideas from Tasha's presentation and centers around the comparision with the supervised learning method.<!--more-->
+This is a summary about paper *"Sutton, R.S., 1988. Learning to predict by the methods of temporal differences. Machine learning, 3(1), pp.9-44."* This paper provided a complete discussion about the temporal difference methods in the learning to predict task, which takes observations and try to predict outcomes from those observations like classification problem. This summary borrowed a lot of ideas from Tasha's presentation and centers around the comparision with the supervised learning method.<!--more-->
 
 
 First is a clarification about what is temporal difference methods and what is the difference between temporal difference and supervised learning. One main difference, and also the benefit of temporal difference, is that, supervised learning can not update the prediction at each time step until the very end when it knows the actual outcome, while temporal difference can sort of update the prediction once it reaches the next step. So the temporal difference method is beneficial for the amount of computation and the storage space. Note that besides the differences we mentions above, we can show the results of temporal difference methods and supervised learning methods are generally the same with specific constuctions. 
@@ -50,7 +50,7 @@ $$
 \Delta w_{t}=\alpha\left(P_{t+1}-P_{t}\right) \sum_{k=1}^{t} \nabla_{w} P_{k} \tag{3}
 $$
 
-we **have a updates independent of z.**  
+we **have an update independent of z.**  
 
 The hallmark of temporal-difference methods is their sensitivity to changes in successive predictions rather than to overall error between predictions and the final outcome, so we modified the above equation (3) and get the following:
 
