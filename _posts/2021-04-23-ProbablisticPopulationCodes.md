@@ -24,10 +24,10 @@ Such reformation also provides a possibility to interprete with Bayes theorem.  
 
 The authors adopted the idea of "Cue Combination": In a cue combination task, one's goal is to take as input two cues and use this to make an inference about a stimulus. For instance, one study cited by the paper did this with visual and haptic feedback for height. It turns out humans can perform nearly optimally at this. Theoretically, Given observations of $$c_{1}$$ and $$c_{2},$$ and under the assumption that these quantities are independent given $$s,$$ the posterior over $$s$$ is ottained via Bayes' rule, $$p\left(s \mid c_{1}, c_{2}\right) \propto p\left(c_{1} \mid s\right) p\left(c_{2} \mid s\right) p(s)$$.
 
-When the prior is flat and the likelihood functions, $$p\left(c_{1} \mid s\right)$ and $p\left(c_{2} \mid s\right),$$ are Gaussian with respect to $$s$$ with means $$\mu_{1}$$ and $$\mu_{2}$$ and variances $$\sigma_{1}^{2}$$ and $$\sigma_{2}^{2}$$, respectively, the mean and variance of the posterior, $$\mu_{3}$$ and $$\sigma_{3}^{2},$$ are given by the following equations: 
+When the prior is flat and the likelihood functions, $$p\left(c_{1} \mid s\right)$$ and $$p\left(c_{2} \mid s\right),$$ are Gaussian with respect to $$s$$ with means $$\mu_{1}$$ and $$\mu_{2}$$ and variances $$\sigma_{1}^{2}$$ and $$\sigma_{2}^{2}$$, respectively, the mean and variance of the posterior, $$\mu_{3}$$ and $$\sigma_{3}^{2},$$ are given by the following equations: 
 
 $$
-\mu_{3}=\frac{\sigma_{2}^{2}}{\sigma_{1}^{2}+\sigma_{2}^{2}} \mu_{1}+\frac{\sigma_{1}^{2}}{\sigma_{1}^{2}+\sigma_{2}^{2}} \mu_{2} \\
+\mu_{3}=\frac{\sigma_{2}^{2}}{\sigma_{1}^{2}+\sigma_{2}^{2}} \mu_{1}+\frac{\sigma_{1}^{2}}{\sigma_{1}^{2}+\sigma_{2}^{2}} \mu_{2} \\[2ex]
 \frac{1}{\sigma_{3}^{2}}=\frac{1}{\sigma_{1}^{2}}+\frac{1}{\sigma_{2}^{2}}
 $$
 
