@@ -5,7 +5,7 @@ tags: BiologicalComplexity
 katex: True
 progress: 100%
 ---
-This is a summary about paper *Jacob Beal and Thomas F. Knight, Jr. - Analyzing Composability in a Sparse Encoding Model of Memorization and Association - 2008*, which is again a follow-up work of paper *L. Valiant, Memorization and association on a realistic neural model, Neural Computation,17:3 (2005) 527-555.* The two papers talked about a random graph model to understand the basic cognitive tasks like memorization and association in brains. <!--more-->
+This is a summary about paper [*Jacob Beal and Thomas F. Knight, Jr. (2008) Analyzing Composability in a Sparse Encoding Model of Memorization and Association*](https://ieeexplore.ieee.org/abstract/document/4640826?casa_token=G6Ufr0TVch8AAAAA:oZU2xZSmTuraOtdRhq8hs9iuJS4eBmANFQY-MEJt0cET3TuG5Rh6g4Tqt23LJZXFEZiV15SDsw), which is again a follow-up work of paper [*L. Valiant (2005) Memorization and association on a realistic neural model*](https://ieeexplore.ieee.org/abstract/document/6788545) The two papers talked about a random graph model to understand the basic cognitive tasks like memorization and association in brains. <!--more-->
 
 
 The question is complicated given following experimental facts:

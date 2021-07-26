@@ -6,7 +6,7 @@ katex: True
 progress: 100%
 ---
 
-This is a summary about paper *Lenski et al. "The evolutionary origins of complex features",  Nature 2003*. They authors used a novel experimental system, digital organisms, to explore the ability of organisms to evolve complex functions. They demonstrated the power of random mutation (even deleterious) and natural selection in the evolutionary pathway to complex functions.
+This is a summary about paper [*Lenski et al. (2003) "The evolutionary origins of complex features"*](https://www.nature.com/articles/nature01568). They authors used a novel experimental system, digital organisms, to explore the ability of organisms to evolve complex functions. They demonstrated the power of random mutation (even deleterious) and natural selection in the evolutionary pathway to complex functions.
 
 A long-standing challenge to evolutionary theory has been whether it can explain the origin of complex organismal features, given the extinction of intermediate forms, imperfection of the fossil record, and incomplete knowledge of the genetic and developmental mechanisms that produce such features. To tackle this issue, the authors performed experiments with digital organism on Avida platform. Digital organisms are self-replicating computer programs that can mutant ramdomly and evolve spontaneously. They also compute for energy and realize logic functions by a series of instructions.<!--more-->
 

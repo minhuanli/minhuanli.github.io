@@ -6,7 +6,7 @@ katex: True
 progress: 100%
 ---
 
-This is asummary about paper *Livnat, Adi, et al. "A mixability theory for the role of sex in evolution." Proceedings of the National Academy of Sciences 105.50 (2008): 19803-19808.* and *Chastain, Erick, et al. "Algorithms, games, and evolution." Proceedings of the National Academy of Sciences 111.29 (2014): 10620-10623.*  The two papers are targeting different central questions, but they both have a good discussion about what is the evolutionary role of sex and recombination from a computational framwork.<!--more-->
+This is asummary about paper [*Livnat, Adi, et al. (2008) A mixability theory for the role of sex in evolution.*](https://www.pnas.org/content/105/50/19803.short) and [*Chastain, Erick, et al. (2014) Algorithms, games, and evolution*](https://www.pnas.org/content/111/29/10620). The two papers are targeting different central questions, but they both have a good discussion about what is the evolutionary role of sex and recombination from a computational framwork.<!--more-->
 
 It is a long-standing question that what role sex plays in evolution. A direct answer could be, sex should help facinitate in fitness. However, even this general and abstract answer is not correct given that sometimes sex recombination break down highly favorable genetic combinations. So authors of the first paper use a computational model show that, instead of single genotypic fitness, sex recombination helps to facilitate the increase of "Mixability", a kind of defined average fitness.  Assume we have a 
 haploid 2-locus fitness landscape as in Figure 1 below:
