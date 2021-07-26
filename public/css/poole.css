@@ -450,3 +450,6 @@ a.pagination-item:hover {
     border-bottom-right-radius: 4px;
   }
 }
+
+/* Math equation size */
+.katex { font-size: 1.0rem !important;}
