@@ -453,3 +453,5 @@ a.pagination-item:hover {
 
 /* Math equation size */
 .katex { font-size: 1.0rem !important;}
+
+.contrast { color: #a00000;}

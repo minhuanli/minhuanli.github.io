@@ -4,22 +4,22 @@
     border-width: 5px 1px 1px 1px;
     border-style: solid dashed dashed;
     border-color: #328c0b;
-    font-size: 0.9rem;}
+    font-size: 0.95rem;}
 .redbox { padding-left: 0.5rem; padding-right: 0.5rem; padding-top: 0.4rem; padding-bottom: 0.4rem; background-color: #faf7f7;
     border-width: 5px 1px 1px 1px;
     border-style: solid dashed dashed;
     border-color: #b51d34;
-    font-size: 0.9rem;}
+    font-size: 0.95rem;}
 .orangebox { padding-left: 0.5rem; padding-right: 0.5rem; padding-top: 0.4rem; padding-bottom: 0.4rem; background-color: #fbfcf2;
     border-width: 5px 1px 1px 1px;
     border-style: solid dashed dashed;
     border-color: #ff9100;
-    font-size: 0.9rem;} /* pset */
+    font-size: 0.95rem;} /* pset */
 .bluebox { padding-left: 0.5rem; padding-right: 0.5rem; padding-top: 0.4rem; padding-bottom: 0.4rem; background-color: #f5f7ff;
     border-width: 5px 1px 1px 1px;
     border-style: solid dashed dashed;
     border-color: #2037a8;
-    font-size: 0.9rem;} /* discussion */
+    font-size: 0.95rem;} /* discussion */
 
 /*-- Progress bar setting --*/
 .progress {
@@ -31,7 +31,7 @@
 .progress:before {
   content: attr(data-label);
   font-size: 0.8rem;
-  font-weight: bold;
+  color: black;
   position: absolute;
   text-align: center;
   top: 0.1rem;
@@ -112,3 +112,4 @@
 .css .o,
 .css .o + .nt,
 .css .nt + .nt { color: #999; }
+
