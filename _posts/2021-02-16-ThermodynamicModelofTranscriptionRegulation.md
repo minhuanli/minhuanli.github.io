@@ -4,6 +4,7 @@ title: Thermodynamic model of transcription regulation
 tags: BiologicalComplexity 
 katex: True
 progress: 100%
+comments: true
 ---
 
 This is summary about paper [*Bintu et al. (2005) Transcriptional regulation by the numbers: models*](https://www.sciencedirect.com/science/article/pii/S0959437X05000304?casa_token=0Bmq59nIMvgAAAAA:sJDfmyWysX19tjo7KJ17tLd3PWFMcUitP6s4J66tKUTucrNYFp-SuiXX5c8tDKqjBk_a8J4wmLc). The authors established a statistical mechainics model to quantitatively understand the initiation of DNA transcription, through the probability of RNA polymerase binding at the promoter of interest. This summary borrows a lot of ideas from Anastasia Ershova's presentation at CS229r course. 

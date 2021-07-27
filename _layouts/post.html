@@ -25,7 +25,15 @@ layout: default
   
   
   {{ content }}
+  
+  {% if page.comments %}
+    <hr>
+    <h2 class="center">Comments</h2>
+    {% include disqus.html %}
+  {% endif %}
+
 </div>
+
 
 
 <!-- <div class="related">

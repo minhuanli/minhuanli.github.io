@@ -5,6 +5,7 @@ description: I summarize 5 best movies I watched (not produced) in 2020, based o
 tags: film 中文
 lang: zh
 katex: True
+comments: true
 ---
 
 因为疫情的缘故，2020年一整年几乎没有看到什么新上线的院线电影。

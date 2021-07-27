@@ -4,6 +4,7 @@ title: Computational Theories of Sex and Recombination
 tags: BiologicalComplexity 
 katex: True
 progress: 100%
+comments: true
 ---
 
 This is asummary about paper [*Livnat, Adi, et al. (2008) A mixability theory for the role of sex in evolution.*](https://www.pnas.org/content/105/50/19803.short) and [*Chastain, Erick, et al. (2014) Algorithms, games, and evolution*](https://www.pnas.org/content/111/29/10620). The two papers are targeting different central questions, but they both have a good discussion about what is the evolutionary role of sex and recombination from a computational framwork.<!--more-->

@@ -3,6 +3,7 @@ layout: post
 title: Setup Jekyll
 description: These github pages are built with Jekyll framework. This is a note about how to setup Ruby and Jekyll development env locally, through direct installation or docker.
 tags: tech blog
+comments: true
 ---
 
 Jekyll is a static site generator. It takes text written in your favorite markup language and uses layouts to create a static website. 

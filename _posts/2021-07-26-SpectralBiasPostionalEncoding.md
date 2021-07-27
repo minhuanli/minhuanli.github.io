@@ -4,6 +4,7 @@ title: Spectral Bias and Postional Encoding
 tags: AI&Physics 
 katex: True
 progress: 100%
+comments: true
 ---
 
 Recent days (maybe it is already out of date when you read this blog), we see a "renaissance" of classic multilayer perceptron (MLP) models in machine learning field. The logic behind this trend is heuristic for researches to see that, by understanding how a complex black box works, we can naturally add some reasonaly modifications to make it better, instead of shotting with blind eyes. The majority of the blog is based on paper [*Tancik, Matthew, et al. (2020) Fourier features let networks learn high frequency functions in low dimensional domains*](https://arxiv.org/abs/2006.10739).
@@ -103,6 +104,10 @@ For higher dimensional inputs, the Fourier Feature mapping can be approached by 
 Note that this mapping is deterministic and only contains on-axis frequencies, making it naturally biased towards data that has more frequency content along the axes.
 </p>
 
+<p class='bluebox'>
+A similar mapping is used in the popular Transformer architecture, where it is also referred to as a positional encoding. However, Transformers use it for a different goal of providing the discrete positions of tokens in a sequence as input to an architecture that does not contain any notion of order. In contrast, we use these functions to map continuous input coordinates into a higher dimensional space to enable our MLP to more easily approximate a higher frequency function.
+</p>
+
 <i class='contrast'>Gaussian Encoding</i>
 
 Another, and better, mapping method for higher dimensional inputs is Gaussian Encoding: $$\gamma(\mathbf{v})=[\cos (2 \pi \mathbf{B} \mathbf{v}), \sin (2 \pi \mathbf{B} \mathbf{v})]^{\mathrm{T}}$$, where each entry in $$\mathbf{B}\ in \mathbb{R}^{m \times d}$$ is sampled from $$\mathcal{N}(0,\sigma^2)$$. The scale $$\sigma$$ is chosen by hyperparameter sweep, again a tradeoff like the $$p$$ above, see the figure below (From from [Main Ref](https://arxiv.org/abs/2006.10739) Figure 10).
@@ -113,6 +118,6 @@ Another, and better, mapping method for higher dimensional inputs is Gaussian En
 
 Here are some real application projects showing the power of positional encodings:
 
-1. [NeRF](https://arxiv.org/abs/2003.08934), synthesizing novel views of complex scences.
+1. [NeRF](https://arxiv.org/abs/2003.08934), novel view synthesis from 2D images.
 
-2. [CryoDRGN](https://www.nature.com/articles/s41592-020-01049-4), reconstruction of heterogeneous structures from cryo-electron micrographs.
+2. [CryoDRGN](https://www.nature.com/articles/s41592-020-01049-4), reconstruction of heterogeneous protein structures from cryo-electron micrographs.

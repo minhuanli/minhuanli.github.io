@@ -4,6 +4,7 @@ title: Bayesian Inference with Probabilisitc Pupulation Codes
 tags: BiologicalComplexity
 katex: True
 progress: 100%
+comments: true
 ---
 This is a summary about paper [*Ma, Wei Ji, et al. (2006) Bayesian inference with probabilistic population codes. Nature neuroscience*](https://www.nature.com/articles/nn1790) and [*Ma, Wei Ji, et al. (2014) Neural Coding of Uncertainty and Probability. Annual Review of Neuroscience.*](https://www.annualreviews.org/doi/abs/10.1146/annurev-neuro-071013-014017?casa_token=sQF4rgWvNSIAAAAA:6UDQKWnO4qCGX-HT2zcE-mfnZulYEp_c9S9tE3pobG2w3VRB3-4lgMD445mbKDIHeFcRie_YTjdZdA) The authors presented a model, with some physiological evidence, about neural realization of bayesian probabilitic computation in human brains: probabilistic population codes. This report borrows a lot from Yafah's presentation.<!--more-->
 

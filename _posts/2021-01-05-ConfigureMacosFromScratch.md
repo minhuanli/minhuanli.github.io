@@ -3,6 +3,7 @@ layout: post
 title: Configure A macOS with Intel chip From Scratch
 description: A walk-through note on how to configure my familiar working system from a brand new macOS system, including Git token, Homebrew, Terminal color theme, Oh-my-zsh plugins, miniconda and jupyter kernel.
 tag: tech
+comments: true
 ---
 
 The new macOS Big Sur has an impressively pretty UI, so today I tried to install it on my old 2015 macbook pro. This is not my primary working computer, as I am not sure if the Big Sur is stable enough and compatible with all my software. 

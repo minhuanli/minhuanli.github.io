@@ -4,6 +4,7 @@ title: Facilitated Variation
 tags: BiologicalComplexity 
 katex: True
 progress: 100%
+comments: true
 ---
 
 This is a summary about paper [*Gerhart, John, and Marc Kirschner. (2007) The theory of facilitated variation*](https://www.pnas.org/content/104/suppl_1/8582.short). It is a paper proposing a direct but quite heuristic thoery to explain the "variation" in the evolution. It have long been a mystery that, in Darwin's theory of evolution, how rare and random mutation can lead to exquisite changes of form and function. Some key advances regarding developmental biology, like how genetic information is transmitted to the next generation, how this information is recovered to produce the active components of cells, have revealed how a single-celled egg develops to a functional adult. Such new insights have permitted the emergence of the new thoery. My summary has borrowed a lot from Ana's CS229r presentation and *An interview with Marc Kirschner and John Gerhart*.<!--more-->

@@ -4,6 +4,7 @@ title: Temporal Difference Methods in Machine Learning
 tags: BiologicalComplexity
 katex: True
 progress: 100%
+comments: true
 ---
 This is a summary about paper [*Sutton, et al. 1988. Learning to predict by the methods of temporal differences*](https://link.springer.com/article/10.1023/A:1022633531479). This paper provided a complete discussion about the temporal difference methods in the learning to predict task, which takes observations and try to predict outcomes from those observations like classification problem. This summary borrowed a lot of ideas from Tasha's presentation and centers around the comparision with the supervised learning method.<!--more-->
 

@@ -4,6 +4,7 @@ title: Neuroidal Model
 tags: BiologicalComplexity
 katex: True
 progress: 100%
+comments: true
 ---
 This is a summary about paper [*C. H. Papadimitriou, S. S. Vempala, Unsupervised Learning through Prediction in a Model of Cortex*](https://arxiv.org/abs/1412.7955). This paper is a follow-up work of Prof. Valiant's neuroidal model. Generally, people want to understand why human brains can do some amazing jobs like memorization, association. Traditional computer algorithms work in fashions that seem completely incompatible with the way brain actually work. The neuroidal model is one kind of minimalist quantitative neural model.<!--more--> 
 

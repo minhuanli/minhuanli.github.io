@@ -4,6 +4,7 @@ title: Digital Organisms
 tags: BiologicalComplexity 
 katex: True
 progress: 100%
+comments: true
 ---
 
 This is a summary about paper [*Lenski et al. (2003) "The evolutionary origins of complex features"*](https://www.nature.com/articles/nature01568). They authors used a novel experimental system, digital organisms, to explore the ability of organisms to evolve complex functions. They demonstrated the power of random mutation (even deleterious) and natural selection in the evolutionary pathway to complex functions.
