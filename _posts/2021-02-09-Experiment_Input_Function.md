@@ -4,6 +4,7 @@ title: Experiments on Input Functions
 tags: BiologicalComplexity 
 katex: True
 progress: 100%
+comments: true
 ---
 
 This is a summary of papers on experimental investigations of gene's input function, especially about [*Diverse Two-Dimensional Input Functions Control Bacterial Sugar Genes (2008)*](https://pubmed.ncbi.nlm.nih.gov/18374652/) and [*Plasticity of the cis-Regulatory Input Function of a Gene (2006)*](https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.0040045). 
