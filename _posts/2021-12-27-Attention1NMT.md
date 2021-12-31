@@ -16,4 +16,34 @@ This blog is a note of the first discussion, about the paper [*Bahdanau, et al. 
 
 ### <i class='contrast'>Translation Task and Seq2Seq Model</i>
 
+There are two major approaches in machine translation tasks: Traditional phrase-based translation system consists of many small sub-components that are tuned separately; Neural machine translation aims at building a single neural network that can be jointly tuned to maximize the translation performance. 
+
+Seq2Seq Model[^1] belongs to a family of encoder-decoders in the neural machine translation approach. They typically encode a source sentence into a **fixed-length** vector, from which a decoder generates a translation. 
+
+<i class='contrast'>Seq2Seq: RNN Encoder-Decoder</i>
+
+Say we have the source sentence $$\mathbf{x}$$ and the output sentence $$\mathbf{y}$$:
+
+$$
+\mathbf{x}=\left(x_{1}, \ldots, x_{T_{x}}\right), x_{i} \in \mathbb{R}^{K_{x}} \\
+\mathbf{y}=\left(y_{1}, \ldots, y_{T_{y}}\right), y_{i} \in \mathbb{R}^{K_{y}} \tag{1}
+$$
+
+<p class='bluebox'>
+Each natural language sentence will first be tokenized (usually includes an ending signal), and each word or token into fixed length vectors. But apparently, different sentences could have different lengths \(T_x\) and \(T_y\)
+</p>
+
+The encoder reads input sequence $$\mathbf{x}=\left(x_{1}, \ldots, x_{T_{x}}\right), x_{i}$$, and pass through a RNN (Recurrent Neural Network) like:
+
+$$
+h_{t}=f\left(x_{t}, h_{t-1}\right) \\
+\tag{2}
+$$
+
+
+### <i class='contrast'>References</i>
+
+[^1]: Sutskever, Ilya, Oriol Vinyals, and Quoc V. Le. "Sequence to sequence learning with neural networks." Advances in neural information processing systems. 2014.
+
+
 

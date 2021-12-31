@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Spectral Bias and Postional Encoding
+title: Spectral Bias and Positional Encoding
 tags: AI&Physics 
 katex: True
 progress: 100%
