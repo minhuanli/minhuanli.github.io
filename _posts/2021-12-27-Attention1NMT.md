@@ -3,7 +3,7 @@ layout: post
 title: Attention I, Jointly Learn to Align and Translate  
 tags: AI&Physics Attention
 katex: True
-progress: 15%
+progress: 50%
 comments: true
 ---
 
@@ -20,7 +20,7 @@ People are trying to translate natural languages with machines. There are two ma
 
 Before the publication of this attention mechanism paper, Seq2Seq model[^1] achieved the best results in neural translation tasks. And in fact, the attention mechanism is only a tiny but profound modification to the Seq2Seq model. So we will first review the Seq2Seq Model's architecture and limitations, then the introduction of the "attention" would be intuitive.
 
-Seq2Seq Model belongs to a family of encoder-decoders in the neural machine translation approach. They typically encode a source sentence into a **fixed-length** vector, from which a decoder generates a translation. 
+Seq2Seq Model belongs to a family of encoder-decoders in the neural machine translation approach. They typically encode a source sentence into a fixed-length vector, from which a decoder generates a translation. 
 
 #### <i class='contrast'>RNN Encoder</i>
 
@@ -53,14 +53,16 @@ $$
 c= q(\{h_1,\dots,h_{T_x}\})\tag{3}
 $$
 
+Usually they use the LSTM as the $$f$$, and $$c= q(\{h_1,\dots,h_{T_x}\})=h_T$$. 
+
 <p class='redbox'>
-Usually they use the LSTM as the \(f\), and \(c= q(\{h_1,\dots,h_{T_x}\})=h_T\). The latter choice is the limitation of the model, as the context vector will be a single fixed-length vector for all output words prediction. 
+It is intuitive to choose \(c=h_T\) at the moment, as \(h_T\) is the only hidden state which could possibly contain all information in the source sentence. But this is not a perfect choice of course, as we all know now RNN would concentrate more on the information around the node..
 </p>
 
 <center>
 <figure>
 <img src='https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20211231000239.png' alt='Figure1' width='50%'/>
-<figcaption align = 'center'><b>Fig.1 - An illustration of the RNN Encoder–Decoder in previous Seq2Seq Model, from reference 2. The choice to construct the context vector c, red circled, is the limitation of the model.</b></figcaption>
+<figcaption align = 'left'><b>Fig.1 - An illustration of the RNN Encoder–Decoder in previous Seq2Seq Model, from reference 2. The choice to construct the context vector c, red circled, is the limitation of the model.</b></figcaption>
 </figure>
 </center>
 
@@ -82,13 +84,23 @@ p\left(y_{i} \mid y_{1}, \ldots, y_{i-1}, \mathbf{x}\right)=g\left(y_i \mid y_{i
 $$
 
 <p class='bluebox'>
-During the training process, loss function is constructed to maximize the likelihood of the true next word. Once the model is trained, they usually use algorithms like beam search that approximately maximizes the conditional probability.
+During the training process, loss function is constructed to maximize the likelihood of the true next word. Once the model is trained, they usually use algorithms like beam search that approximately maximizes the conditional probability to predict the output sentences.
 </p>
 
 
 #### <i class='contrast'>Problem of the Seq2Seq Model</i>
 
+As indicated by the equation (4) and (5), a single context vector $$c$$ is used in prediction for all $$s_i$$ and $$y_i$$. That means, the RNN encoder needs to compress all the necessary information of the source sentence into a single fixed-length vector. It is not surprising that the Seq2Seq model can hardly cope with long sentences, as shown in figure 2[^3]. Fixing this issue is the motivation of the paper.
 
+<center>
+<figure>
+<img src='https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20220103120204.png' alt='Figure2' width='60%'/>
+<figcaption align = 'left'><b>Fig.2 - The BLEU scores achieved by Seq2Seq Model. The performance decreases rapidly when the sentence length grows. From reference 3.</b></figcaption>
+</figure>
+</center>
+
+
+### <i class='contrast'>Introduce Attention to the model</i>
 
 
 ### <i class='contrast'>References</i>
@@ -97,4 +109,5 @@ During the training process, loss function is constructed to maximize the likeli
 
 [^2]: Cho, Kyunghyun, et al. "Learning phrase representations using RNN encoder-decoder for statistical machine translation." arXiv preprint arXiv:1406.1078 (2014).
 
+[^3]: Cho, Kyunghyun, et al. "On the properties of neural machine translation: Encoder-decoder approaches." arXiv preprint arXiv:1409.1259 (2014).
 
