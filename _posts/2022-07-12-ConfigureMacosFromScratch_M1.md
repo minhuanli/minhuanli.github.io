@@ -1,20 +1,14 @@
 ---
 layout: post
-title: Configure A macOS with Intel chip From Scratch
-description: A walk-through note on how to configure my familiar working system from a brand new macOS system, including Git token, Homebrew, Terminal color theme, Oh-my-zsh plugins, miniconda and jupyter kernel.
+title: Configure A macOS with M1 chip From Scratch
+description: A walk-through note on how to configure my familiar working system from a brand new macOS system with M1 chip, including Git token, Homebrew, Terminal color theme, Oh-my-zsh plugins, and conda. Compared to the <a href="https://minhuanli.github.io/2021/01/05/ConfigureMacosFromScratch/">previous post</a> for an Intel chip, the difference mainly lies in the Homebrew PATH. I also use mambaforge to replace miniconda for python environment management. 
 tag: tech
 comments: true
 ---
 
-The new macOS Big Sur has an impressively pretty UI, so today I tried to install it on my old 2015 macbook pro. This is not my primary working computer, as I am not sure if the Big Sur is stable enough and compatible with all my software. 
-As I mostly work with the command line and text editors, after the system installation, I reconfigured my favorite working environment from scratch. This is note could serve as a complete recipe when I (have enough money to) buy a new computer.
+Finally I have saved some money to replace my loyal but old MBP with a new one with M1 pro chip. Here is how I configure it to my comfortable working environment. 
 
-<p class='orangebox'>
-<i class='ge'>Update on Jul 12, 2022:</i><br>
-Yeah I bought the new M1 chip macbook, and <a href="https://minhuanli.github.io/2021/01/05/ConfigureMacosFromScratch_M1/">here</a> is the new cookbook to set up.
-</p>
-
-My system version is macOS 11.1, with Intel chip. 
+My system version is macOS 12.4, with M1 pro chip. 
 
 * This will become a table of contents (this text will be scrapped).
 {:toc}
@@ -35,11 +29,35 @@ Then install Homebrew with:
 ```shell
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
+
+According to this [tutorial](https://mac.install.guide/homebrew/3.html):
+> On Apple Silicon machines, there's one more step. Homebrew files are installed into the `/opt/homebrew` folder. But the folder is not part of the default `$PATH`. Follow Homebrew's advice and create a `~/.zprofile` file which contains a command which sets up Homebrew. 
+
+So we have to do
+```shell
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"
+```
+
 After the installation, run `brew` in the Terminal, if you see some brew tutorial words as "Example usage...", you are ok with the step.
-### 2. Set up Git config and Github HTTP/SSH token
+
+### 2. Set up Git token for password-free interaction
 Then set up Git config and Github token on the computer, you can interact (push and pull) with Github repos in a password-free manner. You should have a github account before this step, you can [register](https://github.com/) for free if you haven't.
 
-First Config your github username and email in global parameters, s.t. Github serve will know who you are:
+First install the newest `git` with homebrew to replace the default one:
+
+```shell
+brew install git
+```
+
+Then quit and reopen the terminal, check the git, you should see
+
+```shell
+>>> which git
+/opt/homebrew/bin/git
+```
+
+Then Config your github username and email in global parameters, s.t. Github serve will know who you are:
 ```shell
 # Remove the quotation marks and replace the words inside with your account info
 git config --global user.name "user-name"
@@ -49,57 +67,26 @@ Check all configs:
 ```shell
 git config --list
 ```
-For a convenient password-free manner, you can use HTTP token (preferred) or SSH token:<br>
 
-<p class="orangebox">
-<i class='ge'>Update on Jan 18, 2021:</i><br>
-Github makes a safety update that requires all personal user to use a personal access token for command line git access. See <a href="https://github.blog/2020-12-15-token-authentication-requirements-for-git-operations/">ref</a>. Previous password access will be no longer supported after August 13, 2021. How to update can be found <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">here</a> and <a href="https://docs.github.com/en/github/using-git/updating-credentials-from-the-macos-keychain">here</a>
-</p>
+For a convenient password-free interaction manner, first setup a personal token accroding on the github [website](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
 
-- **Set HTTP Token**<br>
-  Change to Home Directory
-  ```shell
-  cd ~
-  ```
-  Create a text file containing your username and password
-  ```shell
-  touch .git-credentials
-  vim .git-credentials
-  # Input the following line into .git-credentials, no brackets 
-  https://{username}:{password}@github.com
-  ```
-  Add the file into git config with the following command
-  ```shell
-  git config --global credential.helper store
-  ```
-  Then a `[credential] helper = store` line is in the `.gitconfig`
--  **Set SSH token**<br>
-  Generate SSH Token, run the following codes with 2 following `Enter`
-  ```shell 
-  ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
-  ```
-  Test if SSH setting is Ok
-  ```shell
-  ssh -T git@github.com
-  ```
+Then clone any repo to your local space with the token in the password place. Once this is completed, the new token will be cached in your Keychain Access and you can do password-free access in the future, see [this](https://docs.github.com/en/github/using-git/updating-credentials-from-the-macos-keychain) for details 
 
-With either one of the above 2 methods, you can interact with Github in a password-free manner.
+### 3. Install Mambaforge
+Now we have the a new python environment manager, [Mambaforge](https://github.com/conda-forge/miniforge#mambaforge), which supports nearly all common comamnds in `conda` but much lighter than even miniconda,
 
+Do the following:
 
-### 3. Install Miniconda
-As I am mostly working with `python`, I use miniconda to manage python packages and virtual envs. Check [here](https://medium.com/dunder-data/anaconda-is-bloated-set-up-a-lean-robust-data-science-environment-with-miniconda-and-conda-forge-b48e1ac11646) to see why I choose Miniconda over standard Anaconda. 
-
-To install miniconda, you have to download the installer according to your system [here](https://docs.conda.io/en/latest/miniconda.html)
-
-Then, change to the directory with the installer in Command line, run:
 ```shell
-bash Miniconda3-latest-MacOSX-x86_64.sh
+wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-MacOSX-arm64.sh
+bash Mambaforge-MacOSX-arm64.sh
 ```
+
+And follow the instructions during installation, you will be all set. 
 
 ### 4. Install Oh-my-zsh, theme and useful plugins
 This is my favorite part. I use `zsh` instead of `bash` as my local shell because `zsh` has pretty themes as well as powerful plugins, and `Oh-my-zsh` provides an elegant way to manager them. 
 Here is how to install them. 
-> I am looking for a way to make this oh-my-zsh work on Harvard's Odyssey cluster  
 
 First, change your shell to `zsh`. macOS has `zsh` as its default shell, but you can check and change shell with the following codes:<br>
 - List all available shells<br>
