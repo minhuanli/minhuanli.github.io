@@ -38,10 +38,15 @@ My system version is macOS Catalina 10.15.7
    echo 'export PATH="/usr/local/opt/ruby/bin:$PATH"' >> ~/.zshrc
    ## If you're using Bash
    echo 'export PATH="/usr/local/opt/ruby/bin:$PATH"' >> ~/.bash_profile
+   ## Update Jul 12, 2022
+   ## If you are using M1 chip macbook, the homebrew lives elsewhere, you have to do:
+   echo 'export PATH="/opt/homebrew/opt/ruby/bin:$PATH"' >> ~/.zshrc
 
    ## Source the setting file .zshrc or .bash_profile, you should see
    >>> which ruby
    /usr/local/opt/ruby/bin/ruby
+   # Or on M1 Mac
+   /opt/homebrew/opt/ruby/bin/ruby
 
    # Step4: Install Jekyll
    gem install --user-install bundler jekyll
@@ -65,6 +70,7 @@ My system version is macOS Catalina 10.15.7
    bundle init
    
    # Add necessary gem terms to the Gemfile
+   # Update Jul 12 2022: No need this step anymore
    bundle add webrick
    
    # If you have a `Gemfile` already, you can ignore the above two steps, just:
