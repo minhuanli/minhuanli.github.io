@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Attention I, Early Implementation of Attention Mechanism 
+title: Early Implementation of Attention Mechanism 
 tags: AI&Physics Attention
 katex: True
 progress: 100%
@@ -191,7 +191,7 @@ Besides the visualizaion of weights $$\alpha_{ij}$$ in the attention equation (6
 
 Given the above discussion, let's come back to the question: What is attention? Why it is powerful? Clearly for me, from the equation (6), attention is more like **explicily** writing out and optimize the correlation weights you are interested in. Here we want the correlation (alignment) between the input and output words, so the format like equation (6) did the job. Theoretically, DNN itself could capture the correlation with its abundant weights, but explicitly writing out and optimizing the specific correlations you are interested in seems important. From my point of view, the reason why attention is useful is similar to that why CNN works better on CV tasks than naive MLPs. 
 
-In this paper, we write out the correlation between the input and output, but we are still using RNN to capture the correlation between sequential elements in input. It is very natural to move one step further: **what if we replace the RNN with the "attention" idea?** Just explicitly write out the correlation between order elements and optimize them? Could it work better than RNN? This is the primary motivation of "self-attention" and the transformer model. We will cover this topic in the next blog.
+In this paper, we write out the correlation between the input and output, but we are still using RNN to capture the correlation between sequential elements in input. It is very natural to move one step further: **what if we replace the RNN with the "attention" idea?** Just explicitly write out the correlation between order elements and optimize them? Could it work better than RNN? This is the primary motivation of "self-attention" and the transformer model. We will cover this topic in a future blog.
 
 ### <i class='contrast'>References</i>
 
