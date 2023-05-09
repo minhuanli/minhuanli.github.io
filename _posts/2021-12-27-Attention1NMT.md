@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Attention I, Early Implementation of Attention Mechanism 
+title: Early Implementation of Attention Mechanism 
 tags: AI&Physics Attention
 katex: True
 progress: 100%
