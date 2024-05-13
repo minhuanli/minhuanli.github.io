@@ -5,7 +5,7 @@ tags: AI&Physics
 katex: True
 description: This note delves into a paper recommended by Kevin, which focuses on the challenges of obtaining low-variance gradients for continuous random variables, particularly those pesky distributions we often encounter (yes, the Rice distribution). Key takeaway, you can have unbiased estimators for pathwise gradients of continuous distributions with numerically tractable CDFs, like gamma, truncated, or mixtures.
 progress: 100%
-comments: true
+# comments: true
 ---
 
 Deriving gradients from stochastics operations is a persistent headache in various tasks related to Bayesian inference or training generative models. The reparameterization trick has come to our rescue in numerous cases involving continuous random variables, such as the Gaussian distribution. However, many distributions lacking a location-scale parameterization or a tractable inverse cumulative function—like truncated, mixture, Von Mises or Dirichlet distributions—can't be used with reparameterization gradients. The authors proposed an alternative approach called implicit reparameterization trick, in contrast to the classic reparameterization trick, which **provided unbiased estimators for continuous distributions with numerically tractable CDFs**. 

@@ -3,7 +3,7 @@ layout: post
 title:  An obscure reason of GPU memory leak in pytorch
 description: A short debug note on why I kept getting "CUDA out of memory" error in my codes. Main takeaway is, don't use in-place operations in your computing graph unless necessary. If you are applying it to non-leaf tensors, change it even it seems necessary. I tested on both 1.13 and 2.0, with cuda version 11.6 and 11.7.
 tag: tech
-comments: true
+# comments: true
 ---
 Recently I am transfering some of my prvious tensorflow and jax codes into pytorch. About the comparison between the three frameworks, we could have another 10 blogs to argue, but that is not what I want to share today. 
 

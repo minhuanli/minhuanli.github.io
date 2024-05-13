@@ -3,7 +3,7 @@ layout: post
 title: Configure A macOS with M1 chip From Scratch
 description: A walk-through note on how to configure my familiar working system from a brand new macOS system with M1 chip, including Git token, Homebrew, Terminal color theme, Oh-my-zsh plugins, and conda. Compared to the <a href="https://minhuanli.github.io/2021/01/05/ConfigureMacosFromScratch/">previous post</a> for an Intel chip, the difference mainly lies in the Homebrew PATH. I also use mambaforge to replace miniconda for python environment management. 
 tag: tech
-comments: true
+# comments: true
 ---
 
 Finally I have saved some money to replace my loyal but old MBP with a new one with M1 pro chip. Here is how I configure it to my comfortable working environment. 

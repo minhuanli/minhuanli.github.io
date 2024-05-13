@@ -4,7 +4,7 @@ title: Spectral Bias and Positional Encoding
 tags: AI&Physics 
 katex: True
 progress: 100%
-comments: true
+# comments: true
 ---
 
 Recent days (maybe it is already out of date when you read this blog), we see a "renaissance" of classic multilayer perceptron (MLP) models in machine learning field. The logic behind this trend is heuristic for researches to see that, by understanding how a complex black box works, we can naturally add some reasonably modifications to make it better, instead of shotting with blind eyes. The majority of the blog is based on paper [*Tancik, Matthew, et al. (2020) Fourier features let networks learn high frequency functions in low dimensional domains*](https://arxiv.org/abs/2006.10739).
