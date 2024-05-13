@@ -4,9 +4,12 @@ title: About Me
 lang: zh
 ---
 
+<p class='redbox'>
 <i class='contrast'>News:</i>
 
-- 2024, I will join [Flatiron Institute](https://www.simonsfoundation.org/flatiron/) as a flatiron research fellow in CCM after graduation
+2024, I will join Flatiron Institute as a flatiron research fellow in CCM after graduation
+</p>
+
 
 <img align="right" height="240" alt="MH" src="/public/image/profile.png"/>
 
