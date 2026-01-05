@@ -19,7 +19,7 @@ author:
 paginate:         5
 #google_analytics: 'UA-91425204-3'
 #bing_seo:		  'ECA8D4503D79297E7BB223666F18CAF8'
-emailme:          mailto:minhuanli@g.harvard.edu
+emailme:          mailto:minhuanli@flatironinstitute.org
 
 gems:             [jekyll-paginate, jekyll-seo-tag, jekyll-sitemap]
 
