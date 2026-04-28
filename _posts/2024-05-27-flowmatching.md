@@ -71,7 +71,7 @@ Say we have variable $$x_0 \in \mathbb{R}^d$$, with probability distibution $$p_
 
 In the simulation-based training protocol for continuous normalizing flow, our target lives in the probability density path representation, but our parameters are in the vector field space. Connecting that two representations are expensive. Can we directly construct an objective in vector field space, so the training can be more in a regression manner?
 
-<center><img src="/public/image/flow_matching1.png" alt="fm1" width="600"/></center>
+<center><img src="/assets/img/posts/flow_matching1.png" alt="fm1" width="600"/></center>
 
 
 ### <i class='contrast'>Flow Matching Objective</i>
@@ -126,7 +126,7 @@ $$
 
 In the theorem 1 of the original paper, they proved that the marginal vector field could construct marginal density path.
 
-<center><img src="/public/image/flow_matching2.png" alt="fm2" width="700"/></center>
+<center><img src="/assets/img/posts/flow_matching2.png" alt="fm2" width="700"/></center>
 
 However, even though we have the equation (10) and (11) for $$p_t(x)$$ and $$u_t(x)$$, the $$\mathcal{L}_{\mathrm{FM}}(\theta)$$ in equation (7) is still intractable because of the integrals in (10) and (11).
 

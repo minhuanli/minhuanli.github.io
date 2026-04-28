@@ -110,7 +110,7 @@ There will be a `.zshrc` text file in your home directory.
 You can easily change words inside and `source ~/.zshrc` to make a new configuration happen.
 I have uploaded my configuration files, theme (I modify the af-magic theme) and Terminal color scheme in this [repo](https://github.com/minhuanli/personal_env_setting). 
 Here is how my prompt looks like:
-<center><img src="/public/image/prompt_look_like.png" alt="prompt look like" width="500"/></center>
+<center><img src="/assets/img/posts/prompt_look_like.png" alt="prompt look like" width="500"/></center>
 
 You can explore your favorite themes [here](https://github.com/ohmyzsh/ohmyzsh/wiki/Themes). 
 Another (or main) highlight of `oh-my-zsh` is its convenient management of abundant powerful plugins, which will make the working process much more productive and enjoyable.

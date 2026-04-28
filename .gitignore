@@ -1,48 +1,32 @@
 
-# Ignore some log cache files
-.jekyll-cache/
+# Claude Code
+CLAUDE.md
+.claude/
 
-# Ignore Gemfile.lock
+# Jekyll build output
+_site/
+.jekyll-cache/
+.jekyll-metadata
+
+# Gemfile.lock (let CI manage this)
 Gemfile.lock
 
-# Ignore docs files
-_gh_pages
-_site
-.ruby-version
+# Node / asset pipeline
+node_modules/
+assets/js/search/
+assets/css/main.css
 
-# Numerous always-ignore extensions
-*.diff
-*.err
-*.orig
-*.log
-*.rej
-*.swo
-*.swp
-*.zip
-*.vi
-*~
-
-# OS or Editor folders
+# OS / Editor
 .DS_Store
 ._*
 Thumbs.db
-.cache
-.project
-.settings
-.tmproj
-*.esproj
-nbproject
+.idea/
 *.sublime-project
 *.sublime-workspace
-.idea
+.vscode/
 
-# Komodo
-*.komodoproject
-.komodotools
-
-# grunt-html-validation
-validation-status.json
-validation-report.json
-
-# Folders to ignore
-node_modules
+# Misc
+*.log
+*~
+*.swp
+*.swo

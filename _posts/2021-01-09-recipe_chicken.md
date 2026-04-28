@@ -9,7 +9,7 @@ comments: true
 川菜口水鸡。 <br>前段经常会点这道菜的中餐馆外卖，各家店做的品质不一，鸡肉质感类似，酱汁口味差别很大。
 最近一直自己做饭，冰箱里剩了几根鸡腿没有消灭完，就查了查菜谱，用家里有的材料做了一次，口味很好，偏甜辣口，带微醋酸。菜谱整理如下。在美国做菜最大的障碍是买菜, 能在一般美国超市买到的食材都标注了英文。
 
-<center><img src='/public/image/steamed_chicken.jpeg' alt="口水鸡" width="200"/></center>
+<center><img src='/assets/img/posts/steamed_chicken.jpeg' alt="口水鸡" width="200"/></center>
 
 ### 食材
 

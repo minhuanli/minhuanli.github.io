@@ -1,0 +1,74 @@
+// Custom callout boxes — used in existing blog posts
+.greenbox {
+  background: #f0fff4;
+  border-left: 4px solid #38a169;
+  padding: 0.9rem 1.2rem;
+  margin: 1.5rem 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.bluebox {
+  background: #ebf8ff;
+  border-left: 4px solid #3182ce;
+  padding: 0.9rem 1.2rem;
+  margin: 1.5rem 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.orangebox {
+  background: #fffaf0;
+  border-left: 4px solid #dd6b20;
+  padding: 0.9rem 1.2rem;
+  margin: 1.5rem 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.redbox {
+  background: #fff5f5;
+  border-left: 4px solid #e53e3e;
+  padding: 0.9rem 1.2rem;
+  margin: 1.5rem 0;
+  border-radius: 0 4px 4px 0;
+}
+
+// Used in post headings: <i class='contrast'>Section Title</i>
+i.contrast {
+  color: var(--global-theme-color);
+  font-style: italic;
+  font-weight: 500;
+}
+
+// Profile name on about page
+h1.profile-name {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.3em;
+  font-size: 3.5rem;
+}
+
+.profile-name-en {
+  letter-spacing: 0.01em;
+}
+
+.profile-name-zh {
+  font-family: 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  font-weight: 300;
+  font-size: 0.75em;
+  color: var(--global-text-color-light);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+// Chinese language font support
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Noto Sans SC Regular'), local('NotoSansSC-Regular'),
+       url('https://fonts.gstatic.com/s/notosanssc/v26/k3kXo84MPvpLmixcA63oeALhLOCT-xWNm8Hqd37g1OkDRZe7lR4sg.woff') format('woff');
+}
+
+:lang(zh) {
+  font-family: 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+}

@@ -1,15 +1,29 @@
-# frozen_string_literal: true
-
-source "https://rubygems.org"
-
-git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
-
-# gem "rails"
-
-gem "webrick", "~> 1.7"
-
-gem "jekyll", "~> 4.2"
-
-gem 'jekyll-paginate', group: :jekyll_plugins
-gem 'jekyll-seo-tag', group: :jekyll_plugins
-gem 'jekyll-sitemap', group: :jekyll_plugins
+source 'https://rubygems.org'
+group :jekyll_plugins do
+    gem 'classifier-reborn'
+    gem 'jekyll'
+    gem 'jekyll-archives'
+    gem 'jekyll-email-protect'
+    gem 'jekyll-feed'
+    gem 'jekyll-get-json'
+    gem 'jekyll-imagemagick'
+    gem 'jekyll-link-attributes'
+    gem 'jekyll-minifier'
+    gem 'jekyll-paginate-v2'
+    gem 'jekyll-regex-replace'
+    gem 'jekyll-scholar'
+    gem 'jekyll-sitemap'
+    gem 'jekyll-tabs'
+    gem 'jekyll-toc'
+    gem 'jekyll-twitter-plugin'
+    gem 'jemoji'
+    gem 'mini_racer'
+    gem 'unicode_utils'
+    gem 'webrick'
+end
+group :other_plugins do
+    gem 'css_parser'
+    gem 'feedjira'
+    gem 'httparty'
+    gem 'observer' # required for citeproc-ruby on Ruby >= 3.4
+end

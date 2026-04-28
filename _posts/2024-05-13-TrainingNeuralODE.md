@@ -9,7 +9,7 @@ progress: 100%
 ---
 
 
-<center><img src="/public/image/neural_ODE.png" alt="NeuralODE1" width="600"/></center>
+<center><img src="/assets/img/posts/neural_ODE.png" alt="NeuralODE1" width="600"/></center>
 
 Neural Ordinary Differential Equations (ODEs) represent a subset of deep neural network models where the derivative of the hidden state is defined by a neural network, departing from the traditional approach of stacking hidden layers. In essence, neural networks parameterize the underlying differential equations, and the network's output is computed using specialized solvers for these equations. Consequently, the primary challenge in training lies in effectively computing gradients of the target function with respect to the network parameters. And with different types of loss functions, there can be tiny modifications in the adjoint dynamic systems.
 
@@ -138,7 +138,7 @@ $$
 
 ### <i class='contrast'>Training Algorithm</i>
 
-<center><img src="/public/image/neural_ODE2.png" alt="NeuralODE2" width="400"/></center>
+<center><img src="/assets/img/posts/neural_ODE2.png" alt="NeuralODE2" width="400"/></center>
 
 Summarize the above adjoint method into a training algorithm. Basically for **target function only based on the final output $$L\left(\mathbf{z}\left(t_1\right)\right)$$**, a single training step involves one forward pass and two reverse passes of the ODESolver:
 

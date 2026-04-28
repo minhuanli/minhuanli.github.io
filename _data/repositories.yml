@@ -1,0 +1,12 @@
+github_users:
+  - minhuanli
+
+repo_description_lines_max: 2
+
+github_repos:
+  - rs-station/SFcalculator_torch
+  - rs-station/embedopt
+  - rs-station/ROCKET
+  - rs-station/reciprocalspaceship
+  - flatironinstitute/GOTO-SWAP
+  - minhuanli/deeprefine
