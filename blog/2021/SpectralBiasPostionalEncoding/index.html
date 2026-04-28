@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!-- Head -->
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <!-- Metadata, OpenGraph and Schema.org -->
+
+
+
+
+<!-- Standard metadata -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>
+  
+  
+    
+      Spectral Bias and Positional Encoding | Minhuan Li
+    
+  
+</title>
+<meta name="author" content="Minhuan Li">
+<meta name="description" content="Flatiron Research Fellow at the Center for Computational Mathematics, Simons Foundation. Working at the intersection of statistical physics, machine learning, and structural biology.
+">
+
+  <meta name="keywords" content="computational biology, machine learning, statistical physics, protein dynamics, generative models">
+
+
+
+
+
+
+
+
+
+
+<!-- Bootstrap & MDB -->
+<link rel="stylesheet" href="/assets/css/bootstrap.min.css?a4b3f509e79c54a512b890d73235ef04">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+<!-- Bootstrap Table -->
+
+
+<!-- Fonts & Icons -->
+<link defer rel="stylesheet" href="/assets/css/academicons.min.css?f0b7046b84e425c55f3463ac249818f5">
+<link defer rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;family=Roboto+Slab:wght@100;300;400;500;700&amp;family=Cormorant+Garamond:wght@400;600;700&amp;family=Noto+Sans+SC:wght@300;400&amp;display=swap">
+
+<!-- Code Syntax Highlighting -->
+<link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?591dab5a4e56573bf4ef7fd332894c99" media="" id="highlight_theme_light">
+
+
+
+<!-- Styles -->
+
+<!-- pseudocode -->
+
+
+
+  <link rel="shortcut icon" href="/assets/img/einstein.png?10f070c24c243684959801e4422ea7ca">
+
+<link rel="stylesheet" href="/assets/css/main.css?d41d8cd98f00b204e9800998ecf8427e">
+<link rel="canonical" href="https://minhuanli.github.io/blog/2021/SpectralBiasPostionalEncoding/">
+
+<!-- Dark Mode -->
+<script src="/assets/js/theme.js?9a0c749ec5240d9cda97bc72359a72c0"></script>
+
+  <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?5847e5ed4a4568527aa6cfab446049ca" media="none" id="highlight_theme_dark">
+  <script>
+    initTheme();
+  </script>
+
+
+<!-- GeoJSON support via Leaflet -->
+
+
+<!-- diff2html -->
+
+
+<!-- GitHub Project Introduction Section -->
+
+
+
+
+
+
+  </head>
+
+  <!-- Body -->
+  <body class="fixed-top-nav ">
+    <!-- Header -->
+    <header>
+  <!-- Nav Bar -->
+  <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation">
+    <div class="container">
+      
+        <a class="navbar-brand title font-weight-lighter" href="/">
+          
+            
+              <span class="font-weight-bold">Minhuan</span>
+            
+            
+            
+              <span class="font-weight-bold">Li</span>
+            
+          
+        </a>
+      
+      <!-- Navbar Toggle -->
+      <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar top-bar"></span>
+        <span class="icon-bar middle-bar"></span>
+        <span class="icon-bar bottom-bar"></span>
+      </button>
+
+      <div class="collapse navbar-collapse text-right" id="navbarNav">
+        <ul class="navbar-nav ml-auto flex-nowrap">
+          
+
+          <!-- About -->
+          <li class="nav-item ">
+            <a class="nav-link" href="/">about
+              
+            </a>
+          </li>
+
+          <!-- Other pages -->
+          
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+              
+                
+                <li class="nav-item active">
+                  
+                  <a class="nav-link" href="/blog/">blog
+                    
+                  </a>
+                </li>
+              
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+              
+                
+                <li class="nav-item ">
+                  
+                  <a class="nav-link" href="/publications/">publications
+                    
+                  </a>
+                </li>
+              
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+          
+            <!-- Search -->
+            <li class="nav-item">
+              <button id="search-toggle" title="Search" onclick="openSearchModal()">
+                <span class="nav-link">ctrl k <i class="ti ti-search"></i></span>
+              </button>
+            </li>
+          
+          
+            <!-- Toogle theme mode -->
+            <li class="toggle-container">
+              <button id="light-toggle" title="Change theme">
+                <i class="ti ti-sun-moon" id="light-toggle-system"></i>
+                <i class="ti ti-moon-filled" id="light-toggle-dark"></i>
+                <i class="ti ti-sun-filled" id="light-toggle-light"></i>
+              </button>
+            </li>
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+    <!-- Scrolling Progress Bar -->
+    <progress id="progress" value="0">
+      <div class="progress-container">
+        <span class="progress-bar"></span>
+      </div>
+    </progress>
+  
+</header>
+
+
+    <!-- Content -->
+    <div class="container mt-5" role="main">
+      
+        
+
+
+
+
+
+
+
+<div class="post">
+  <header class="post-header">
+    <h1 class="post-title">Spectral Bias and Positional Encoding</h1>
+    <p class="post-meta">
+      Created in July 26, 2021
+      
+      
+      
+    </p>
+    <p class="post-tags">
+      
+        <a href="/blog/2021"> <i class="fa-solid fa-calendar fa-sm"></i> 2021 </a>
+      
+      
+          ·  
+        
+          
+            <a href="/blog/tag/ai-physics"> <i class="fa-solid fa-hashtag fa-sm"></i> AI&amp;Physics</a>
+          
+          
+        
+      
+
+      
+    </p>
+  </header>
+
+  <article class="post-content">
+    
+    <div id="markdown-content">
+      <p>Recent days (maybe it is already out of date when you read this blog), we see a “renaissance” of classic multilayer perceptron (MLP) models in machine learning field. The logic behind this trend is heuristic for researches to see that, by understanding how a complex black box works, we can naturally add some reasonably modifications to make it better, instead of shotting with blind eyes. The majority of the blog is based on paper <a href="https://arxiv.org/abs/2006.10739" rel="external nofollow noopener" target="_blank"><em>Tancik, Matthew, et al. (2020) Fourier features let networks learn high frequency functions in low dimensional domains</em></a>.</p>
+
+<p>The basic take-away is, a standard MLP model fails to learn high frequencies both in theory and in practice, which is called Spectral Bias. Based on this findings, with a simple Fourier feature mapping (Positional Encoding), the performance of MLPs can be greatly improved, especially for low-dimensional regression tasks, like your inputs are atom coordinates. <!--more--></p>
+
+<ul id="markdown-toc">
+  <li><a href="#neural-tangent-kernel" id="markdown-toc-neural-tangent-kernel"><i class="contrast">Neural Tangent Kernel</i></a></li>
+  <li><a href="#spectral-bias-during-training" id="markdown-toc-spectral-bias-during-training"><i class="contrast">Spectral Bias during training</i></a></li>
+  <li><a href="#fourier-feature-and-encoding-methods" id="markdown-toc-fourier-feature-and-encoding-methods"><i class="contrast">Fourier Feature and Encoding methods</i></a></li>
+  <li><a href="#real-applications" id="markdown-toc-real-applications"><i class="contrast">Real Applications</i></a></li>
+</ul>
+
+<h3 id="neural-tangent-kernel"><i class="contrast">Neural Tangent Kernel</i></h3>
+
+<p><i class="contrast">Kernel Regression</i></p>
+
+<p>Kernel regression is a classic nonlinear regression algorithm. Given a training dataset \((\mathbf{X}, \mathbf{y})=\left\{\left(\mathbf{x}_{i}, y_{i}\right)\right\}_{i=1}^{n}\), where \(\mathbf{x}_{i}\) are input points and \(y_{i}=f\left(\mathbf{x}_{i}\right)\) are the corresponding scalar output labels, kernel regression constructs an estimate \(\hat{f}\) of the underlying function at any point \(\mathbf{x}\) as:</p>
+
+\[\hat{f}(\mathbf{x})=\sum_{i=1}^{n}\left(\mathbf{K}^{-1} \mathbf{y}\right)_{i} k\left(\mathbf{x}_{i}, \mathbf{x}\right)\tag{1}\]
+
+<p>where \(\mathbf{K}\) is an \(n \times n\) kernel (Gram) matrix with entries \(\mathbf{K}_{i j}=k\left(\mathbf{x}_{i}, \mathbf{x}_{j}\right)\) and \(k\) is a <em>symmetric positive semidefinite (PSD)</em> kernel function which represents the “similarity” between two input vectors.</p>
+
+<p class="bluebox">
+Intuitively, the kernel regression estimate at any point \(\mathbf{x}\) can be thought of as a weighted sum of training labels \(y_{i}\) using the similarity between the corresponding \(\mathbf{x}_{i}\) and \(\mathbf{x}\).
+</p>
+
+<p><i class="contrast">Approximate deep networks with kernel regression</i></p>
+
+<p>Let \(f\) be a fully-connected nonlinear deep network with weights \(\theta\) initialized from a Gaussian distribution \(\mathcal{N}\). Theory proposed in <a href="https://papers.nips.cc/paper/2018/hash/5a4be1fa34e62bb8a6ec6b91d2462f5a-Abstract.html" rel="external nofollow noopener" target="_blank">Ref1</a> shows that when the width of the layers in \(f\) tends to infinity and the learning rate for SGD tends to zero, the function \(f(\mathbf{x};\theta)\) converges over the course of training to the kernel regression solution using the <em>neural tangent kernel</em> (NTK), defeined as:</p>
+
+\[k_{\mathrm{NTK}}\left(\mathbf{x}_{i}, \mathbf{x}_{j}\right)=\mathbb{E}_{\theta \sim \mathcal{N}}\left\langle\frac{\partial f\left(\mathbf{x}_{i} ; \theta\right)}{\partial \theta}, \frac{\partial f\left(\mathbf{x}_{j} ; \theta\right)}{\partial \theta}\right\rangle \tag{2}\]
+
+<p class="bluebox">
+As the width becomes large, the neural network can be effectively replaced by its first-order Taylor expansion with
+respect to its parameters at initialization. For this linear model, the dynamics of gradient descent
+become analytically tractable. 
+</p>
+
+<p>An NTK linear system model can be used to approximate the dynamics of a deep network during training. Consider a network trained with L2 loss and a learin rate \(\eta\), where the network’s weights are initialized such taht the output of the network at initialization is close to zero. Under asymptotic conditions stated in <a href="https://arxiv.org/abs/1902.06720" rel="external nofollow noopener" target="_blank">Ref2</a>, the output for any data \(\mathbf{X}_{\text{test}}\) after \(t\) training iterations can be approximated as:</p>
+
+\[\hat{\mathbf{y}}^{(t)} \approx \mathbf{K}_{\text {test }} \mathbf{K}^{-1}\left(\mathbf{I}-e^{-\eta \mathbf{K} t}\right) \mathbf{y} \tag{3}\]
+
+<p>where \(\hat{\mathbf{y}}^{(t)}=f\left(\mathbf{X}_{\text {test }} ; \theta\right)\) are the network’s predictions on input points \(\mathbf{X}_{\text {test }}\) at training iteration \(t\), \(\mathbf{K}\) is the NTK matrix between all pairs of training points in \(\mathbf{X}\), and \(\mathbf{K}_{\text {test }}\) is the NTK matrix between all points in \(\mathbf{X}_{\text {test }}\) and all points in the training dataset \(\mathbf{X}\).</p>
+
+<h3 id="spectral-bias-during-training"><i class="contrast">Spectral Bias during training</i></h3>
+
+<p>Let us consider the training error \(\hat{\mathbf{y}}_{\text {train }}^{(t)}-\mathbf{y}\), where \(\hat{\mathbf{y}}_{\text {train }}^{(t)}\) are the network’s predictions on the training dataset at iteration \(t\). Since the NTK matrix \(\mathbf{K}\) must be PSD, we can take its eigendecomposition \(\mathbf{K}=\mathbf{Q} \mathbf{\Lambda} \mathbf{Q}^{\mathrm{T}}\), where \(\mathbf{Q}\) is orthogonal and \(\mathbf{\Lambda}\) is a diagonal matrix whose entries are the eigenvalues \(\lambda_{i} \geq 0\) of \(\mathbf{K}\). Then, take \(e^{-\eta \mathbf{K} t}=\mathbf{Q} e^{-\eta \Lambda t} \mathbf{Q}^{\mathrm{T}}\) into equation 3:</p>
+
+\[\mathbf{Q}^{\mathrm{T}}\left(\hat{\mathbf{y}}_{\text {train }}^{(t)}-\mathbf{y}\right) \approx \mathbf{Q}^{\mathrm{T}}\left(\left(\mathbf{I}-e^{-\eta \mathbf{K} t}\right) \mathbf{y}-\mathbf{y}\right)=-e^{-\eta \boldsymbol{\Lambda} t} \mathbf{Q}^{\mathrm{T}} \mathbf{y} \tag{4}\]
+
+<p>This means that if we consider training convergence in the eigenbasis of the NTK, the \(i^{\text {th }}\) component of the absolute error \(\left \vert \mathbf{Q}^{\mathrm{T}}\left(\hat{\mathbf{y}}_{\text {train }}^{(t)}-\mathbf{y}\right)\right \vert _{i}\) will <em>decay approximately exponentially</em> at the rate \(\eta \lambda_{i}\).</p>
+
+<p class="bluebox">
+In other words, components of the target function that correspond to kernel eigenvectors with larger eigenvalues (larger wavelength, lower frequency) will be learned faster.
+</p>
+
+<p>For a conventional MLP, the eigenvalues of the NTK decay rapidly (very low bandwidth). This results in extremely slow convergence to the high frequency components of the target function, to the point where standard MLPs are effectively unable to learn these components, as shown in the following figure (from <a href="https://arxiv.org/abs/2006.10739" rel="external nofollow noopener" target="_blank">Main Ref</a> Figure 1).</p>
+
+<center><img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20210726194920.png" alt="Figure1" width="90%"></center>
+
+<h3 id="fourier-feature-and-encoding-methods"><i class="contrast">Fourier Feature and Encoding methods</i></h3>
+
+<p>The solution to the above spectral bias issue is mapping the input points into a fourier feature space with tunable bandwidth, before passing to the MLP. Say we have input points \(\mathbf{v} \in [0,1)^d\), we can map them to a higher dimensional fourier feature space with function \(\gamma\):</p>
+
+\[\gamma(\mathbf{v})=\left[a_{1} \cos \left(2 \pi \mathbf{b}_{1}^{\mathrm{T}} \mathbf{v}\right), a_{1} \sin \left(2 \pi \mathbf{b}_{1}^{\mathrm{T}} \mathbf{v}\right), \ldots, a_{m} \cos \left(2 \pi \mathbf{b}_{m}^{\mathrm{T}} \mathbf{v}\right), a_{m} \sin \left(2 \pi \mathbf{b}_{m}^{\mathrm{T}} \mathbf{v}\right)\right]^{\mathrm{T}} \tag{5}\]
+
+<p>where \(\mathbf{b}_j\) are the Fourier basis frequencies, and \(a_j\) are the Fourier series coefficients. Then the MLP becomes \(f(\gamma(\mathbf{v});\theta)\).</p>
+
+<p class="bluebox">
+Of course the number of terms in the Fourier feature, or the number of non-zero \(a_j\) determines the bandwidth.
+</p>
+
+<p><i class="contrast">Effect of Fourier Features in 1D toy system</i></p>
+
+<p>To visualize how the Fourier feature affect the model performance, we first look at a 1D toy system. Say input \(v\) is a scalar, we can then set \(b_j=j\) (as a full Fourier basis in 1D) and \(a_j = 1/j^p\) for \(j=1,\dots,n/2\) in equation 5. Apparently the adjustable parameter \(p\) determined the bandwidth of the Fourier Feature.</p>
+
+<p class="bluebox">
+Smaller \(p\) means more terms in equation (5) has non-negligible coefficients (wider bandwidth), larger \(p\) means narrower bandwidth. Specially, \(p=\infty\) means the mapping \(\gamma(v) = [\cos 2\pi v, \sin 2\pi v]^T\).
+</p>
+
+<p>The experiments in this 1D system shows that (as in the below figure, from <a href="https://arxiv.org/abs/2006.10739" rel="external nofollow noopener" target="_blank">Main Ref</a> Figure 3): <strong>Choosing \(p\) is a tradeoff between expressiveness and overfitting</strong>, a lower \(p\) will include more high frequency features but will also give rise to overfitting. Here \(p=1\) is the optimal choice (smallest test loss).</p>
+
+<center><img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20210726204813.png" alt="Figure 2" width="90%"></center>
+
+<p><i class="contrast">Generalized Positional Encoding</i></p>
+
+<p>For higher dimensional inputs, the Fourier Feature mapping can be approached by \(\gamma(\mathbf{v})=\left[\ldots, \cos \left(2 \pi \sigma^{j / m} \mathbf{v}\right), \sin \left(2 \pi \sigma^{j / m} \mathbf{v}\right), \ldots\right]^{\mathrm{T}}\), for \(j = 0, \dots, m-1\). Use log-linear spaced frequencies for each dimension. And the scale \(\sigma\) is chosen by hyperparameter sweep.</p>
+
+<p class="bluebox">
+Note that this mapping is deterministic and only contains on-axis frequencies, making it naturally biased towards data that has more frequency content along the axes.
+</p>
+
+<p class="bluebox">
+A similar mapping is used in the popular Transformer architecture, where it is also referred to as a positional encoding. However, Transformers use it for a different goal of providing the discrete positions of tokens in a sequence as input to an architecture that does not contain any notion of order. In contrast, we use these functions to map continuous input coordinates into a higher dimensional space to enable our MLP to more easily approximate a higher frequency function.
+</p>
+
+<p><i class="contrast">Gaussian Encoding</i></p>
+
+<p>Another, and better, mapping method for higher dimensional inputs is Gaussian Encoding: \(\gamma(\mathbf{v})=[\cos (2 \pi \mathbf{B} \mathbf{v}), \sin (2 \pi \mathbf{B} \mathbf{v})]^{\mathrm{T}}\), where each entry in \(\mathbf{B}\ in \mathbb{R}^{m \times d}\) is sampled from \(\mathcal{N}(0,\sigma^2)\). The scale \(\sigma\) is chosen by hyperparameter sweep, again a tradeoff like the \(p\) above, see the figure below (From from <a href="https://arxiv.org/abs/2006.10739" rel="external nofollow noopener" target="_blank">Main Ref</a> Figure 10).</p>
+
+<center><img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20210726210320.png" alt="Figure 4" width="90%"></center>
+
+<h3 id="real-applications"><i class="contrast">Real Applications</i></h3>
+
+<p>Here are some real application projects showing the power of positional encodings:</p>
+
+<ol>
+  <li>
+    <p><a href="https://arxiv.org/abs/2003.08934" rel="external nofollow noopener" target="_blank">NeRF</a>, novel view synthesis from 2D images.</p>
+  </li>
+  <li>
+    <p><a href="https://www.nature.com/articles/s41592-020-01049-4" rel="external nofollow noopener" target="_blank">CryoDRGN</a>, reconstruction of heterogeneous protein structures from cryo-electron micrographs.</p>
+  </li>
+</ol>
+
+    </div>
+  </article>
+
+  
+
+  
+
+  
+    
+      
+
+  
+    
+    <br>
+    <hr>
+    <br>
+    <ul class="list-disc pl-8"></ul>
+
+    <!-- Adds related posts to the end of an article -->
+    <h2 class="text-3xl font-semibold mb-4 mt-12">Enjoy Reading This Article?</h2>
+    <p class="mb-2">Here are some more articles you might like to read next:</p>
+  
+
+  <li class="my-2">
+    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2024/flowmatching/">Flow-Matching Objectives</a>
+  </li>
+
+  
+
+  <li class="my-2">
+    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2024/TrainingNeuralODE/">Training Neural ODE with three different loss types</a>
+  </li>
+
+  
+
+  <li class="my-2">
+    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2023/ImplicitReparameterizationTrick/">Implicit Reparameterization Gradients</a>
+  </li>
+
+  
+
+  <li class="my-2">
+    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2023/PytorchMemoryLeak/">An obscure reason of GPU memory leak in pytorch</a>
+  </li>
+
+  
+
+  <li class="my-2">
+    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2022/ConfigureMacosFromScratch_M1/">Configure A macOS with M1 chip From Scratch</a>
+  </li>
+
+
+
+    
+  
+
+  
+  
+</div>
+
+      
+    </div>
+
+    <!-- Footer -->
+    
+  <footer class="fixed-bottom" role="contentinfo">
+    <div class="container mt-0">
+      © Copyright 2026
+      Minhuan
+      
+      Li. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>.
+
+      
+      
+    </div>
+  </footer>
+
+
+
+    <!-- JavaScripts -->
+    <!-- jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Bootsrap & MDB scripts -->
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="/assets/js/mdb.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    
+  <!-- Masonry & imagesLoaded -->
+  <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script>
+  <script defer src="/assets/js/masonry.js" type="text/javascript"></script>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  <!-- Medium Zoom JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+  <script defer src="/assets/js/zoom.js?85ddb88934d28b74e78031fd54cf8308"></script>
+
+
+
+<!-- Bootstrap Table -->
+
+
+<!-- Load Common JS -->
+<script src="/assets/js/no_defer.js?2781658a0a2b13ed609542042a859126"></script>
+<script defer src="/assets/js/common.js?e0514a05c5c95ac1a93a8dfd5249b92e"></script>
+<script defer src="/assets/js/copy_code.js?12775fdf7f95e901d7119054556e495f" type="text/javascript"></script>
+
+<!-- Jupyter Open External Links New Tab -->
+<script defer src="/assets/js/jupyter_new_tab.js?d9f17b6adc2311cbabd747f4538bb15f"></script>
+
+
+
+    
+  <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
+
+
+  <script async src="https://badge.dimensions.ai/badge.js"></script>
+
+
+    
+  
+    <!-- MathJax -->
+    <script type="text/javascript">
+      window.MathJax = {
+        tex: {
+          tags: 'ams',
+        },
+      };
+    </script>
+    <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script>
+    <script defer src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6" crossorigin="anonymous"></script>
+  
+
+
+    
+
+    
+
+
+
+    
+  <!-- Scrolling Progress Bar -->
+  <script type="text/javascript">
+    /*
+     * This JavaScript code has been adapted from the article
+     * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar,
+     * published on the website https://css-tricks.com on the 7th of May, 2014.
+     * Couple of changes were made to the original code to make it compatible
+     * with the `al-foio` theme.
+     */
+    const progressBar = $('#progress');
+    /*
+     * We set up the bar after all elements are done loading.
+     * In some cases, if the images in the page are larger than the intended
+     * size they'll have on the page, they'll be resized via CSS to accomodate
+     * the desired size. This mistake, however, breaks the computations as the
+     * scroll size is computed as soon as the elements finish loading.
+     * To account for this, a minimal delay was introduced before computing the
+     * values.
+     */
+    window.onload = function () {
+      setTimeout(progressBarSetup, 50);
+    };
+    /*
+     * We set up the bar according to the browser.
+     * If the browser supports the progress element we use that.
+     * Otherwise, we resize the bar thru CSS styling
+     */
+    function progressBarSetup() {
+      if ('max' in document.createElement('progress')) {
+        initializeProgressElement();
+        $(document).on('scroll', function () {
+          progressBar.attr({ value: getCurrentScrollPosition() });
+        });
+        $(window).on('resize', initializeProgressElement);
+      } else {
+        resizeProgressBar();
+        $(document).on('scroll', resizeProgressBar);
+        $(window).on('resize', resizeProgressBar);
+      }
+    }
+    /*
+     * The vertical scroll position is the same as the number of pixels that
+     * are hidden from view above the scrollable area. Thus, a value > 0 is
+     * how much the user has scrolled from the top
+     */
+    function getCurrentScrollPosition() {
+      return $(window).scrollTop();
+    }
+
+    function initializeProgressElement() {
+      let navbarHeight = $('#navbar').outerHeight(true);
+      $('body').css({ 'padding-top': navbarHeight });
+      $('progress-container').css({ 'padding-top': navbarHeight });
+      progressBar.css({ top: navbarHeight });
+      progressBar.attr({
+        max: getDistanceToScroll(),
+        value: getCurrentScrollPosition(),
+      });
+    }
+    /*
+     * The offset between the html document height and the browser viewport
+     * height will be greater than zero if vertical scroll is possible.
+     * This is the distance the user can scroll
+     */
+    function getDistanceToScroll() {
+      return $(document).height() - $(window).height();
+    }
+
+    function resizeProgressBar() {
+      progressBar.css({ width: getWidthPercentage() + '%' });
+    }
+    // The scroll ratio equals the percentage to resize the bar
+    function getWidthPercentage() {
+      return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+    }
+  </script>
+
+
+    
+
+    
+
+    
+
+    
+  <script src="/assets/js/vanilla-back-to-top.min.js?f40d453793ff4f64e238e420181a1d17"></script>
+  <script>
+    addBackToTop();
+  </script>
+
+
+    
+  <script type="module" src="/assets/js/search/ninja-keys.min.js?a3446f084dcaecc5f75aa1757d087dcf"></script>
+  <ninja-keys hidebreadcrumbs noautoloadmdicons placeholder="Type to start searching"></ninja-keys>
+  <script>
+    let searchTheme = determineComputedTheme();
+    const ninjaKeys = document.querySelector('ninja-keys');
+
+    if (searchTheme === 'dark') {
+      ninjaKeys.classList.add('dark');
+    } else {
+      ninjaKeys.classList.remove('dark');
+    }
+
+    const openSearchModal = () => {
+      // collapse navbarNav if expanded on mobile
+      const $navbarNav = $('#navbarNav');
+      if ($navbarNav.hasClass('show')) {
+        $navbarNav.collapse('hide');
+      }
+      ninjaKeys.open();
+    };
+  </script>
+  <script>
+    // get the ninja-keys element
+    const ninja = document.querySelector('ninja-keys');
+
+    // add the home and posts menu items
+    ninja.data = [{
+        id: "nav-about",
+        title: "about",
+        section: "Navigation",
+        handler: () => {
+          window.location.href = "/";
+        },
+      },{id: "nav-blog",
+              title: "blog",
+              description: "",
+              section: "Navigation",
+              handler: () => {
+                window.location.href = "/blog/";
+              },
+            },{id: "nav-publications",
+              title: "publications",
+              description: "publications by categories in reversed chronological order. generated by jekyll-scholar.",
+              section: "Navigation",
+              handler: () => {
+                window.location.href = "/publications/";
+              },
+            },{id: "post-flow-matching-objectives",
+          
+            title: "Flow-Matching Objectives",
+          
+          description: "In the previous blog, I walked through the simulation-based approaches to train the neural ODE/continuous normalizing flow models. Those approaches are mathematically elegant, while they are still expensive and non-scalable in practice. Flow-matching objectives are targets to make the training more affordable and scalable. In this blog, I will review the derivations behind flow-matching models.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2024/flowmatching/";
+            
+          },
+        },{id: "post-training-neural-ode-with-three-different-loss-types",
+          
+            title: "Training Neural ODE with three different loss types",
+          
+          description: "The recent popular flow-matching models are based on another interesting model group called Neural ODE/continuous normalizing flow. While the main idea behind flow-matching models is to find a practical and affordable way to train the neural ODE, the original adjoint sensitivity method is actually very intellectually interesting and full of meaningful details. So, in this blog, I&#39;ll review the derivations behind the adjoint method before diving into the flow-matching objective in the next one. At the end, they are both good candiates of protocols to make observables from MD trajectories differentiable.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2024/TrainingNeuralODE/";
+            
+          },
+        },{id: "post-implicit-reparameterization-gradients",
+          
+            title: "Implicit Reparameterization Gradients",
+          
+          description: "This note delves into a paper recommended by Kevin, which focuses on the challenges of obtaining low-variance gradients for continuous random variables, particularly those pesky distributions we often encounter (yes, the Rice distribution). Key takeaway, you can have unbiased estimators for pathwise gradients of continuous distributions with numerically tractable CDFs, like gamma, truncated, or mixtures.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2023/ImplicitReparameterizationTrick/";
+            
+          },
+        },{id: "post-an-obscure-reason-of-gpu-memory-leak-in-pytorch",
+          
+            title: "An obscure reason of GPU memory leak in pytorch",
+          
+          description: "A short debug note on why I kept getting &quot;CUDA out of memory&quot; error in my codes. Main takeaway is, don&#39;t use in-place operations in your computing graph unless necessary. If you are applying it to non-leaf tensors, change it even it seems necessary. I tested on both 1.13 and 2.0, with cuda version 11.6 and 11.7.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2023/PytorchMemoryLeak/";
+            
+          },
+        },{id: "post-configure-a-macos-with-m1-chip-from-scratch",
+          
+            title: "Configure A macOS with M1 chip From Scratch",
+          
+          description: "A walk-through note on how to configure my familiar working system from a brand new macOS system with M1 chip, including Git token, Homebrew, Terminal color theme, Oh-my-zsh plugins, and conda. Compared to the previous post for an Intel chip, the difference mainly lies in the Homebrew PATH. I also use mambaforge to replace miniconda for python environment management.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2022/ConfigureMacosFromScratch_M1/";
+            
+          },
+        },{id: "post-early-implementation-of-attention-mechanism",
+          
+            title: "Early Implementation of Attention Mechanism",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/Attention1NMT/";
+            
+          },
+        },{id: "post-spectral-bias-and-positional-encoding",
+          
+            title: "Spectral Bias and Positional Encoding",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/SpectralBiasPostionalEncoding/";
+            
+          },
+        },{id: "post-bayesian-inference-with-probabilisitc-pupulation-codes",
+          
+            title: "Bayesian Inference with Probabilisitc Pupulation Codes",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/ProbablisticPopulationCodes/";
+            
+          },
+        },{id: "post-temporal-difference-methods-in-machine-learning",
+          
+            title: "Temporal Difference Methods in Machine Learning",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/TemporalDifference/";
+            
+          },
+        },{id: "post-stability-of-memory-allocation-with-neuroidal-model",
+          
+            title: "Stability of Memory Allocation with Neuroidal Model",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/StabilityRGM/";
+            
+          },
+        },{id: "post-neuroidal-model",
+          
+            title: "Neuroidal Model",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/NeuroidalModel/";
+            
+          },
+        },{id: "post-facilitated-variation",
+          
+            title: "Facilitated Variation",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/FacilitatedVariation/";
+            
+          },
+        },{id: "post-digital-organisms",
+          
+            title: "Digital Organisms",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/DigitalOrganisms/";
+            
+          },
+        },{id: "post-computational-theories-of-sex-and-recombination",
+          
+            title: "Computational Theories of Sex and Recombination",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/ComputationalThoeyofSexandRecombination/";
+            
+          },
+        },{id: "post-thermodynamic-model-of-transcription-regulation",
+          
+            title: "Thermodynamic model of transcription regulation",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/ThermodynamicModelofTranscriptionRegulation/";
+            
+          },
+        },{id: "post-experiments-on-input-functions",
+          
+            title: "Experiments on Input Functions",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/Experiment_Input_Function/";
+            
+          },
+        },{id: "post-the-thermodynamic-variational-objective-and-more",
+          
+            title: "The Thermodynamic Variational Objective and more",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/tvo/";
+            
+          },
+        },{id: "post-a-theoretical-connection-between-statistical-physics-and-reinforcement-learning",
+          
+            title: "A Theoretical Connection Between Statistical Physics and Reinforcement Learning",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/RL_Stat_Mech/";
+            
+          },
+        },{id: "post-菜谱-口水鸡",
+          
+            title: "菜谱：口水鸡",
+          
+          description: "My recipe of a Sichuan food, steamed chicken with chili oil. Most ingredients can be found in American markets.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/recipe_chicken/";
+            
+          },
+        },{id: "post-configure-a-macos-with-intel-chip-from-scratch",
+          
+            title: "Configure A macOS with Intel chip From Scratch",
+          
+          description: "A walk-through note on how to configure my familiar working system from a brand new macOS system, including Git token, Homebrew, Terminal color theme, Oh-my-zsh plugins, miniconda and jupyter kernel.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/ConfigureMacosFromScratch/";
+            
+          },
+        },{id: "post-我的2020五佳观影",
+          
+            title: "我的2020五佳观影",
+          
+          description: "I summarize 5 best movies I watched (not produced) in 2020, based on my personal taste. My previous plan was listing top 10, but I turned out be too critical and lazy.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/PersonalTopMovies2020/";
+            
+          },
+        },{id: "post-about-the-blog",
+          
+            title: "About the Blog",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/AboutTheBlog/";
+            
+          },
+        },{id: "post-setup-jekyll",
+          
+            title: "Setup Jekyll",
+          
+          description: "These github pages are built with Jekyll framework. This is a note about how to setup Ruby and Jekyll development env locally, through direct installation or docker.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2020/SetupJekylllocally/";
+            
+          },
+        },{id: "post-blog-content-syntax",
+          
+            title: "Blog Content Syntax",
+          
+          description: "My first blog here! A demo about how to write different contents with this blog framework.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2020/BlogSyntaxTutoroial/";
+            
+          },
+        },{id: "news-preprint-out-goto-https-www-biorxiv-org-content-10-64898-2025-12-23-696001v1-a-robust-differentiable-sliced-wasserstein-loss-for-image-based-inverse-problems-with-applications-to-cryo-em",
+              title: 'Preprint out: [GOTO](https://www.biorxiv.org/content/10.64898/2025.12.23.696001v1), a robust differentiable sliced Wasserstein loss for image-based inverse problems,...',
+              description: "",
+              section: "News",},{id: "news-preprint-out-embedopt-https-arxiv-org-abs-2602-05285-a-new-framework-for-robust-inference-time-steering-of-protein-diffusion-models-via-embedding-optimization",
+              title: 'Preprint out: [embedopt](https://arxiv.org/abs/2602.05285), a new framework for robust inference-time steering of protein diffusion...',
+              description: "",
+              section: "News",},{id: "news-our-paper-on-rocket-https-www-nature-com-articles-s41592-026-03047-4-using-alphafold-as-a-prior-for-experimental-structure-determination-is-published-in-nature-methods",
+              title: 'Our paper on [ROCKET](https://www.nature.com/articles/s41592-026-03047-4) — using AlphaFold as a prior for experimental structure...',
+              description: "",
+              section: "News",},{id: "news-released-the-codebase-for-embedopt-https-github-com-rs-station-embedopt-a-method-for-robust-inference-time-steering-of-protein-diffusion-models-via-embedding-optimization",
+              title: 'Released the codebase for [embedopt](https://github.com/rs-station/embedopt), a method for robust inference-time steering of protein...',
+              description: "",
+              section: "News",},{
+            id: 'socials-email',
+            title: 'Send email',
+            section: 'Socials',
+            handler: () => {
+              window.open("mailto:%6D%69%6E%68%75%61%6E%6C%69@%66%6C%61%74%69%72%6F%6E%69%6E%73%74%69%74%75%74%65.%6F%72%67", "_blank");
+            },
+          },{
+            id: 'socials-google-scholar',
+            title: 'Google Scholar',
+            section: 'Socials',
+            handler: () => {
+              window.open("https://scholar.google.com/citations?user=zls7LKwAAAAJ", "_blank");
+            },
+          },{
+            id: 'socials-github',
+            title: 'GitHub',
+            section: 'Socials',
+            handler: () => {
+              window.open("https://github.com/minhuanli", "_blank");
+            },
+          },{
+            id: 'socials-x',
+            title: 'X',
+            description: 'Twitter',
+            section: 'Socials',
+            handler: () => {
+              window.open("https://twitter.com/mhli41", "_blank");
+            },
+          },{
+            id: 'socials-bluesky',
+            title: 'Bluesky',
+            section: 'Socials',
+            handler: () => {
+              window.open("https://bsky.app/profile/https://bsky.app/profile/minhuanli.bsky.social", "_blank");
+            },
+          },{
+            id: 'socials-rss',
+            title: 'RSS Feed',
+            section: 'Socials',
+            handler: () => {
+              window.open("/feed.xml", "_blank");
+            },
+          },{
+          id: 'light-theme',
+          title: 'Change theme to light',
+          description: 'Change the theme of the site to Light',
+          section: 'Theme',
+          handler: () => {
+            setThemeSetting("light");
+          },
+        },
+        {
+          id: 'dark-theme',
+          title: 'Change theme to dark',
+          description: 'Change the theme of the site to Dark',
+          section: 'Theme',
+          handler: () => {
+            setThemeSetting("dark");
+          },
+        },
+        {
+          id: 'system-theme',
+          title: 'Use system default theme',
+          description: 'Change the theme of the site to System Default',
+          section: 'Theme',
+          handler: () => {
+            setThemeSetting("system");
+          },
+        },];
+  </script>
+  <script src="/assets/js/shortcut-key.js?6f508d74becd347268a7f822bca7309d"></script>
+
+
+  </body>
+</html>

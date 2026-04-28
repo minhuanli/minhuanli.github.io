@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!-- Head -->
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <!-- Metadata, OpenGraph and Schema.org -->
+
+
+
+
+<!-- Standard metadata -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>
+  
+  
+    
+      Configure A macOS with M1 chip From Scratch | Minhuan Li
+    
+  
+</title>
+<meta name="author" content="Minhuan Li">
+<meta name="description" content="A walk-through note on how to configure my familiar working system from a brand new macOS system with M1 chip, including Git token, Homebrew, Terminal color theme, Oh-my-zsh plugins, and conda. Compared to the &lt;a href=" https:>
+</head>
+<body>
+<p>previous post for an Intel chip, the difference mainly lies in the Homebrew PATH. I also use mambaforge to replace miniconda for python environment management."&gt;
+
+  <meta name="keywords" content="computational biology, machine learning, statistical physics, protein dynamics, generative models">
+
+
+
+
+
+
+
+
+
+
+<!-- Bootstrap & MDB -->
+<link rel="stylesheet" href="/assets/css/bootstrap.min.css?a4b3f509e79c54a512b890d73235ef04">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+<!-- Bootstrap Table -->
+
+
+<!-- Fonts & Icons -->
+<link defer rel="stylesheet" href="/assets/css/academicons.min.css?f0b7046b84e425c55f3463ac249818f5">
+<link defer rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;family=Roboto+Slab:wght@100;300;400;500;700&amp;family=Cormorant+Garamond:wght@400;600;700&amp;family=Noto+Sans+SC:wght@300;400&amp;display=swap">
+
+<!-- Code Syntax Highlighting -->
+<link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?591dab5a4e56573bf4ef7fd332894c99" media="" id="highlight_theme_light">
+
+
+
+<!-- Styles -->
+
+<!-- pseudocode -->
+
+
+
+  <link rel="shortcut icon" href="/assets/img/einstein.png?10f070c24c243684959801e4422ea7ca">
+
+<link rel="stylesheet" href="/assets/css/main.css?d41d8cd98f00b204e9800998ecf8427e">
+<link rel="canonical" href="https://minhuanli.github.io/blog/2022/ConfigureMacosFromScratch_M1/">
+
+<!-- Dark Mode -->
+<script src="/assets/js/theme.js?9a0c749ec5240d9cda97bc72359a72c0"></script>
+
+  <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?5847e5ed4a4568527aa6cfab446049ca" media="none" id="highlight_theme_dark">
+  <script>
+    initTheme();
+  </script>
+
+
+<!-- GeoJSON support via Leaflet -->
+
+
+<!-- diff2html -->
+
+
+<!-- GitHub Project Introduction Section -->
+
+
+
+
+
+
+  
+
+  <!-- Body -->
+  </p>
+    <!-- Header -->
+    <header>
+  <!-- Nav Bar -->
+  <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation">
+    <div class="container">
+      
+        <a class="navbar-brand title font-weight-lighter" href="/">
+          
+            
+              <span class="font-weight-bold">Minhuan</span>
+            
+            
+            
+              <span class="font-weight-bold">Li</span>
+            
+          
+        </a>
+      
+      <!-- Navbar Toggle -->
+      <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar top-bar"></span>
+        <span class="icon-bar middle-bar"></span>
+        <span class="icon-bar bottom-bar"></span>
+      </button>
+
+      <div class="collapse navbar-collapse text-right" id="navbarNav">
+        <ul class="navbar-nav ml-auto flex-nowrap">
+          
+
+          <!-- About -->
+          <li class="nav-item ">
+            <a class="nav-link" href="/">about
+              
+            </a>
+          </li>
+
+          <!-- Other pages -->
+          
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+              
+                
+                <li class="nav-item active">
+                  
+                  <a class="nav-link" href="/blog/">blog
+                    
+                  </a>
+                </li>
+              
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+              
+                
+                <li class="nav-item ">
+                  
+                  <a class="nav-link" href="/publications/">publications
+                    
+                  </a>
+                </li>
+              
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+          
+            <!-- Search -->
+            <li class="nav-item">
+              <button id="search-toggle" title="Search" onclick="openSearchModal()">
+                <span class="nav-link">ctrl k <i class="ti ti-search"></i></span>
+              </button>
+            </li>
+          
+          
+            <!-- Toogle theme mode -->
+            <li class="toggle-container">
+              <button id="light-toggle" title="Change theme">
+                <i class="ti ti-sun-moon" id="light-toggle-system"></i>
+                <i class="ti ti-moon-filled" id="light-toggle-dark"></i>
+                <i class="ti ti-sun-filled" id="light-toggle-light"></i>
+              </button>
+            </li>
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+    <!-- Scrolling Progress Bar -->
+    <progress id="progress" value="0">
+      <div class="progress-container">
+        <span class="progress-bar"></span>
+      </div>
+    </progress>
+  
+</header>
+
+
+    <!-- Content -->
+    <div class="container mt-5" role="main">
+      
+        
+
+
+
+
+
+
+
+<div class="post">
+  <header class="post-header">
+    <h1 class="post-title">Configure A macOS with M1 chip From Scratch</h1>
+    <p class="post-meta">
+      Created in July 12, 2022
+      
+      
+      
+    </p>
+    <p class="post-tags">
+      
+        <a href="/blog/2022"> <i class="fa-solid fa-calendar fa-sm"></i> 2022 </a>
+      
+      
+          ·  
+        
+          
+            <a href="/blog/tag/tech"> <i class="fa-solid fa-hashtag fa-sm"></i> tech</a>
+          
+          
+        
+      
+
+      
+    </p>
+  </header>
+
+  <article class="post-content">
+    
+    <div id="markdown-content">
+      <p>Finally I have saved some money to replace my loyal but old MBP with a new one with M1 pro chip. Here is how I configure it to my comfortable working environment.</p>
+
+<p>My system version is macOS 12.4, with M1 pro chip.</p>
+
+<ul id="markdown-toc">
+  <li><a href="#1-command-line-tools-and-homebrew" id="markdown-toc-1-command-line-tools-and-homebrew">1. Command Line Tools and Homebrew</a></li>
+  <li><a href="#2-set-up-git-token-for-password-free-interaction" id="markdown-toc-2-set-up-git-token-for-password-free-interaction">2. Set up Git token for password-free interaction</a></li>
+  <li><a href="#3-install-mambaforge" id="markdown-toc-3-install-mambaforge">3. Install Mambaforge</a></li>
+  <li>
+<a href="#4-install-oh-my-zsh-theme-and-useful-plugins" id="markdown-toc-4-install-oh-my-zsh-theme-and-useful-plugins">4. Install Oh-my-zsh, theme and useful plugins</a>    <ul>
+      <li><a href="#41-easy-set-plugins-git-sublime-web-search-osx-vi-mode" id="markdown-toc-41-easy-set-plugins-git-sublime-web-search-osx-vi-mode">4.1 Easy-set plugins: <em>git</em>, <em>sublime</em>, <em>web-search</em>, <em>osx</em>, <em>vi-mode</em></a></li>
+      <li><a href="#42-have-to-install-plugins-zsh-autosuggestions-zsh-syntax-highlighting-autojump" id="markdown-toc-42-have-to-install-plugins-zsh-autosuggestions-zsh-syntax-highlighting-autojump">4.2 Have-to-install plugins: <em>zsh-autosuggestions</em>, <em>zsh-syntax-highlighting</em>, <em>autojump</em></a></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="1-command-line-tools-and-homebrew">1. Command Line Tools and Homebrew</h3>
+
+<p>On a brand new system, first install the basic command line tool and <a href="https://brew.sh/" rel="external nofollow noopener" target="_blank">Homebrew</a> package manager.</p>
+
+<p>Run following codes in the Terminal, it should prompt an installation GUI to get you through, just follow their instructions.</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xcode-select <span class="nt">--install</span>
+</code></pre></div></div>
+<blockquote>
+  <p>It is possible that you have installed command line tools before.
+If that is the case, you will see some words like “xcode-select: error: command line tools are already installed”.
+It is totally Ok, just move to the Homebrew installation.</p>
+</blockquote>
+
+<p>Then install Homebrew with:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/bin/bash <span class="nt">-c</span> <span class="s2">"</span><span class="si">$(</span>curl <span class="nt">-fsSL</span> https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="si">)</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<p>According to this <a href="https://mac.install.guide/homebrew/3.html" rel="external nofollow noopener" target="_blank">tutorial</a>:</p>
+<blockquote>
+  <p>On Apple Silicon machines, there’s one more step. Homebrew files are installed into the <code class="language-plaintext highlighter-rouge">/opt/homebrew</code> folder. But the folder is not part of the default <code class="language-plaintext highlighter-rouge">$PATH</code>. Follow Homebrew’s advice and create a <code class="language-plaintext highlighter-rouge">~/.zprofile</code> file which contains a command which sets up Homebrew.</p>
+</blockquote>
+
+<p>So we have to do</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s1">'eval "$(/opt/homebrew/bin/brew shellenv)"'</span> <span class="o">&gt;&gt;</span> ~/.zprofile
+<span class="nb">eval</span> <span class="s2">"</span><span class="si">$(</span>/opt/homebrew/bin/brew shellenv<span class="si">)</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<p>After the installation, run <code class="language-plaintext highlighter-rouge">brew</code> in the Terminal, if you see some brew tutorial words as “Example usage…”, you are ok with the step.</p>
+
+<h3 id="2-set-up-git-token-for-password-free-interaction">2. Set up Git token for password-free interaction</h3>
+<p>Then set up Git config and Github token on the computer, you can interact (push and pull) with Github repos in a password-free manner. You should have a github account before this step, you can <a href="https://github.com/" rel="external nofollow noopener" target="_blank">register</a> for free if you haven’t.</p>
+
+<p>First install the newest <code class="language-plaintext highlighter-rouge">git</code> with homebrew to replace the default one:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew <span class="nb">install </span>git
+</code></pre></div></div>
+
+<p>Then quit and reopen the terminal, check the git, you should see</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> which git
+/opt/homebrew/bin/git
+</code></pre></div></div>
+
+<p>Then Config your github username and email in global parameters, s.t. Github serve will know who you are:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Remove the quotation marks and replace the words inside with your account info</span>
+git config <span class="nt">--global</span> user.name <span class="s2">"user-name"</span>
+git config <span class="nt">--global</span> user.email <span class="s2">"user-email"</span>
+</code></pre></div></div>
+<p>Check all configs:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git config <span class="nt">--list</span>
+</code></pre></div></div>
+
+<p>For a convenient password-free interaction manner, first setup a personal token accroding on the github <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token" rel="external nofollow noopener" target="_blank">website</a>.</p>
+
+<p>Then clone any repo to your local space with the token in the password place. Once this is completed, the new token will be cached in your Keychain Access and you can do password-free access in the future, see <a href="https://docs.github.com/en/github/using-git/updating-credentials-from-the-macos-keychain" rel="external nofollow noopener" target="_blank">this</a> for details</p>
+
+<h3 id="3-install-mambaforge">3. Install Mambaforge</h3>
+<p>Now we have the a new python environment manager, <a href="https://github.com/conda-forge/miniforge#mambaforge" rel="external nofollow noopener" target="_blank">Mambaforge</a>, which supports nearly all common comamnds in <code class="language-plaintext highlighter-rouge">conda</code> but much lighter than even miniconda,</p>
+
+<p>Do the following:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-MacOSX-arm64.sh
+bash Mambaforge-MacOSX-arm64.sh
+</code></pre></div></div>
+
+<p>And follow the instructions during installation, you will be all set.</p>
+
+<h3 id="4-install-oh-my-zsh-theme-and-useful-plugins">4. Install Oh-my-zsh, theme and useful plugins</h3>
+<p>This is my favorite part. I use <code class="language-plaintext highlighter-rouge">zsh</code> instead of <code class="language-plaintext highlighter-rouge">bash</code> as my local shell because <code class="language-plaintext highlighter-rouge">zsh</code> has pretty themes as well as powerful plugins, and <code class="language-plaintext highlighter-rouge">Oh-my-zsh</code> provides an elegant way to manager them. 
+Here is how to install them.</p>
+
+<p>First, change your shell to <code class="language-plaintext highlighter-rouge">zsh</code>. macOS has <code class="language-plaintext highlighter-rouge">zsh</code> as its default shell, but you can check and change shell with the following codes:<br></p>
+<ul>
+  <li>List all available shells<br>
+    <div class="language-shell highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> /etc/shells
+</code></pre></div>    </div>
+  </li>
+  <li>Check current shell<br>
+    <div class="language-shell highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="nv">$SHELL</span>
+</code></pre></div>    </div>
+  </li>
+  <li>Change shell to zsh<br>
+    <div class="language-shell highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>chsh <span class="nt">-s</span> /bin/zsh
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>Then, according to their <a href="https://ohmyz.sh/#install" rel="external nofollow noopener" target="_blank">documentation</a>, install <code class="language-plaintext highlighter-rouge">oh-my-zsh</code> with:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sh <span class="nt">-c</span> <span class="s2">"</span><span class="si">$(</span>curl <span class="nt">-fsSL</span> https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh<span class="si">)</span><span class="s2">"</span>
+</code></pre></div></div>
+<p>There will be a <code class="language-plaintext highlighter-rouge">.zshrc</code> text file in your home directory. 
+You can easily change words inside and <code class="language-plaintext highlighter-rouge">source ~/.zshrc</code> to make a new configuration happen.
+I have uploaded my configuration files, theme (I modify the af-magic theme) and Terminal color scheme in this <a href="https://github.com/minhuanli/personal_env_setting" rel="external nofollow noopener" target="_blank">repo</a>. 
+Here is how my prompt looks like:</p>
+<center><img src="/assets/img/posts/prompt_look_like.png" alt="prompt look like" width="500"></center>
+
+<p>You can explore your favorite themes <a href="https://github.com/ohmyzsh/ohmyzsh/wiki/Themes" rel="external nofollow noopener" target="_blank">here</a>. 
+Another (or main) highlight of <code class="language-plaintext highlighter-rouge">oh-my-zsh</code> is its convenient management of abundant powerful plugins, which will make the working process much more productive and enjoyable.
+I list my favourite plugins here, there are more than 200 plugins you can explore <a href="(https://github.com/ohmyzsh/ohmyzsh/wiki/Plugins)">here</a></p>
+<h4 id="41-easy-set-plugins-git-sublime-web-search-osx-vi-mode">4.1 Easy-set plugins: <em>git</em>, <em>sublime</em>, <em>web-search</em>, <em>osx</em>, <em>vi-mode</em>
+</h4>
+<p>Easy-set plugins are really “easy to set”, you simply add the plugin name in to the <code class="language-plaintext highlighter-rouge">plugins</code> line in <code class="language-plaintext highlighter-rouge">~/.zshrc</code> and source the file, like:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">plugins</span><span class="o">=(</span>git sublime web-search macos vi-mode<span class="o">)</span>
+</code></pre></div></div>
+<ul>
+  <li>
+<a href="https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git" rel="external nofollow noopener" target="_blank"><em>git</em></a>:<br>
+provide useful alias regarding git commands, like <code class="language-plaintext highlighter-rouge">gst = git status</code>
+</li>
+  <li>
+<a href="https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/sublime" rel="external nofollow noopener" target="_blank"><em>sublime</em></a><br>
+open file by sublime text with <code class="language-plaintext highlighter-rouge">st "file-name"</code>, you should have sublime installed first.</li>
+  <li>
+<a href="https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/web-search" rel="external nofollow noopener" target="_blank"><em>web-search</em></a><br>
+Enable you to search through many engines in command line, like <code class="language-plaintext highlighter-rouge">google "something"</code>
+</li>
+  <li>
+<a href="https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/osx" rel="external nofollow noopener" target="_blank"><em>macos</em></a><br>
+An extremely useful tools with a few utilities in macOS. Like you can open the current directory in finder by <code class="language-plaintext highlighter-rouge">ofd</code>, let the spotify play a music with <code class="language-plaintext highlighter-rouge">spotify play</code>.</li>
+</ul>
+
+<h4 id="42-have-to-install-plugins-zsh-autosuggestions-zsh-syntax-highlighting-autojump">4.2 Have-to-install plugins: <em>zsh-autosuggestions</em>, <em>zsh-syntax-highlighting</em>, <em>autojump</em>
+</h4>
+<p>These plugins are not included in a standard <code class="language-plaintext highlighter-rouge">oh-my-zsh</code> distribution, but you can still easily install them by one more line</p>
+<ul>
+  <li>
+<a href="https://github.com/zsh-users/zsh-autosuggestions" rel="external nofollow noopener" target="_blank"><em>zsh-autosuggestions</em></a><br>
+A very useful tool to suggest commands as you type based on history and completions.<br> 
+You can install by:<br>
+clone this repository into <code class="language-plaintext highlighter-rouge">$ZSH_CUSTOM/plugins</code> (by default <code class="language-plaintext highlighter-rouge">~/.oh-my-zsh/custom/plugins</code>)
+    <div class="language-shell highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>git clone https://github.com/zsh-users/zsh-autosuggestions <span class="k">${</span><span class="nv">ZSH_CUSTOM</span><span class="k">:-</span><span class="p">~/.oh-my-zsh/custom</span><span class="k">}</span>/plugins/zsh-autosuggestions
+</code></pre></div>    </div>
+    <p>add the plugin name into <code class="language-plaintext highlighter-rouge">~/.zshrc</code> and source the file</p>
+    <div class="language-shell highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="nv">plugins</span><span class="o">=(</span>... zsh-autosuggestions<span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+<a href="https://github.com/zsh-users/zsh-syntax-highlighting" rel="external nofollow noopener" target="_blank"><em>zsh-syntax-highlighting</em></a><br>
+This package provides syntax highlighting for the shell zsh. It enables highlighting of commands whilst they are typed at a zsh prompt into an interactive terminal. This helps in reviewing commands before running them, particularly in catching syntax errors.<br>
+You can install by:<br>
+clone this repository in oh-my-zsh’s plugins directory:
+    <div class="language-shell highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>git clone https://github.com/zsh-users/zsh-syntax-highlighting.git <span class="k">${</span><span class="nv">ZSH_CUSTOM</span><span class="k">:-</span><span class="p">~/.oh-my-zsh/custom</span><span class="k">}</span>/plugins/zsh-syntax-highlighting
+</code></pre></div>    </div>
+    <p>add the plugin name into <code class="language-plaintext highlighter-rouge">~/.zshrc</code> and source the file</p>
+    <div class="language-shell highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="nv">plugins</span><span class="o">=(</span>... zsh-syntax-highlighting<span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+<a href="https://github.com/wting/autojump" rel="external nofollow noopener" target="_blank">autojump</a><br>
+autojump is a faster way to navigate your filesystem. It works by maintaining a database of the directories you use the most from the command line.
+You can install by:<br>
+install <em>autojump</em> by Homebrew
+    <div class="language-shell highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code>brew <span class="nb">install </span>autojump
+</code></pre></div>    </div>
+    <p>add the plugin name into <code class="language-plaintext highlighter-rouge">~/.zshrc</code> and source the file</p>
+    <div class="language-shell highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code><span class="nv">plugins</span><span class="o">=(</span>... autojump<span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p><strong>References</strong></p>
+<ul>
+  <li><a href="https://brew.sh/" rel="external nofollow noopener" target="_blank">https://brew.sh/</a></li>
+  <li><a href="https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github" rel="external nofollow noopener" target="_blank">https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github</a></li>
+  <li><a href="https://ohmyz.sh/" rel="external nofollow noopener" target="_blank">https://ohmyz.sh/</a></li>
+  <li><a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/macos.html" rel="external nofollow noopener" target="_blank">https://docs.conda.io/projects/conda/en/latest/user-guide/install/macos.html</a></li>
+</ul>
+
+    </div>
+  </article>
+
+  
+
+  
+
+  
+    
+      
+
+  
+    
+    <br>
+    <hr>
+    <br>
+    <ul class="list-disc pl-8"></ul>
+
+    <!-- Adds related posts to the end of an article -->
+    <h2 class="text-3xl font-semibold mb-4 mt-12">Enjoy Reading This Article?</h2>
+    <p class="mb-2">Here are some more articles you might like to read next:</p>
+  
+
+  <li class="my-2">
+    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2024/flowmatching/">Flow-Matching Objectives</a>
+  </li>
+
+  
+
+  <li class="my-2">
+    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2024/TrainingNeuralODE/">Training Neural ODE with three different loss types</a>
+  </li>
+
+  
+
+  <li class="my-2">
+    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2023/ImplicitReparameterizationTrick/">Implicit Reparameterization Gradients</a>
+  </li>
+
+  
+
+  <li class="my-2">
+    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2023/PytorchMemoryLeak/">An obscure reason of GPU memory leak in pytorch</a>
+  </li>
+
+  
+
+  <li class="my-2">
+    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2021/Attention1NMT/">Early Implementation of Attention Mechanism</a>
+  </li>
+
+
+
+    
+  
+
+  
+  
+</div>
+
+      
+    </div>
+
+    <!-- Footer -->
+    
+  <footer class="fixed-bottom" role="contentinfo">
+    <div class="container mt-0">
+      © Copyright 2026
+      Minhuan
+      
+      Li. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>.
+
+      
+      
+    </div>
+  </footer>
+
+
+
+    <!-- JavaScripts -->
+    <!-- jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Bootsrap & MDB scripts -->
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="/assets/js/mdb.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    
+  <!-- Masonry & imagesLoaded -->
+  <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script>
+  <script defer src="/assets/js/masonry.js" type="text/javascript"></script>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  <!-- Medium Zoom JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+  <script defer src="/assets/js/zoom.js?85ddb88934d28b74e78031fd54cf8308"></script>
+
+
+
+<!-- Bootstrap Table -->
+
+
+<!-- Load Common JS -->
+<script src="/assets/js/no_defer.js?2781658a0a2b13ed609542042a859126"></script>
+<script defer src="/assets/js/common.js?e0514a05c5c95ac1a93a8dfd5249b92e"></script>
+<script defer src="/assets/js/copy_code.js?12775fdf7f95e901d7119054556e495f" type="text/javascript"></script>
+
+<!-- Jupyter Open External Links New Tab -->
+<script defer src="/assets/js/jupyter_new_tab.js?d9f17b6adc2311cbabd747f4538bb15f"></script>
+
+
+
+    
+  <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
+
+
+  <script async src="https://badge.dimensions.ai/badge.js"></script>
+
+
+    
+  
+    <!-- MathJax -->
+    <script type="text/javascript">
+      window.MathJax = {
+        tex: {
+          tags: 'ams',
+        },
+      };
+    </script>
+    <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script>
+    <script defer src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6" crossorigin="anonymous"></script>
+  
+
+
+    
+
+    
+
+
+
+    
+  <!-- Scrolling Progress Bar -->
+  <script type="text/javascript">
+    /*
+     * This JavaScript code has been adapted from the article
+     * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar,
+     * published on the website https://css-tricks.com on the 7th of May, 2014.
+     * Couple of changes were made to the original code to make it compatible
+     * with the `al-foio` theme.
+     */
+    const progressBar = $('#progress');
+    /*
+     * We set up the bar after all elements are done loading.
+     * In some cases, if the images in the page are larger than the intended
+     * size they'll have on the page, they'll be resized via CSS to accomodate
+     * the desired size. This mistake, however, breaks the computations as the
+     * scroll size is computed as soon as the elements finish loading.
+     * To account for this, a minimal delay was introduced before computing the
+     * values.
+     */
+    window.onload = function () {
+      setTimeout(progressBarSetup, 50);
+    };
+    /*
+     * We set up the bar according to the browser.
+     * If the browser supports the progress element we use that.
+     * Otherwise, we resize the bar thru CSS styling
+     */
+    function progressBarSetup() {
+      if ('max' in document.createElement('progress')) {
+        initializeProgressElement();
+        $(document).on('scroll', function () {
+          progressBar.attr({ value: getCurrentScrollPosition() });
+        });
+        $(window).on('resize', initializeProgressElement);
+      } else {
+        resizeProgressBar();
+        $(document).on('scroll', resizeProgressBar);
+        $(window).on('resize', resizeProgressBar);
+      }
+    }
+    /*
+     * The vertical scroll position is the same as the number of pixels that
+     * are hidden from view above the scrollable area. Thus, a value > 0 is
+     * how much the user has scrolled from the top
+     */
+    function getCurrentScrollPosition() {
+      return $(window).scrollTop();
+    }
+
+    function initializeProgressElement() {
+      let navbarHeight = $('#navbar').outerHeight(true);
+      $('body').css({ 'padding-top': navbarHeight });
+      $('progress-container').css({ 'padding-top': navbarHeight });
+      progressBar.css({ top: navbarHeight });
+      progressBar.attr({
+        max: getDistanceToScroll(),
+        value: getCurrentScrollPosition(),
+      });
+    }
+    /*
+     * The offset between the html document height and the browser viewport
+     * height will be greater than zero if vertical scroll is possible.
+     * This is the distance the user can scroll
+     */
+    function getDistanceToScroll() {
+      return $(document).height() - $(window).height();
+    }
+
+    function resizeProgressBar() {
+      progressBar.css({ width: getWidthPercentage() + '%' });
+    }
+    // The scroll ratio equals the percentage to resize the bar
+    function getWidthPercentage() {
+      return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+    }
+  </script>
+
+
+    
+
+    
+
+    
+
+    
+  <script src="/assets/js/vanilla-back-to-top.min.js?f40d453793ff4f64e238e420181a1d17"></script>
+  <script>
+    addBackToTop();
+  </script>
+
+
+    
+  <script type="module" src="/assets/js/search/ninja-keys.min.js?a3446f084dcaecc5f75aa1757d087dcf"></script>
+  <ninja-keys hidebreadcrumbs noautoloadmdicons placeholder="Type to start searching"></ninja-keys>
+  <script>
+    let searchTheme = determineComputedTheme();
+    const ninjaKeys = document.querySelector('ninja-keys');
+
+    if (searchTheme === 'dark') {
+      ninjaKeys.classList.add('dark');
+    } else {
+      ninjaKeys.classList.remove('dark');
+    }
+
+    const openSearchModal = () => {
+      // collapse navbarNav if expanded on mobile
+      const $navbarNav = $('#navbarNav');
+      if ($navbarNav.hasClass('show')) {
+        $navbarNav.collapse('hide');
+      }
+      ninjaKeys.open();
+    };
+  </script>
+  <script>
+    // get the ninja-keys element
+    const ninja = document.querySelector('ninja-keys');
+
+    // add the home and posts menu items
+    ninja.data = [{
+        id: "nav-about",
+        title: "about",
+        section: "Navigation",
+        handler: () => {
+          window.location.href = "/";
+        },
+      },{id: "nav-blog",
+              title: "blog",
+              description: "",
+              section: "Navigation",
+              handler: () => {
+                window.location.href = "/blog/";
+              },
+            },{id: "nav-publications",
+              title: "publications",
+              description: "publications by categories in reversed chronological order. generated by jekyll-scholar.",
+              section: "Navigation",
+              handler: () => {
+                window.location.href = "/publications/";
+              },
+            },{id: "post-flow-matching-objectives",
+          
+            title: "Flow-Matching Objectives",
+          
+          description: "In the previous blog, I walked through the simulation-based approaches to train the neural ODE/continuous normalizing flow models. Those approaches are mathematically elegant, while they are still expensive and non-scalable in practice. Flow-matching objectives are targets to make the training more affordable and scalable. In this blog, I will review the derivations behind flow-matching models.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2024/flowmatching/";
+            
+          },
+        },{id: "post-training-neural-ode-with-three-different-loss-types",
+          
+            title: "Training Neural ODE with three different loss types",
+          
+          description: "The recent popular flow-matching models are based on another interesting model group called Neural ODE/continuous normalizing flow. While the main idea behind flow-matching models is to find a practical and affordable way to train the neural ODE, the original adjoint sensitivity method is actually very intellectually interesting and full of meaningful details. So, in this blog, I&#39;ll review the derivations behind the adjoint method before diving into the flow-matching objective in the next one. At the end, they are both good candiates of protocols to make observables from MD trajectories differentiable.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2024/TrainingNeuralODE/";
+            
+          },
+        },{id: "post-implicit-reparameterization-gradients",
+          
+            title: "Implicit Reparameterization Gradients",
+          
+          description: "This note delves into a paper recommended by Kevin, which focuses on the challenges of obtaining low-variance gradients for continuous random variables, particularly those pesky distributions we often encounter (yes, the Rice distribution). Key takeaway, you can have unbiased estimators for pathwise gradients of continuous distributions with numerically tractable CDFs, like gamma, truncated, or mixtures.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2023/ImplicitReparameterizationTrick/";
+            
+          },
+        },{id: "post-an-obscure-reason-of-gpu-memory-leak-in-pytorch",
+          
+            title: "An obscure reason of GPU memory leak in pytorch",
+          
+          description: "A short debug note on why I kept getting &quot;CUDA out of memory&quot; error in my codes. Main takeaway is, don&#39;t use in-place operations in your computing graph unless necessary. If you are applying it to non-leaf tensors, change it even it seems necessary. I tested on both 1.13 and 2.0, with cuda version 11.6 and 11.7.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2023/PytorchMemoryLeak/";
+            
+          },
+        },{id: "post-configure-a-macos-with-m1-chip-from-scratch",
+          
+            title: "Configure A macOS with M1 chip From Scratch",
+          
+          description: "A walk-through note on how to configure my familiar working system from a brand new macOS system with M1 chip, including Git token, Homebrew, Terminal color theme, Oh-my-zsh plugins, and conda. Compared to the previous post for an Intel chip, the difference mainly lies in the Homebrew PATH. I also use mambaforge to replace miniconda for python environment management.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2022/ConfigureMacosFromScratch_M1/";
+            
+          },
+        },{id: "post-early-implementation-of-attention-mechanism",
+          
+            title: "Early Implementation of Attention Mechanism",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/Attention1NMT/";
+            
+          },
+        },{id: "post-spectral-bias-and-positional-encoding",
+          
+            title: "Spectral Bias and Positional Encoding",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/SpectralBiasPostionalEncoding/";
+            
+          },
+        },{id: "post-bayesian-inference-with-probabilisitc-pupulation-codes",
+          
+            title: "Bayesian Inference with Probabilisitc Pupulation Codes",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/ProbablisticPopulationCodes/";
+            
+          },
+        },{id: "post-temporal-difference-methods-in-machine-learning",
+          
+            title: "Temporal Difference Methods in Machine Learning",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/TemporalDifference/";
+            
+          },
+        },{id: "post-stability-of-memory-allocation-with-neuroidal-model",
+          
+            title: "Stability of Memory Allocation with Neuroidal Model",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/StabilityRGM/";
+            
+          },
+        },{id: "post-neuroidal-model",
+          
+            title: "Neuroidal Model",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/NeuroidalModel/";
+            
+          },
+        },{id: "post-facilitated-variation",
+          
+            title: "Facilitated Variation",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/FacilitatedVariation/";
+            
+          },
+        },{id: "post-digital-organisms",
+          
+            title: "Digital Organisms",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/DigitalOrganisms/";
+            
+          },
+        },{id: "post-computational-theories-of-sex-and-recombination",
+          
+            title: "Computational Theories of Sex and Recombination",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/ComputationalThoeyofSexandRecombination/";
+            
+          },
+        },{id: "post-thermodynamic-model-of-transcription-regulation",
+          
+            title: "Thermodynamic model of transcription regulation",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/ThermodynamicModelofTranscriptionRegulation/";
+            
+          },
+        },{id: "post-experiments-on-input-functions",
+          
+            title: "Experiments on Input Functions",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/Experiment_Input_Function/";
+            
+          },
+        },{id: "post-the-thermodynamic-variational-objective-and-more",
+          
+            title: "The Thermodynamic Variational Objective and more",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/tvo/";
+            
+          },
+        },{id: "post-a-theoretical-connection-between-statistical-physics-and-reinforcement-learning",
+          
+            title: "A Theoretical Connection Between Statistical Physics and Reinforcement Learning",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/RL_Stat_Mech/";
+            
+          },
+        },{id: "post-菜谱-口水鸡",
+          
+            title: "菜谱：口水鸡",
+          
+          description: "My recipe of a Sichuan food, steamed chicken with chili oil. Most ingredients can be found in American markets.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/recipe_chicken/";
+            
+          },
+        },{id: "post-configure-a-macos-with-intel-chip-from-scratch",
+          
+            title: "Configure A macOS with Intel chip From Scratch",
+          
+          description: "A walk-through note on how to configure my familiar working system from a brand new macOS system, including Git token, Homebrew, Terminal color theme, Oh-my-zsh plugins, miniconda and jupyter kernel.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/ConfigureMacosFromScratch/";
+            
+          },
+        },{id: "post-我的2020五佳观影",
+          
+            title: "我的2020五佳观影",
+          
+          description: "I summarize 5 best movies I watched (not produced) in 2020, based on my personal taste. My previous plan was listing top 10, but I turned out be too critical and lazy.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/PersonalTopMovies2020/";
+            
+          },
+        },{id: "post-about-the-blog",
+          
+            title: "About the Blog",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/AboutTheBlog/";
+            
+          },
+        },{id: "post-setup-jekyll",
+          
+            title: "Setup Jekyll",
+          
+          description: "These github pages are built with Jekyll framework. This is a note about how to setup Ruby and Jekyll development env locally, through direct installation or docker.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2020/SetupJekylllocally/";
+            
+          },
+        },{id: "post-blog-content-syntax",
+          
+            title: "Blog Content Syntax",
+          
+          description: "My first blog here! A demo about how to write different contents with this blog framework.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2020/BlogSyntaxTutoroial/";
+            
+          },
+        },{id: "news-preprint-out-goto-https-www-biorxiv-org-content-10-64898-2025-12-23-696001v1-a-robust-differentiable-sliced-wasserstein-loss-for-image-based-inverse-problems-with-applications-to-cryo-em",
+              title: 'Preprint out: [GOTO](https://www.biorxiv.org/content/10.64898/2025.12.23.696001v1), a robust differentiable sliced Wasserstein loss for image-based inverse problems,...',
+              description: "",
+              section: "News",},{id: "news-preprint-out-embedopt-https-arxiv-org-abs-2602-05285-a-new-framework-for-robust-inference-time-steering-of-protein-diffusion-models-via-embedding-optimization",
+              title: 'Preprint out: [embedopt](https://arxiv.org/abs/2602.05285), a new framework for robust inference-time steering of protein diffusion...',
+              description: "",
+              section: "News",},{id: "news-our-paper-on-rocket-https-www-nature-com-articles-s41592-026-03047-4-using-alphafold-as-a-prior-for-experimental-structure-determination-is-published-in-nature-methods",
+              title: 'Our paper on [ROCKET](https://www.nature.com/articles/s41592-026-03047-4) — using AlphaFold as a prior for experimental structure...',
+              description: "",
+              section: "News",},{id: "news-released-the-codebase-for-embedopt-https-github-com-rs-station-embedopt-a-method-for-robust-inference-time-steering-of-protein-diffusion-models-via-embedding-optimization",
+              title: 'Released the codebase for [embedopt](https://github.com/rs-station/embedopt), a method for robust inference-time steering of protein...',
+              description: "",
+              section: "News",},{
+            id: 'socials-email',
+            title: 'Send email',
+            section: 'Socials',
+            handler: () => {
+              window.open("mailto:%6D%69%6E%68%75%61%6E%6C%69@%66%6C%61%74%69%72%6F%6E%69%6E%73%74%69%74%75%74%65.%6F%72%67", "_blank");
+            },
+          },{
+            id: 'socials-google-scholar',
+            title: 'Google Scholar',
+            section: 'Socials',
+            handler: () => {
+              window.open("https://scholar.google.com/citations?user=zls7LKwAAAAJ", "_blank");
+            },
+          },{
+            id: 'socials-github',
+            title: 'GitHub',
+            section: 'Socials',
+            handler: () => {
+              window.open("https://github.com/minhuanli", "_blank");
+            },
+          },{
+            id: 'socials-x',
+            title: 'X',
+            description: 'Twitter',
+            section: 'Socials',
+            handler: () => {
+              window.open("https://twitter.com/mhli41", "_blank");
+            },
+          },{
+            id: 'socials-bluesky',
+            title: 'Bluesky',
+            section: 'Socials',
+            handler: () => {
+              window.open("https://bsky.app/profile/https://bsky.app/profile/minhuanli.bsky.social", "_blank");
+            },
+          },{
+            id: 'socials-rss',
+            title: 'RSS Feed',
+            section: 'Socials',
+            handler: () => {
+              window.open("/feed.xml", "_blank");
+            },
+          },{
+          id: 'light-theme',
+          title: 'Change theme to light',
+          description: 'Change the theme of the site to Light',
+          section: 'Theme',
+          handler: () => {
+            setThemeSetting("light");
+          },
+        },
+        {
+          id: 'dark-theme',
+          title: 'Change theme to dark',
+          description: 'Change the theme of the site to Dark',
+          section: 'Theme',
+          handler: () => {
+            setThemeSetting("dark");
+          },
+        },
+        {
+          id: 'system-theme',
+          title: 'Use system default theme',
+          description: 'Change the theme of the site to System Default',
+          section: 'Theme',
+          handler: () => {
+            setThemeSetting("system");
+          },
+        },];
+  </script>
+  <script src="/assets/js/shortcut-key.js?6f508d74becd347268a7f822bca7309d"></script>
+
+
+  
+</body>
+</html>

@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!-- Head -->
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <!-- Metadata, OpenGraph and Schema.org -->
+
+
+
+
+<!-- Standard metadata -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>
+  
+  
+    
+      Implicit Reparameterization Gradients | Minhuan Li
+    
+  
+</title>
+<meta name="author" content="Minhuan Li">
+<meta name="description" content="This note delves into a paper recommended by Kevin, which focuses on the challenges of obtaining low-variance gradients for continuous random variables, particularly those pesky distributions we often encounter (yes, the Rice distribution). Key takeaway, you can have unbiased estimators for pathwise gradients of continuous distributions with numerically tractable CDFs, like gamma, truncated, or mixtures.">
+
+  <meta name="keywords" content="computational biology, machine learning, statistical physics, protein dynamics, generative models">
+
+
+
+
+
+
+
+
+
+
+<!-- Bootstrap & MDB -->
+<link rel="stylesheet" href="/assets/css/bootstrap.min.css?a4b3f509e79c54a512b890d73235ef04">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+<!-- Bootstrap Table -->
+
+
+<!-- Fonts & Icons -->
+<link defer rel="stylesheet" href="/assets/css/academicons.min.css?f0b7046b84e425c55f3463ac249818f5">
+<link defer rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;family=Roboto+Slab:wght@100;300;400;500;700&amp;family=Cormorant+Garamond:wght@400;600;700&amp;family=Noto+Sans+SC:wght@300;400&amp;display=swap">
+
+<!-- Code Syntax Highlighting -->
+<link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?591dab5a4e56573bf4ef7fd332894c99" media="" id="highlight_theme_light">
+
+
+
+<!-- Styles -->
+
+<!-- pseudocode -->
+
+
+
+  <link rel="shortcut icon" href="/assets/img/einstein.png?10f070c24c243684959801e4422ea7ca">
+
+<link rel="stylesheet" href="/assets/css/main.css?d41d8cd98f00b204e9800998ecf8427e">
+<link rel="canonical" href="https://minhuanli.github.io/blog/2023/ImplicitReparameterizationTrick/">
+
+<!-- Dark Mode -->
+<script src="/assets/js/theme.js?9a0c749ec5240d9cda97bc72359a72c0"></script>
+
+  <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?5847e5ed4a4568527aa6cfab446049ca" media="none" id="highlight_theme_dark">
+  <script>
+    initTheme();
+  </script>
+
+
+<!-- GeoJSON support via Leaflet -->
+
+
+<!-- diff2html -->
+
+
+<!-- GitHub Project Introduction Section -->
+
+
+
+
+
+
+  </head>
+
+  <!-- Body -->
+  <body class="fixed-top-nav ">
+    <!-- Header -->
+    <header>
+  <!-- Nav Bar -->
+  <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation">
+    <div class="container">
+      
+        <a class="navbar-brand title font-weight-lighter" href="/">
+          
+            
+              <span class="font-weight-bold">Minhuan</span>
+            
+            
+            
+              <span class="font-weight-bold">Li</span>
+            
+          
+        </a>
+      
+      <!-- Navbar Toggle -->
+      <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar top-bar"></span>
+        <span class="icon-bar middle-bar"></span>
+        <span class="icon-bar bottom-bar"></span>
+      </button>
+
+      <div class="collapse navbar-collapse text-right" id="navbarNav">
+        <ul class="navbar-nav ml-auto flex-nowrap">
+          
+
+          <!-- About -->
+          <li class="nav-item ">
+            <a class="nav-link" href="/">about
+              
+            </a>
+          </li>
+
+          <!-- Other pages -->
+          
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+              
+                
+                <li class="nav-item active">
+                  
+                  <a class="nav-link" href="/blog/">blog
+                    
+                  </a>
+                </li>
+              
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+              
+                
+                <li class="nav-item ">
+                  
+                  <a class="nav-link" href="/publications/">publications
+                    
+                  </a>
+                </li>
+              
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+            
+          
+          
+            <!-- Search -->
+            <li class="nav-item">
+              <button id="search-toggle" title="Search" onclick="openSearchModal()">
+                <span class="nav-link">ctrl k <i class="ti ti-search"></i></span>
+              </button>
+            </li>
+          
+          
+            <!-- Toogle theme mode -->
+            <li class="toggle-container">
+              <button id="light-toggle" title="Change theme">
+                <i class="ti ti-sun-moon" id="light-toggle-system"></i>
+                <i class="ti ti-moon-filled" id="light-toggle-dark"></i>
+                <i class="ti ti-sun-filled" id="light-toggle-light"></i>
+              </button>
+            </li>
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+    <!-- Scrolling Progress Bar -->
+    <progress id="progress" value="0">
+      <div class="progress-container">
+        <span class="progress-bar"></span>
+      </div>
+    </progress>
+  
+</header>
+
+
+    <!-- Content -->
+    <div class="container mt-5" role="main">
+      
+        
+
+
+
+
+
+
+
+<div class="post">
+  <header class="post-header">
+    <h1 class="post-title">Implicit Reparameterization Gradients</h1>
+    <p class="post-meta">
+      Created in September 12, 2023
+      
+      
+      
+    </p>
+    <p class="post-tags">
+      
+        <a href="/blog/2023"> <i class="fa-solid fa-calendar fa-sm"></i> 2023 </a>
+      
+      
+          ·  
+        
+          
+            <a href="/blog/tag/ai-physics"> <i class="fa-solid fa-hashtag fa-sm"></i> AI&amp;Physics</a>
+          
+          
+        
+      
+
+      
+    </p>
+  </header>
+
+  <article class="post-content">
+    
+    <div id="markdown-content">
+      <p>Deriving gradients from stochastics operations is a persistent headache in various tasks related to Bayesian inference or training generative models. The reparameterization trick has come to our rescue in numerous cases involving continuous random variables, such as the Gaussian distribution. However, many distributions lacking a location-scale parameterization or a tractable inverse cumulative function—like truncated, mixture, Von Mises or Dirichlet distributions—can’t be used with reparameterization gradients. The authors proposed an alternative approach called implicit reparameterization trick, in contrast to the classic reparameterization trick, which <strong>provided unbiased estimators for continuous distributions with numerically tractable CDFs</strong>.</p>
+
+<p><i class="contrast">Update @ Nov 23, 2023</i> : Attach pytorch codes to demo implicit reparameterization with customized gradient</p>
+
+<p><i class="contrast">Reference</i></p>
+
+<p>Figurnov, Mikhail, Shakir Mohamed, and Andriy Mnih. “Implicit reparameterization gradients.” Advances in neural information processing systems 31 (2018)</p>
+
+<h3 id="explicit-reparameterization-gradients"><i class="contrast">Explicit Reparameterization Gradients</i></h3>
+
+<p>First let’s do a problem setup for the <em>explicit</em> reparameterization trick. Suppose we would like to optimize the following expectation w.r.t the distribution parameter \(\phi\):</p>
+
+\[\mathbb{E}_{q_\phi(\boldsymbol{z})}[f(\boldsymbol{z})] \tag{1}\]
+
+<p>\(f(z)\) is a continuously differentiable function.</p>
+
+<p class="orangebox">
+<i class="contrast">Why this is important?</i><br>
+Equation (1) is quite common in stochastic variational inference for latent variable models. Except for a few special cases (like normalizing flow), the maximum likelihood target is intractable. Instead variational inference provides an alternative by introducing a surrogate posterior distribution $$q_\phi(\boldsymbol{z} \mid \boldsymbol{x})$$ and maximizing the following Evidence Lower Bound Objective (ELBO):
+
+$$
+\mathcal{L}(\boldsymbol{x}, \boldsymbol{\theta}, \boldsymbol{\phi})=\mathbb{E}_{q_{\boldsymbol{\phi}}(\boldsymbol{z} \mid \boldsymbol{x})}\left[\log p_{\boldsymbol{\theta}}(\boldsymbol{x} \mid \boldsymbol{z})\right]-\mathrm{KL}\left(q_{\boldsymbol{\phi}}(\boldsymbol{z} \mid \boldsymbol{x}) \| p(\boldsymbol{z})\right) \leq \log p_{\boldsymbol{\theta}}(\boldsymbol{x})
+$$
+
+The first term is exactly in the form of equation (1) and its gradients are typically intractable and approximated using samples from the variational posterior. The reparameterization trick usually provides a low variance gradient estimator.
+</p>
+
+<p>Assume we can find a standardize function \(\mathcal{S}_\phi(\boldsymbol{z})\) <strong>differentiable</strong> to \(\phi\) and also <strong>invertible</strong>:</p>
+
+\[\mathcal{S}_\phi(\boldsymbol{z})=\varepsilon \sim q(\varepsilon) \quad z=\mathcal{S}_\phi^{-1}(\varepsilon) \tag{2}\]
+
+<p>It will <strong>remove \(z\)’s dependence on the parameters</strong> of the distribution. Then we can do:</p>
+
+\[\mathbb{E}_{q_\phi(\boldsymbol{z})}[f(\boldsymbol{z})]=\mathbb{E}_{q(\boldsymbol{\varepsilon})}\left[f\left(\mathcal{S}_{\boldsymbol{\phi}}^{-1}(\boldsymbol{\varepsilon})\right)\right] \tag{3}\]
+
+<p>The dependence on \(\phi\) has been moved into \(f\), so the gradient is tractable:</p>
+
+\[\nabla_\phi \mathbb{E}_{q_\phi(\boldsymbol{z})}[f(\boldsymbol{z})]=\mathbb{E}_{q(\boldsymbol{\varepsilon})}\left[\nabla_\phi f\left(\mathcal{S}_\phi^{-1}(\boldsymbol{\varepsilon})\right)\right]=\mathbb{E}_{q(\boldsymbol{\varepsilon})}\left[\nabla_{\boldsymbol{z}} f\left(\mathcal{S}_{\boldsymbol{\phi}}^{-1}(\boldsymbol{\varepsilon})\right) \nabla_\phi \mathcal{S}_\phi^{-1}(\boldsymbol{\varepsilon})\right]\tag{4}\]
+
+<p class="orangebox">
+<i class="contrast">Why CDF is an universal standardization function?</i><br>
+For an arbitrary univariant distribution \(q_\phi(\boldsymbol{z})\), the cumulative distribution function (CDF) \(F(z|\phi)\) convert the distribution to a parameter-indpendent uniform distribution:
+$$
+\mathcal{S}_\phi(z)=F(z \mid \phi) \sim \text { Uniform }(0,1)
+$$
+By the way, if the inverse CDF is attractable, that also means you can easily do one-shot batch sampling of the target distribution: first do one-shot sampling with uniform distribution and apply inverse CDF. 
+
+For multivariate case, the distribution transform looks like:
+$$
+\mathcal{S}_{\boldsymbol{\phi}}(\boldsymbol{z})=\left(F\left(z_1 \mid \boldsymbol{\phi}\right), F\left(z_2 \mid z_1, \boldsymbol{\phi}\right), \ldots, F\left(z_D \mid z_1, \ldots, z_{D-1}, \boldsymbol{\phi}\right)\right)=\boldsymbol{\varepsilon}
+$$
+where \(q(\varepsilon)=\prod_{d=1}^D \text { Uniform }\left(\varepsilon_d \mid 0,1\right)\).
+</p>
+
+<p>However, it is not always practical to find an invertible and tractable standardization function. For example, Rice distribution \(f(x \mid \nu, \sigma)=\frac{x}{\sigma^2} \exp \left(\frac{-\left(x^2+\nu^2\right)}{2 \sigma^2}\right) I_0\left(\frac{x \nu}{\sigma^2}\right)\) is important in scattering and wireless communication field. The CDF is \(1-Q_1\left(\frac{\nu}{\sigma}, \frac{x}{\sigma}\right)\), where \(Q_1\) is the Marcum Q-function. So currently the inverse CDF is not tractable.</p>
+
+<h3 id="implicit-reparameterization-gradients"><i class="contrast">Implicit Reparameterization Gradients</i></h3>
+<p>The authors porposed an alternative way for the raparameterization gradient that avoids the inversion of the standardization function. Start from Equation (4):</p>
+
+\[\nabla_\phi \mathbb{E}_{q_\phi(\boldsymbol{z})}[f(\boldsymbol{z})]=\mathbb{E}_{q(\boldsymbol{\varepsilon})}\left[\nabla_\phi f\left(\underbrace{\mathcal{S}_\phi^{-1}(\boldsymbol{\varepsilon})}_{\color{red}{z}}\right)\right]=\mathbb{E}_{q(\boldsymbol{\varepsilon})}\left[\nabla_{\boldsymbol{z}} f(\boldsymbol{z}) \nabla_{\boldsymbol{\phi}} \boldsymbol{z}\right] \tag{5}\]
+
+<p>Key point is compute \(\nabla_\phi z\) by <em>implicit differentiation</em>. Apply <i class="contrast">total gradient</i> \(\nabla_{\boldsymbol{\phi}}^{\mathrm{TD}}\) to the equality \(\mathcal{S}_\phi(\boldsymbol{z})=\boldsymbol{\varepsilon}\), you got:</p>
+
+\[\nabla_{\boldsymbol{z}} \mathcal{S}_{\boldsymbol{\phi}}(\boldsymbol{z}) \nabla_{\boldsymbol{\phi}} \boldsymbol{z}+\nabla_{\boldsymbol{\phi}} \mathcal{S}_{\boldsymbol{\phi}}(\boldsymbol{z})=\mathbf{0} \rightarrow \nabla_{\boldsymbol{\phi}} \boldsymbol{z}=-\left(\nabla_{\boldsymbol{z}} \mathcal{S}_{\boldsymbol{\phi}}(\boldsymbol{z})\right)^{-1} \nabla_\phi \mathcal{S}_{\boldsymbol{\phi}}(\boldsymbol{z}) \tag{6}\]
+
+<p>Now the gradient only requires differentiating the standardization function and not inverting it. Say if we use the CDF as an universal standardization function for an arbitrary distribution \(q_{\phi}(z)\), we have:</p>
+
+\[\nabla_\phi z=-\frac{\nabla_\phi F(z \mid \phi)}{q_\phi(z)} \tag{7}\]
+
+<p class="bluebox">
+<i class="contrast">Algorithm</i><br>
+$$
+\begin{array}{lll}
+\hline &amp; \text { Explicit reparameterization } &amp; \text { Implicit reparameterization } \\
+\hline \text { Forward pass } &amp; \begin{aligned} &amp;\text { Sample } \boldsymbol{\varepsilon} \sim q(\boldsymbol{\varepsilon}) \\
+&amp;\text { Set } \boldsymbol{z} \leftarrow \mathcal{S}_{\boldsymbol{\phi}}^{-1}(\boldsymbol{\varepsilon}) \end{aligned} &amp; \text { Sample } \boldsymbol{z} \sim q_{\boldsymbol{\phi}}(\boldsymbol{z}) \\
+\hline \text { Backward pass } &amp; \begin{aligned} &amp;\text { Set } \nabla_{\boldsymbol{\phi}} \boldsymbol{z} \leftarrow \nabla_\phi \mathcal{S}_{\boldsymbol{\phi}}^{-1}(\boldsymbol{\varepsilon}) \\
+&amp;\text { Set } \nabla_{\boldsymbol{\phi}} f(\boldsymbol{z}) \leftarrow \nabla_{\boldsymbol{z}} f(\boldsymbol{z}) \nabla_{\boldsymbol{\phi}} \boldsymbol{z} \end{aligned} &amp; \begin{aligned} &amp;\text { Set } \nabla_{\boldsymbol{\phi}} \boldsymbol{z} \leftarrow-\left(\nabla_{\boldsymbol{z}} \mathcal{S}_{\boldsymbol{\phi}}(\boldsymbol{z})\right)^{-1} \nabla_\phi \mathcal{S}_{\boldsymbol{\phi}}(\boldsymbol{z}) \\
+&amp;\text { Set } \nabla_{\boldsymbol{\phi}} f(\boldsymbol{z}) \leftarrow \nabla_{\boldsymbol{z}} f(\boldsymbol{z}) \nabla_{\boldsymbol{\phi}} \boldsymbol{z} \end{aligned} \\
+\hline
+\end{array}
+$$
+</p>
+
+<p><i class="contrast">Pytorch Implementation Example</i></p>
+
+<p>The following demonstrates the implementation of implicit reparameterization using a Gaussian distribution. It serves as a framework example, considering that Gaussian distribution already possesses a clearly established explicit reparameterization technique. To apply implicit reparameterization sampling to other distributions, you require three key components: a differentiable cumulative distribution function (CDF), various methods for sampling from the distribution, and a probability density function (PDF).</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NormalIRSample</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">autograd</span><span class="p">.</span><span class="n">Function</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">dFdmu</span><span class="p">,</span> <span class="n">dFdsig</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="n">dzdmu</span> <span class="o">=</span> <span class="o">-</span><span class="n">dFdmu</span><span class="o">/</span><span class="n">q</span>
+        <span class="n">dzdsig</span> <span class="o">=</span> <span class="o">-</span><span class="n">dFdsig</span><span class="o">/</span><span class="n">q</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="nf">save_for_backward</span><span class="p">(</span><span class="n">dzdmu</span><span class="p">,</span> <span class="n">dzdsig</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">samples</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">grad_output</span><span class="p">):</span>
+        <span class="n">dzdmu</span><span class="p">,</span> <span class="n">dzdsig</span><span class="p">,</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">saved_tensors</span>
+        <span class="k">return</span> <span class="n">grad_output</span> <span class="o">*</span> <span class="n">dzdmu</span><span class="p">,</span> <span class="n">grad_output</span> <span class="o">*</span> <span class="n">dzdsig</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+<span class="k">class</span> <span class="nc">IRNormal</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">distributions</span><span class="p">.</span><span class="n">Normal</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nf">super</span><span class="p">(</span><span class="n">IRNormal</span><span class="p">,</span> <span class="n">self</span><span class="p">).</span><span class="nf">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">_irsample</span> <span class="o">=</span> <span class="nc">NormalIRSample</span><span class="p">().</span><span class="nb">apply</span>
+
+    <span class="k">def</span> <span class="nf">pdf</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="p">.</span><span class="nf">exp</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="nf">log_prob</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">irsample</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">sample_shape</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="nc">Size</span><span class="p">()):</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">sample</span><span class="p">(</span><span class="n">sample_shape</span><span class="p">)</span> <span class="c1"># sample without grad
+</span>        <span class="n">F</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">cdf</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">pdf</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+        <span class="n">dFdmu</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">autograd</span><span class="p">.</span><span class="nf">grad</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">loc</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dFdsig</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">autograd</span><span class="p">.</span><span class="nf">grad</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">scale</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">samples</span><span class="p">.</span><span class="nf">requires_grad_</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="nf">_irsample</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">loc</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">scale</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">dFdmu</span><span class="p">,</span> <span class="n">dFdsig</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>And it works as:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> mu <span class="o">=</span> torch.tensor<span class="o">(</span>1.0, <span class="nv">requires_grad</span><span class="o">=</span>True<span class="o">)</span>
+<span class="o">&gt;&gt;&gt;</span> sig <span class="o">=</span> torch.tensor<span class="o">(</span>2.0, <span class="nv">requires_grad</span><span class="o">=</span>True<span class="o">)</span>
+<span class="o">&gt;&gt;&gt;</span> dista <span class="o">=</span> IRNormal<span class="o">(</span>mu, sig<span class="o">)</span>
+<span class="o">&gt;&gt;&gt;</span> z <span class="o">=</span> dista.irsample<span class="o">()</span>
+<span class="o">&gt;&gt;&gt;</span> z
+tensor<span class="o">(</span>1.9856, <span class="nv">grad_fn</span><span class="o">=</span>&lt;NormalIRSampleBackward&gt;<span class="o">)</span>
+<span class="o">&gt;&gt;&gt;</span> z.backward<span class="o">()</span>
+<span class="o">&gt;&gt;&gt;</span> mu.grad
+tensor<span class="o">(</span>1.0000<span class="o">)</span>
+<span class="o">&gt;&gt;&gt;</span> sig.grad
+tensor<span class="o">(</span>0.4928<span class="o">)</span>
+</code></pre></div></div>
+
+<h3 id="accuracy-and-speed-of-reparameterization-gradient-estimators"><i class="contrast">Accuracy and speed of reparameterization gradient estimators</i></h3>
+
+<p>In this paper, the author compared the implicit reparameterization estimator with two alternatives, Automatic differentiation with implicit reparameterization achieves the lowest error and the highest speed.</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20230918181100.png" alt="Figure1" width="90%">
+</figure>
+</center>
+
+    </div>
+  </article>
+
+  
+
+  
+
+  
+    
+      
+
+  
+    
+    <br>
+    <hr>
+    <br>
+    <ul class="list-disc pl-8"></ul>
+
+    <!-- Adds related posts to the end of an article -->
+    <h2 class="text-3xl font-semibold mb-4 mt-12">Enjoy Reading This Article?</h2>
+    <p class="mb-2">Here are some more articles you might like to read next:</p>
+  
+
+  <li class="my-2">
+    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2024/flowmatching/">Flow-Matching Objectives</a>
+  </li>
+
+  
+
+  <li class="my-2">
+    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2024/TrainingNeuralODE/">Training Neural ODE with three different loss types</a>
+  </li>
+
+  
+
+  <li class="my-2">
+    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2023/PytorchMemoryLeak/">An obscure reason of GPU memory leak in pytorch</a>
+  </li>
+
+  
+
+  <li class="my-2">
+    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2022/ConfigureMacosFromScratch_M1/">Configure A macOS with M1 chip From Scratch</a>
+  </li>
+
+  
+
+  <li class="my-2">
+    <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2021/Attention1NMT/">Early Implementation of Attention Mechanism</a>
+  </li>
+
+
+
+    
+  
+
+  
+  
+</div>
+
+      
+    </div>
+
+    <!-- Footer -->
+    
+  <footer class="fixed-bottom" role="contentinfo">
+    <div class="container mt-0">
+      © Copyright 2026
+      Minhuan
+      
+      Li. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>.
+
+      
+      
+    </div>
+  </footer>
+
+
+
+    <!-- JavaScripts -->
+    <!-- jQuery -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Bootsrap & MDB scripts -->
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="/assets/js/mdb.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    
+  <!-- Masonry & imagesLoaded -->
+  <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script>
+  <script defer src="/assets/js/masonry.js" type="text/javascript"></script>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+  <!-- Medium Zoom JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+  <script defer src="/assets/js/zoom.js?85ddb88934d28b74e78031fd54cf8308"></script>
+
+
+
+<!-- Bootstrap Table -->
+
+
+<!-- Load Common JS -->
+<script src="/assets/js/no_defer.js?2781658a0a2b13ed609542042a859126"></script>
+<script defer src="/assets/js/common.js?e0514a05c5c95ac1a93a8dfd5249b92e"></script>
+<script defer src="/assets/js/copy_code.js?12775fdf7f95e901d7119054556e495f" type="text/javascript"></script>
+
+<!-- Jupyter Open External Links New Tab -->
+<script defer src="/assets/js/jupyter_new_tab.js?d9f17b6adc2311cbabd747f4538bb15f"></script>
+
+
+
+    
+  <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
+
+
+  <script async src="https://badge.dimensions.ai/badge.js"></script>
+
+
+    
+  
+    <!-- MathJax -->
+    <script type="text/javascript">
+      window.MathJax = {
+        tex: {
+          tags: 'ams',
+        },
+      };
+    </script>
+    <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script>
+    <script defer src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6" crossorigin="anonymous"></script>
+  
+
+
+    
+
+    
+
+
+
+    
+  <!-- Scrolling Progress Bar -->
+  <script type="text/javascript">
+    /*
+     * This JavaScript code has been adapted from the article
+     * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar,
+     * published on the website https://css-tricks.com on the 7th of May, 2014.
+     * Couple of changes were made to the original code to make it compatible
+     * with the `al-foio` theme.
+     */
+    const progressBar = $('#progress');
+    /*
+     * We set up the bar after all elements are done loading.
+     * In some cases, if the images in the page are larger than the intended
+     * size they'll have on the page, they'll be resized via CSS to accomodate
+     * the desired size. This mistake, however, breaks the computations as the
+     * scroll size is computed as soon as the elements finish loading.
+     * To account for this, a minimal delay was introduced before computing the
+     * values.
+     */
+    window.onload = function () {
+      setTimeout(progressBarSetup, 50);
+    };
+    /*
+     * We set up the bar according to the browser.
+     * If the browser supports the progress element we use that.
+     * Otherwise, we resize the bar thru CSS styling
+     */
+    function progressBarSetup() {
+      if ('max' in document.createElement('progress')) {
+        initializeProgressElement();
+        $(document).on('scroll', function () {
+          progressBar.attr({ value: getCurrentScrollPosition() });
+        });
+        $(window).on('resize', initializeProgressElement);
+      } else {
+        resizeProgressBar();
+        $(document).on('scroll', resizeProgressBar);
+        $(window).on('resize', resizeProgressBar);
+      }
+    }
+    /*
+     * The vertical scroll position is the same as the number of pixels that
+     * are hidden from view above the scrollable area. Thus, a value > 0 is
+     * how much the user has scrolled from the top
+     */
+    function getCurrentScrollPosition() {
+      return $(window).scrollTop();
+    }
+
+    function initializeProgressElement() {
+      let navbarHeight = $('#navbar').outerHeight(true);
+      $('body').css({ 'padding-top': navbarHeight });
+      $('progress-container').css({ 'padding-top': navbarHeight });
+      progressBar.css({ top: navbarHeight });
+      progressBar.attr({
+        max: getDistanceToScroll(),
+        value: getCurrentScrollPosition(),
+      });
+    }
+    /*
+     * The offset between the html document height and the browser viewport
+     * height will be greater than zero if vertical scroll is possible.
+     * This is the distance the user can scroll
+     */
+    function getDistanceToScroll() {
+      return $(document).height() - $(window).height();
+    }
+
+    function resizeProgressBar() {
+      progressBar.css({ width: getWidthPercentage() + '%' });
+    }
+    // The scroll ratio equals the percentage to resize the bar
+    function getWidthPercentage() {
+      return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+    }
+  </script>
+
+
+    
+
+    
+
+    
+
+    
+  <script src="/assets/js/vanilla-back-to-top.min.js?f40d453793ff4f64e238e420181a1d17"></script>
+  <script>
+    addBackToTop();
+  </script>
+
+
+    
+  <script type="module" src="/assets/js/search/ninja-keys.min.js?a3446f084dcaecc5f75aa1757d087dcf"></script>
+  <ninja-keys hidebreadcrumbs noautoloadmdicons placeholder="Type to start searching"></ninja-keys>
+  <script>
+    let searchTheme = determineComputedTheme();
+    const ninjaKeys = document.querySelector('ninja-keys');
+
+    if (searchTheme === 'dark') {
+      ninjaKeys.classList.add('dark');
+    } else {
+      ninjaKeys.classList.remove('dark');
+    }
+
+    const openSearchModal = () => {
+      // collapse navbarNav if expanded on mobile
+      const $navbarNav = $('#navbarNav');
+      if ($navbarNav.hasClass('show')) {
+        $navbarNav.collapse('hide');
+      }
+      ninjaKeys.open();
+    };
+  </script>
+  <script>
+    // get the ninja-keys element
+    const ninja = document.querySelector('ninja-keys');
+
+    // add the home and posts menu items
+    ninja.data = [{
+        id: "nav-about",
+        title: "about",
+        section: "Navigation",
+        handler: () => {
+          window.location.href = "/";
+        },
+      },{id: "nav-blog",
+              title: "blog",
+              description: "",
+              section: "Navigation",
+              handler: () => {
+                window.location.href = "/blog/";
+              },
+            },{id: "nav-publications",
+              title: "publications",
+              description: "publications by categories in reversed chronological order. generated by jekyll-scholar.",
+              section: "Navigation",
+              handler: () => {
+                window.location.href = "/publications/";
+              },
+            },{id: "post-flow-matching-objectives",
+          
+            title: "Flow-Matching Objectives",
+          
+          description: "In the previous blog, I walked through the simulation-based approaches to train the neural ODE/continuous normalizing flow models. Those approaches are mathematically elegant, while they are still expensive and non-scalable in practice. Flow-matching objectives are targets to make the training more affordable and scalable. In this blog, I will review the derivations behind flow-matching models.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2024/flowmatching/";
+            
+          },
+        },{id: "post-training-neural-ode-with-three-different-loss-types",
+          
+            title: "Training Neural ODE with three different loss types",
+          
+          description: "The recent popular flow-matching models are based on another interesting model group called Neural ODE/continuous normalizing flow. While the main idea behind flow-matching models is to find a practical and affordable way to train the neural ODE, the original adjoint sensitivity method is actually very intellectually interesting and full of meaningful details. So, in this blog, I&#39;ll review the derivations behind the adjoint method before diving into the flow-matching objective in the next one. At the end, they are both good candiates of protocols to make observables from MD trajectories differentiable.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2024/TrainingNeuralODE/";
+            
+          },
+        },{id: "post-implicit-reparameterization-gradients",
+          
+            title: "Implicit Reparameterization Gradients",
+          
+          description: "This note delves into a paper recommended by Kevin, which focuses on the challenges of obtaining low-variance gradients for continuous random variables, particularly those pesky distributions we often encounter (yes, the Rice distribution). Key takeaway, you can have unbiased estimators for pathwise gradients of continuous distributions with numerically tractable CDFs, like gamma, truncated, or mixtures.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2023/ImplicitReparameterizationTrick/";
+            
+          },
+        },{id: "post-an-obscure-reason-of-gpu-memory-leak-in-pytorch",
+          
+            title: "An obscure reason of GPU memory leak in pytorch",
+          
+          description: "A short debug note on why I kept getting &quot;CUDA out of memory&quot; error in my codes. Main takeaway is, don&#39;t use in-place operations in your computing graph unless necessary. If you are applying it to non-leaf tensors, change it even it seems necessary. I tested on both 1.13 and 2.0, with cuda version 11.6 and 11.7.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2023/PytorchMemoryLeak/";
+            
+          },
+        },{id: "post-configure-a-macos-with-m1-chip-from-scratch",
+          
+            title: "Configure A macOS with M1 chip From Scratch",
+          
+          description: "A walk-through note on how to configure my familiar working system from a brand new macOS system with M1 chip, including Git token, Homebrew, Terminal color theme, Oh-my-zsh plugins, and conda. Compared to the previous post for an Intel chip, the difference mainly lies in the Homebrew PATH. I also use mambaforge to replace miniconda for python environment management.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2022/ConfigureMacosFromScratch_M1/";
+            
+          },
+        },{id: "post-early-implementation-of-attention-mechanism",
+          
+            title: "Early Implementation of Attention Mechanism",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/Attention1NMT/";
+            
+          },
+        },{id: "post-spectral-bias-and-positional-encoding",
+          
+            title: "Spectral Bias and Positional Encoding",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/SpectralBiasPostionalEncoding/";
+            
+          },
+        },{id: "post-bayesian-inference-with-probabilisitc-pupulation-codes",
+          
+            title: "Bayesian Inference with Probabilisitc Pupulation Codes",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/ProbablisticPopulationCodes/";
+            
+          },
+        },{id: "post-temporal-difference-methods-in-machine-learning",
+          
+            title: "Temporal Difference Methods in Machine Learning",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/TemporalDifference/";
+            
+          },
+        },{id: "post-stability-of-memory-allocation-with-neuroidal-model",
+          
+            title: "Stability of Memory Allocation with Neuroidal Model",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/StabilityRGM/";
+            
+          },
+        },{id: "post-neuroidal-model",
+          
+            title: "Neuroidal Model",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/NeuroidalModel/";
+            
+          },
+        },{id: "post-facilitated-variation",
+          
+            title: "Facilitated Variation",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/FacilitatedVariation/";
+            
+          },
+        },{id: "post-digital-organisms",
+          
+            title: "Digital Organisms",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/DigitalOrganisms/";
+            
+          },
+        },{id: "post-computational-theories-of-sex-and-recombination",
+          
+            title: "Computational Theories of Sex and Recombination",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/ComputationalThoeyofSexandRecombination/";
+            
+          },
+        },{id: "post-thermodynamic-model-of-transcription-regulation",
+          
+            title: "Thermodynamic model of transcription regulation",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/ThermodynamicModelofTranscriptionRegulation/";
+            
+          },
+        },{id: "post-experiments-on-input-functions",
+          
+            title: "Experiments on Input Functions",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/Experiment_Input_Function/";
+            
+          },
+        },{id: "post-the-thermodynamic-variational-objective-and-more",
+          
+            title: "The Thermodynamic Variational Objective and more",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/tvo/";
+            
+          },
+        },{id: "post-a-theoretical-connection-between-statistical-physics-and-reinforcement-learning",
+          
+            title: "A Theoretical Connection Between Statistical Physics and Reinforcement Learning",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/RL_Stat_Mech/";
+            
+          },
+        },{id: "post-菜谱-口水鸡",
+          
+            title: "菜谱：口水鸡",
+          
+          description: "My recipe of a Sichuan food, steamed chicken with chili oil. Most ingredients can be found in American markets.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/recipe_chicken/";
+            
+          },
+        },{id: "post-configure-a-macos-with-intel-chip-from-scratch",
+          
+            title: "Configure A macOS with Intel chip From Scratch",
+          
+          description: "A walk-through note on how to configure my familiar working system from a brand new macOS system, including Git token, Homebrew, Terminal color theme, Oh-my-zsh plugins, miniconda and jupyter kernel.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/ConfigureMacosFromScratch/";
+            
+          },
+        },{id: "post-我的2020五佳观影",
+          
+            title: "我的2020五佳观影",
+          
+          description: "I summarize 5 best movies I watched (not produced) in 2020, based on my personal taste. My previous plan was listing top 10, but I turned out be too critical and lazy.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/PersonalTopMovies2020/";
+            
+          },
+        },{id: "post-about-the-blog",
+          
+            title: "About the Blog",
+          
+          description: "",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2021/AboutTheBlog/";
+            
+          },
+        },{id: "post-setup-jekyll",
+          
+            title: "Setup Jekyll",
+          
+          description: "These github pages are built with Jekyll framework. This is a note about how to setup Ruby and Jekyll development env locally, through direct installation or docker.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2020/SetupJekylllocally/";
+            
+          },
+        },{id: "post-blog-content-syntax",
+          
+            title: "Blog Content Syntax",
+          
+          description: "My first blog here! A demo about how to write different contents with this blog framework.",
+          section: "Posts",
+          handler: () => {
+            
+              window.location.href = "/blog/2020/BlogSyntaxTutoroial/";
+            
+          },
+        },{id: "news-preprint-out-goto-https-www-biorxiv-org-content-10-64898-2025-12-23-696001v1-a-robust-differentiable-sliced-wasserstein-loss-for-image-based-inverse-problems-with-applications-to-cryo-em",
+              title: 'Preprint out: [GOTO](https://www.biorxiv.org/content/10.64898/2025.12.23.696001v1), a robust differentiable sliced Wasserstein loss for image-based inverse problems,...',
+              description: "",
+              section: "News",},{id: "news-preprint-out-embedopt-https-arxiv-org-abs-2602-05285-a-new-framework-for-robust-inference-time-steering-of-protein-diffusion-models-via-embedding-optimization",
+              title: 'Preprint out: [embedopt](https://arxiv.org/abs/2602.05285), a new framework for robust inference-time steering of protein diffusion...',
+              description: "",
+              section: "News",},{id: "news-our-paper-on-rocket-https-www-nature-com-articles-s41592-026-03047-4-using-alphafold-as-a-prior-for-experimental-structure-determination-is-published-in-nature-methods",
+              title: 'Our paper on [ROCKET](https://www.nature.com/articles/s41592-026-03047-4) — using AlphaFold as a prior for experimental structure...',
+              description: "",
+              section: "News",},{id: "news-released-the-codebase-for-embedopt-https-github-com-rs-station-embedopt-a-method-for-robust-inference-time-steering-of-protein-diffusion-models-via-embedding-optimization",
+              title: 'Released the codebase for [embedopt](https://github.com/rs-station/embedopt), a method for robust inference-time steering of protein...',
+              description: "",
+              section: "News",},{
+            id: 'socials-email',
+            title: 'Send email',
+            section: 'Socials',
+            handler: () => {
+              window.open("mailto:%6D%69%6E%68%75%61%6E%6C%69@%66%6C%61%74%69%72%6F%6E%69%6E%73%74%69%74%75%74%65.%6F%72%67", "_blank");
+            },
+          },{
+            id: 'socials-google-scholar',
+            title: 'Google Scholar',
+            section: 'Socials',
+            handler: () => {
+              window.open("https://scholar.google.com/citations?user=zls7LKwAAAAJ", "_blank");
+            },
+          },{
+            id: 'socials-github',
+            title: 'GitHub',
+            section: 'Socials',
+            handler: () => {
+              window.open("https://github.com/minhuanli", "_blank");
+            },
+          },{
+            id: 'socials-x',
+            title: 'X',
+            description: 'Twitter',
+            section: 'Socials',
+            handler: () => {
+              window.open("https://twitter.com/mhli41", "_blank");
+            },
+          },{
+            id: 'socials-bluesky',
+            title: 'Bluesky',
+            section: 'Socials',
+            handler: () => {
+              window.open("https://bsky.app/profile/https://bsky.app/profile/minhuanli.bsky.social", "_blank");
+            },
+          },{
+            id: 'socials-rss',
+            title: 'RSS Feed',
+            section: 'Socials',
+            handler: () => {
+              window.open("/feed.xml", "_blank");
+            },
+          },{
+          id: 'light-theme',
+          title: 'Change theme to light',
+          description: 'Change the theme of the site to Light',
+          section: 'Theme',
+          handler: () => {
+            setThemeSetting("light");
+          },
+        },
+        {
+          id: 'dark-theme',
+          title: 'Change theme to dark',
+          description: 'Change the theme of the site to Dark',
+          section: 'Theme',
+          handler: () => {
+            setThemeSetting("dark");
+          },
+        },
+        {
+          id: 'system-theme',
+          title: 'Use system default theme',
+          description: 'Change the theme of the site to System Default',
+          section: 'Theme',
+          handler: () => {
+            setThemeSetting("system");
+          },
+        },];
+  </script>
+  <script src="/assets/js/shortcut-key.js?6f508d74becd347268a7f822bca7309d"></script>
+
+
+  </body>
+</html>

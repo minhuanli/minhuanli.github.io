@@ -1,0 +1,1115 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://minhuanli.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://minhuanli.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-04-28T02:55:28+00:00</updated><id>https://minhuanli.github.io/feed.xml</id><title type="html">blank</title><subtitle>Flatiron Research Fellow at the Center for Computational Mathematics, Simons Foundation. Working at the intersection of statistical physics, machine learning, and structural biology.
+</subtitle><entry><title type="html">Flow-Matching Objectives</title><link href="https://minhuanli.github.io/blog/2024/flowmatching/" rel="alternate" type="text/html" title="Flow-Matching Objectives" /><published>2024-05-27T00:00:00+00:00</published><updated>2024-05-27T00:00:00+00:00</updated><id>https://minhuanli.github.io/blog/2024/flowmatching</id><content type="html" xml:base="https://minhuanli.github.io/blog/2024/flowmatching/"><![CDATA[<p>Before we talked about the continuous normalzing flow model, say we have a neural ODE \(f_\theta\):</p>
+
+\[\frac{d \mathbf{z}(t)}{d t}=f(\mathbf{z}(t), t, \theta), \quad \mathbf{z}\left(t_1\right)=\mathbf{z}\left(t_0\right)+\int_{t_0}^{t_1} f d t\]
+
+<p>And the maximum likelihood training tagets writes:</p>
+
+\[-\underset{z_1 \sim \rho\left(z_1\right)}{\mathbb{E}}\left[\log \mu_{z_0}\left(F_{1 \rightarrow 0}\left(z_1\right)\right)+\int_0^1 \operatorname{tr}\left(\frac{\partial f}{\partial z}\right) d t\right]\]
+
+<p>The adjoint method training would require several ODEsolver runs for each iteration, which is not scalable. How to make an affordable training protocol?</p>
+
+<h3 id="vector-field-flow-and-probability-density-path"><i class="contrast">Vector field, flow and probability density path</i></h3>
+
+<p>Before we move on to the flow-matching objective, let’s first clarify three concepts: vector field, flow and probability density path. They can be understood as three different representations of variable transformation.</p>
+
+<p>Say we have variable \(x_0 \in \mathbb{R}^d\), with probability distibution \(p_0\)</p>
+
+<ol>
+  <li>
+    <p><strong>Flow \(\phi\)</strong></p>
+
+    <p>Flow is the transformation of the variable into another variable with the same dimensionality:</p>
+
+\[\begin{gathered}
+ \phi_t\left(x_0\right)=x_t \\
+ \phi:[0,1] \times \mathbb{R}^d \rightarrow \mathbb{R}^d
+ \end{gathered} \tag{1}\]
+  </li>
+  <li>
+    <p><strong>Probability Density Path \(p_t\)</strong></p>
+
+    <p>Under the above flow transformation, the probability density function of the transformed variable would change as well:</p>
+
+\[\begin{gathered}
+ p_t=\left[\phi_t\right]_* p_0 \\
+ p:[0,1] \times \mathbb{R}^d \rightarrow \mathbb{R}_{&gt;0}
+ \end{gathered}\tag{2}\]
+
+    <p>With the change of variables theorem, we know the density function changes as following:</p>
+
+\[\left[\phi_t\right]_* p_0(x)=p_0\left(\phi_t^{-1}(x)\right) \operatorname{det}\left[\frac{\partial \phi_t^{-1}}{\partial x}(x)\right]\tag{3}\]
+  </li>
+  <li>
+    <p><strong>Vector Field \(v_t\)</strong></p>
+
+    <p>If we say the above flow/transformation is constructed by a neural ODE, then it could be written as:</p>
+
+\[\begin{aligned}
+ &amp; \frac{d}{d t} \phi_t(x)=v_t\left(\phi_t(x); \theta\right) \\
+ &amp; v:[0,1] \times \mathbb{R}^d \rightarrow \mathbb{R}^d
+ \end{aligned}\tag{4}\]
+
+    <p>\(v\) is parameterized by neural network \(\theta\).</p>
+  </li>
+</ol>
+
+<p>In the simulation-based training protocol for continuous normalizing flow, our target lives in the probability density path representation, but our parameters are in the vector field space. Connecting that two representations are expensive. Can we directly construct an objective in vector field space, so the training can be more in a regression manner?</p>
+
+<center><img src="/assets/img/posts/flow_matching1.png" alt="fm1" width="600" /></center>
+
+<h3 id="flow-matching-objective"><i class="contrast">Flow Matching Objective</i></h3>
+
+<p>Say we have samples from unknown distribution \(q(x_1)\). We hope to have a probability density path \(p_t(x)\), such that we can transform a simple distribution to approximate the underlying complex distribution:</p>
+
+\[p_0(x)=p(x)=\mathcal{N}(x \mid 0, I) \qquad \text{at t=0}\tag{5}\]
+
+\[p_1(x) \approx q(x) \qquad \text{at t=1} \tag{6}\]
+
+<p>And such path could be constructed by a corresponding vector field \(u_t(x)\), so idealy we could use the following <i class="contrast">Flow Matching Objective:</i> to train our vector field:</p>
+
+\[\mathcal{L}_{\mathrm{FM}}(\theta)=\mathbb{E}_{t, p_t(x)}\left\|v_t(x, \theta)-u_t(x)\right\|^2\tag{7}\]
+
+<p>Unfortunately we don’t know how to sample from \(p_t(x)\), neither do we know the exact form of ground truth \(u_t(x)\).</p>
+
+<h3 id="conditional-flow-matching"><i class="contrast">Conditional Flow Matching</i></h3>
+
+<p>To tackle the above issue, now we define a <strong>conditioanl probability path</strong> \(p_t\left(x \mid x_1\right)\), such that it could trasform a simple distribution function into a narrow gaussian around \(x_1\):</p>
+
+\[p_0\left(x \mid x_1\right)=p(x)=\mathcal{N}(x \mid 0, I) \qquad \text{at t=0}\tag{8}\]
+
+\[p_1\left(x \mid x_1\right)=\mathcal{N}\left(x \mid x_1, \sigma^2 I\right) \qquad \text{at t=1} \tag{9}\]
+
+<p>The corresponding marginal path is:</p>
+
+\[p_t(x)=\int p_t\left(x \mid x_1\right) q\left(x_1\right) d x_1\tag{10}\]
+
+<p>And as \(\sigma \to 0\), we can easily prove:</p>
+
+\[p_1(x)=\int p_1\left(x \mid x_1\right) q\left(x_1\right) d x_1 \approx q(x)\]
+
+<p>Let’s say conditonal proability path could be constructed by a conditonal vector field \(u_t\left(x \mid x_1\right)\), and it would aggregate to be the marginal vector field:</p>
+
+\[u_t(x)=\int u_t\left(x \mid x_1\right) \frac{p_t\left(x \mid x_1\right) q\left(x_1\right)}{p_t(x)} d x_1 \tag{11}\]
+
+<p>In the theorem 1 of the original paper, they proved that the marginal vector field could construct marginal density path.</p>
+
+<center><img src="/assets/img/posts/flow_matching2.png" alt="fm2" width="700" /></center>
+
+<p>However, even though we have the equation (10) and (11) for \(p_t(x)\) and \(u_t(x)\), the \(\mathcal{L}_{\mathrm{FM}}(\theta)\) in equation (7) is still intractable because of the integrals in (10) and (11).</p>
+
+<h3 id="conditional-flow-matching-objective"><i class="contrast">Conditional Flow Matching Objective</i></h3>
+
+<p>Instead we can define the following conditional flow matching objective:</p>
+
+\[\mathcal{L}_{\mathrm{CFM}}(\theta)=\mathbb{E}_{t, q\left(x_1\right), \textcolor{#e41a1c}{p_t\left(x \mid x_1\right)}}\left\|v_t(x, \theta)-\textcolor{#377eb8}{u_t\left(x \mid x_1\right)}\right\|^2 \tag{12}\]
+
+<p>And in their theorem 2, the authors proved that:</p>
+
+\[\nabla_\theta \mathcal{L}_{F M}(\theta)=\nabla_\theta \mathcal{L}_{C F M}(\theta) \tag{13}\]
+
+<p>So <strong>minimizing CFM with gradient descent is the same as miminizing FM target</strong>. And the conditional path and vector filed in the CFM do not involve any integrals, we only have to determine the form of \(p_t\left(x \mid x_1\right)\) and \(u_t\left(x \mid x_1\right)\) based on our choice.</p>
+
+<p>We consider a <strong>gaussian conditional probability path</strong>:</p>
+
+\[\textcolor{#e41a1c}{p_t\left(x \mid x_1\right)=\mathcal{N}\left(x \mid \mu_t\left(x_1\right), \sigma_t\left(x_1\right)^2 I\right)} \tag{14}\]
+
+<p>with</p>
+
+\[\mu_0\left(x_1\right)=0, \sigma_0\left(x_1\right)=1 \qquad \text{at t = 0}\]
+
+\[\mu_0\left(x_1\right)=x_1, \sigma_0\left(x_1\right)=\sigma_{\text{min}} \qquad \text{at t = 0}\]
+
+<p>And the corresponding flow is \(\psi_t(x)=\sigma_t\left(x_1\right) x+\mu_t\left(x_1\right)\)</p>
+
+<p>According to the theorem 3, we have the expression of the confitional vector field:</p>
+
+\[\textcolor{#377eb8}{u_t\left(x \mid x_1\right)=\frac{\sigma_t^{\prime}\left(x_1\right)}{\sigma_t\left(x_1\right)}\left(x-\mu_t\left(x_1\right)\right)+\mu_t^{\prime}\left(x_1\right)} \tag{15}\]
+
+<p>Then the only missing pieces for calculating CFM in (12) are \(\mu_t\left(x_1\right)\) and \(\sigma_t\left(x_1\right)\) in equation (14). They depends on our <strong>choices of different paths</strong>.</p>
+
+<p class="orangebox">
+Consider two different <i style="font-weight: bold">diffusion paths</i><br />
+
+
+1. Data to noise
+
+$$
+\mu_t\left(x_1\right)=x_1 \quad \sigma_t\left(x_1\right)=\sigma_{1-t}
+$$
+
+$$
+u_t\left(x \mid x_1\right)=-\frac{\sigma_{1-t}^{\prime}}{\sigma_{1-t}}\left(x-x_1\right)
+$$
+
+2. Noise to data
+
+$$
+\mu_t\left(x_1\right)=\alpha_{1-t} x_1 \quad \sigma_t\left(x_1\right)=\sqrt{1-\alpha_{1-t}^2}
+$$
+
+$$
+u_t\left(x \mid x_1\right)=\frac{\alpha_{1-t}^{\prime}}{1-\alpha_{1-t}^2}\left(\alpha_{1-t} x-x_1\right)=-\frac{T^{\prime}(1-t)}{2}\left[\frac{e^{-T(1-t)} x-e^{-\frac{1}{2} T(1-t)} x_1}{1-e^{-T(1-t)}}\right]
+$$
+
+</p>
+
+<p class="bluebox">
+Consider the <i style="font-weight: bold">optimal transportation path</i><br />
+
+$$
+\mu_t(x)=t x_1 \text {, and } \sigma_t(x)=1-\left(1-\sigma_{\min }\right) t
+$$
+
+$$
+u_t\left(x \mid x_1\right)=\frac{x_1-\left(1-\sigma_{\min }\right) x}{1-\left(1-\sigma_{\min }\right) t}
+$$
+
+$$
+\mathcal{L}_{\mathrm{CFM}}(\theta)=\mathbb{E}_{t, q\left(x_1\right), p\left(x_0\right)}\left\|v_t\left(\psi_t\left(x_0\right)\right)-\left(x_1-\left(1-\sigma_{\text {min }}\right) x_0\right)\right\|^2
+$$
+</p>]]></content><author><name></name></author><category term="AI&amp;Physics" /><summary type="html"><![CDATA[In the previous blog, I walked through the simulation-based approaches to train the neural ODE/continuous normalizing flow models. Those approaches are mathematically elegant, while they are still expensive and non-scalable in practice. Flow-matching objectives are targets to make the training more affordable and scalable. In this blog, I will review the derivations behind flow-matching models.]]></summary></entry><entry><title type="html">Training Neural ODE with three different loss types</title><link href="https://minhuanli.github.io/blog/2024/TrainingNeuralODE/" rel="alternate" type="text/html" title="Training Neural ODE with three different loss types" /><published>2024-05-13T00:00:00+00:00</published><updated>2024-05-13T00:00:00+00:00</updated><id>https://minhuanli.github.io/blog/2024/TrainingNeuralODE</id><content type="html" xml:base="https://minhuanli.github.io/blog/2024/TrainingNeuralODE/"><![CDATA[<center><img src="/assets/img/posts/neural_ODE.png" alt="NeuralODE1" width="600" /></center>
+
+<p>Neural Ordinary Differential Equations (ODEs) represent a subset of deep neural network models where the derivative of the hidden state is defined by a neural network, departing from the traditional approach of stacking hidden layers. In essence, neural networks parameterize the underlying differential equations, and the network’s output is computed using specialized solvers for these equations. Consequently, the primary challenge in training lies in effectively computing gradients of the target function with respect to the network parameters. And with different types of loss functions, there can be tiny modifications in the adjoint dynamic systems.</p>
+
+<h3 id="problem-setup"><i class="contrast">Problem Setup</i></h3>
+
+<p>Say we have a neural network parameterizing the gradients as:</p>
+
+\[f_{\theta}(\mathbf{z}) = \frac{d\mathbf{z}}{dt} \tag{1}\]
+
+<p>\(f_{\theta}\) is the neural network with trainable parameters \(\theta\). The output of the model can be obtained from a black-box ODEsolver:</p>
+
+\[\mathbf{z}\left(t_1\right)=\text { ODESolve }\left(\mathbf{z}\left(t_0\right), f, t_0, t_1, \theta\right) \tag{2}\]
+
+<p class="bluebox">
+Throughout history, various ODE solvers have been developed, with Euler's method and the Runge-Kutta Method standing as the two primary approaches. Selecting different ODE solvers can offer a balanced compromise between computational performance and solution accuracy.
+</p>
+
+<p>Let’s say our target function is <strong>only a function of model output</strong>, which is the case in many supervised learning setups:</p>
+
+\[L\left(\mathbf{z}\left(t_1\right)\right)=L\left(\int_{t_0}^{t_1} f(\mathbf{z}(t), t, \theta) d t\right)=L\left(\operatorname{ODESolve}\left(\mathbf{z}\left(t_0\right), f, t_0, t_1, \theta\right)\right) \tag{3}\]
+
+<p>If we want \(\underset{\theta}{\operatorname{argmin}} L\left(z\left(t_1\right)\right)\) using a gradient descent optimizer, that means we need to compute the following in an efficient way:</p>
+
+\[\frac{d L}{d \theta} \tag{4}\]
+
+<p>Applying chain rule to equation (4) we have:</p>
+
+\[\frac{\mathrm{d} L}{\mathrm{~d} \theta}=\frac{\partial L}{\partial z\left(t_1\right)}\frac{\mathrm{d} z\left(t_1\right)}{\mathrm{d} \theta}\]
+
+<p>But naively \(\frac{\mathrm{d} z\left(t_1\right)}{\mathrm{d} \theta}\) would require to store every intermediate states of the ODEsolver, which can be expensive and not practical at all.</p>
+
+<p class="bluebox">
+There can be other more complex cases of target functions, like:
+
+$$
+L(\mathbf{z}, \theta)=\int_{t_0}^{t_1} l(\mathbf{z}, \theta, t) d t
+$$
+
+which appears in the maximum likelihood training of the continuous normalizing flow. And even more generally:
+
+$$
+L(\mathbf{z}, \theta, t)
+$$
+
+which could be picutured as the target regarding observables from MD trajectory. We will cover their training protocols in the following sections.
+</p>
+
+<h3 id="adjoint-method-from-lagrangian-multiplier"><i class="contrast">Adjoint Method from Lagrangian Multiplier</i></h3>
+
+<p>Reforumalte our optimization problem into a constrained optimization setup:</p>
+
+\[\underset{\theta}{\operatorname{argmin}} L\left({z}\left(t_1\right)\right)
+\\
+\begin{gathered}
+s.t. \quad F(\dot{z (t)}, z(t), \theta, t)=\dot{z}(t)-f(z(t), \theta, t)=0 \\
+z\left(t_0\right)=z_{t_0} \quad t_0&lt;t_1
+\end{gathered}\]
+
+<p>Where the two constraints are IVP ODE system. So we can define the following function with lagrangian multiplier:</p>
+
+\[\psi=L\left(z\left(t_1\right)\right)-\int_{t_0}^{t_1} a(t) F(z(t), z(t), \theta, t) d t \tag{5}\]
+
+<p>satisfying:</p>
+
+\[\frac{\mathrm{d} \psi}{\mathrm{d} \theta}=\frac{\mathrm{d} L\left(z\left(t_1\right)\right)}{\mathrm{d} \theta} \tag{6}\]
+
+<p>So our target in equation (4) has changed to target in equation (6).</p>
+
+<p>Do the following derivations of the second term of \(\psi\), using part integral:</p>
+
+\[\int_{t_0}^{t_1} a(t) F d t  =a\left(t_1\right) z\left(t_1\right)-a\left(t_0\right) z_{t_0} -\int_{t_0}^{t_1}(z \dot{a}+a f) d t\]
+
+<p>Consequently we have:</p>
+
+\[\begin{aligned}
+\frac{\mathrm{d}}{\mathrm{d} \theta}\left[\int_{t_0}^{t_1} a F d t\right]= &amp; a\left(t_1\right) \textcolor{#fc8d62}{\frac{\mathrm{d} z\left(t_1\right)}{\mathrm{d} \theta}}-\int_{t_0}^{t_1}\left(\dot{a}+a \frac{\partial f}{\partial }\right) \textcolor{#8da0cb}{\frac{\mathrm{d} z(t)}{\mathrm{~d} \theta}} d t -\int_{t_0}^{t_1} a \frac{\partial f}{\partial \theta} d t
+\end{aligned}\]
+
+<p>taking back to equation (5) we have:</p>
+
+\[\frac{\mathrm{d} \psi}{\mathrm{d} \theta}=\left[\frac{\partial L}{\partial z\left(t_1\right)}-a\left(t_1\right)\right] \textcolor{#fc8d62}{\frac{\mathrm{d} z\left(t_1\right)}{\mathrm{d} \theta}}+\int_{t_0}^{t_1}\left(\dot{a}(t)+a(t) \frac{\partial f}{\partial z}\right) \textcolor{#8da0cb}{\frac{\mathrm{d} z(t)}{\mathrm{d} \theta}} d t+\int_{t_0}^{t_1} a(t) \frac{\partial f}{\partial \theta} d t\]
+
+<p>As we mentioned above, \(\textcolor{#fc8d62}{\frac{\mathrm{d} z\left(t_1\right)}{\mathrm{d} \theta}}\) and \(\textcolor{#8da0cb}{\frac{\mathrm{d} z(t)}{\mathrm{d} \theta}}\) are expensive to compute. But here we have the freedom to choose appropriate function \(a(t)\) to cancel the coefficients before both terms. That is to say:</p>
+
+\[\left\{\begin{array}{l}
+\dot{a}(t)=-a(t)^{\top} \frac{\partial f}{\partial \mathbf{z}} \\[2ex]
+a\left(t_1\right)=\frac{\partial L}{\partial z\left(t_1\right)}
+\end{array}\right. \tag{7}\]
+
+<p>which defined an adjoint dynamic system \(a\) in the reverse direction:</p>
+
+\[a\left(t_0\right)=a\left(t_1\right)-\int_{t_1}^{t_0} a(t) \frac{\partial f}{\partial z} d t \tag{8}\]
+
+<p>And once we have the function \(a(t)\) from the above system, the gradient can be calculated with:</p>
+
+\[\frac{\mathrm{d} L}{\mathrm{~d} \theta}=\frac{\mathrm{d} \psi}{\mathrm{~d} \theta} = -\int_{t_1}^{t_0} a(t) \frac{\partial f}{\partial \theta} dt \tag{9}\]
+
+<h3 id="training-algorithm"><i class="contrast">Training Algorithm</i></h3>
+
+<center><img src="/assets/img/posts/neural_ODE2.png" alt="NeuralODE2" width="400" /></center>
+
+<p>Summarize the above adjoint method into a training algorithm. Basically for <strong>target function only based on the final output \(L\left(\mathbf{z}\left(t_1\right)\right)\)</strong>, a single training step involves one forward pass and two reverse passes of the ODESolver:</p>
+
+<ol>
+  <li>
+    <p>Forward pass: Solve the ODE from the time \(t_0\) to \(t_1\), get the output \(z(t_1)\)</p>
+
+\[\frac{d \mathbf{z}(t)}{d t}=f(\mathbf{z}(t), t, \theta), \quad \mathbf{z}\left(t_1\right)=\mathbf{z}\left(t_0\right)+\int_{t_0}^{t_1} f d t\]
+  </li>
+  <li>
+    <p>Calculate loss function \(L\left(\mathbf{z}\left(t_1\right)\right)\).</p>
+  </li>
+  <li>
+    <p>Backward pass: Solve ODEs from time \(t_1\) to \(t_0\) to get the gradient of the loss:</p>
+
+    <p>\(a(t)=-a(t) \frac{\partial f}{\partial z} \text { s.t. } a\left(t_1\right)=\frac{\partial L}{\partial z\left(t_1\right)}\)
+ giving
+ \(a\left(t_0\right)=a\left(t_1\right)-\int_{t_1}^{t_0} a(t) \frac{\partial f}{\partial z} d t\)</p>
+
+    <p>and</p>
+
+\[\frac{\mathrm{d} L}{\mathrm{~d} \theta}=-\int_{t_1}^{t_0} a(t) \frac{\partial f}{\partial \theta} d t\]
+  </li>
+  <li>
+    <p>Use the gradient to update the network parameters \(\theta\).</p>
+  </li>
+</ol>
+
+<p>As you can see, even though the adjoint method has made the training possible, but it is still quite expensive and non-scalable because of the multiple ODESolver runs per iteration. That is where flow-matching method comes in. We will cover in the next blog.</p>
+
+<h3 id="adjoint-system-for-other-two-kinds-of-loss"><i class="contrast">Adjoint system for other two kinds of loss</i></h3>
+
+<p>As I mentioned above, there can be other more complex cases of target functions, which could involve more than the final output.</p>
+
+<p>For example, in the maximum likelihood of continuous normalizing flow training, the target function could be written as:</p>
+
+\[-\underset{z_1 \sim \rho\left(z_1\right)}{\mathbb{E}}\left[\log \mu_{z_0}\left(F_{1 \rightarrow 0}\left(z_1\right)\right)+\int_0^1 \operatorname{tr}\left(\frac{\partial f}{\partial z}\right) d t\right]\]
+
+<p>The second term in the target function involves an integration of a function of \(z\) over time, generally in this form:</p>
+
+\[L(\mathbf{z}, \theta)=\int_{t_0}^{t_1} l(\mathbf{z}, \theta, t) d t\]
+
+<p>Under this circumstance, the adjoint system will be:</p>
+
+\[\left\{\begin{array}{l}
+-\dot{a}(t)-a(t)^{\top} \frac{\partial f}{\partial \mathbf{z}}+\frac{\partial l}{\partial \mathbf{z}}=0 \\
+a\left(t_1\right)=0
+\end{array}\right.\]
+
+<p>and the gradient expression is:</p>
+
+\[\frac{d L}{d \theta}=\frac{\partial L}{\partial \theta}-\int_{t_0}^{t_1} a(t)^{\top} \frac{\partial h}{\partial \theta} d t\]
+
+<p>The other more general form of target function is:</p>
+
+\[L(\mathbf{z}, \theta, t)\]
+
+<p>And the corresponding adjoint dynamic system is:</p>
+
+\[\left\{\begin{array}{l}
+\dot{a}(t)=-a(t)^{\top} \frac{\partial f}{\partial \mathbf{z}} \\
+a\left(t_i\right)=a_{t_i}
+\end{array}\right.\]
+
+<p>with the gradient expression as:</p>
+
+\[\frac{d L}{d \theta}=\frac{\partial L}{\partial \theta}-\int_{t_0}^{t_1} a(t)^{\top} \frac{\partial h}{\partial \theta} d t\]
+
+<p>The training algorithm is similar to above, but with different adjoint system and gradient expression.</p>
+
+<p><i class="contrast">References</i></p>
+
+<ol>
+  <li>
+    <p><a href="https://arxiv.org/abs/1806.07366">Neural Ordinary Differential Equations</a></p>
+  </li>
+  <li>
+    <p><a href="https://vaipatel.com/posts/deriving-the-adjoint-equation-for-neural-odes-using-lagrange-multipliers/">Blog regarding adjoint method</a></p>
+  </li>
+</ol>]]></content><author><name></name></author><category term="AI&amp;Physics" /><summary type="html"><![CDATA[The recent popular flow-matching models are based on another interesting model group called Neural ODE/continuous normalizing flow. While the main idea behind flow-matching models is to find a practical and affordable way to train the neural ODE, the original adjoint sensitivity method is actually very intellectually interesting and full of meaningful details. So, in this blog, I'll review the derivations behind the adjoint method before diving into the flow-matching objective in the next one. At the end, they are both good candiates of protocols to make observables from MD trajectories differentiable.]]></summary></entry><entry><title type="html">Implicit Reparameterization Gradients</title><link href="https://minhuanli.github.io/blog/2023/ImplicitReparameterizationTrick/" rel="alternate" type="text/html" title="Implicit Reparameterization Gradients" /><published>2023-09-12T00:00:00+00:00</published><updated>2023-09-12T00:00:00+00:00</updated><id>https://minhuanli.github.io/blog/2023/ImplicitReparameterizationTrick</id><content type="html" xml:base="https://minhuanli.github.io/blog/2023/ImplicitReparameterizationTrick/"><![CDATA[<p>Deriving gradients from stochastics operations is a persistent headache in various tasks related to Bayesian inference or training generative models. The reparameterization trick has come to our rescue in numerous cases involving continuous random variables, such as the Gaussian distribution. However, many distributions lacking a location-scale parameterization or a tractable inverse cumulative function—like truncated, mixture, Von Mises or Dirichlet distributions—can’t be used with reparameterization gradients. The authors proposed an alternative approach called implicit reparameterization trick, in contrast to the classic reparameterization trick, which <strong>provided unbiased estimators for continuous distributions with numerically tractable CDFs</strong>.</p>
+
+<p><i class="contrast">Update @ Nov 23, 2023</i> : Attach pytorch codes to demo implicit reparameterization with customized gradient</p>
+
+<p><i class="contrast">Reference</i></p>
+
+<p>Figurnov, Mikhail, Shakir Mohamed, and Andriy Mnih. “Implicit reparameterization gradients.” Advances in neural information processing systems 31 (2018)</p>
+
+<h3 id="explicit-reparameterization-gradients"><i class="contrast">Explicit Reparameterization Gradients</i></h3>
+
+<p>First let’s do a problem setup for the <em>explicit</em> reparameterization trick. Suppose we would like to optimize the following expectation w.r.t the distribution parameter \(\phi\):</p>
+
+\[\mathbb{E}_{q_\phi(\boldsymbol{z})}[f(\boldsymbol{z})] \tag{1}\]
+
+<p>\(f(z)\) is a continuously differentiable function.</p>
+
+<p class="orangebox">
+<i class="contrast">Why this is important?</i><br />
+Equation (1) is quite common in stochastic variational inference for latent variable models. Except for a few special cases (like normalizing flow), the maximum likelihood target is intractable. Instead variational inference provides an alternative by introducing a surrogate posterior distribution $$q_\phi(\boldsymbol{z} \mid \boldsymbol{x})$$ and maximizing the following Evidence Lower Bound Objective (ELBO):
+
+$$
+\mathcal{L}(\boldsymbol{x}, \boldsymbol{\theta}, \boldsymbol{\phi})=\mathbb{E}_{q_{\boldsymbol{\phi}}(\boldsymbol{z} \mid \boldsymbol{x})}\left[\log p_{\boldsymbol{\theta}}(\boldsymbol{x} \mid \boldsymbol{z})\right]-\mathrm{KL}\left(q_{\boldsymbol{\phi}}(\boldsymbol{z} \mid \boldsymbol{x}) \| p(\boldsymbol{z})\right) \leq \log p_{\boldsymbol{\theta}}(\boldsymbol{x})
+$$
+
+The first term is exactly in the form of equation (1) and its gradients are typically intractable and approximated using samples from the variational posterior. The reparameterization trick usually provides a low variance gradient estimator.
+</p>
+
+<p>Assume we can find a standardize function \(\mathcal{S}_\phi(\boldsymbol{z})\) <strong>differentiable</strong> to \(\phi\) and also <strong>invertible</strong>:</p>
+
+\[\mathcal{S}_\phi(\boldsymbol{z})=\varepsilon \sim q(\varepsilon) \quad z=\mathcal{S}_\phi^{-1}(\varepsilon) \tag{2}\]
+
+<p>It will <strong>remove \(z\)’s dependence on the parameters</strong> of the distribution. Then we can do:</p>
+
+\[\mathbb{E}_{q_\phi(\boldsymbol{z})}[f(\boldsymbol{z})]=\mathbb{E}_{q(\boldsymbol{\varepsilon})}\left[f\left(\mathcal{S}_{\boldsymbol{\phi}}^{-1}(\boldsymbol{\varepsilon})\right)\right] \tag{3}\]
+
+<p>The dependence on \(\phi\) has been moved into \(f\), so the gradient is tractable:</p>
+
+\[\nabla_\phi \mathbb{E}_{q_\phi(\boldsymbol{z})}[f(\boldsymbol{z})]=\mathbb{E}_{q(\boldsymbol{\varepsilon})}\left[\nabla_\phi f\left(\mathcal{S}_\phi^{-1}(\boldsymbol{\varepsilon})\right)\right]=\mathbb{E}_{q(\boldsymbol{\varepsilon})}\left[\nabla_{\boldsymbol{z}} f\left(\mathcal{S}_{\boldsymbol{\phi}}^{-1}(\boldsymbol{\varepsilon})\right) \nabla_\phi \mathcal{S}_\phi^{-1}(\boldsymbol{\varepsilon})\right]\tag{4}\]
+
+<p class="orangebox">
+<i class="contrast">Why CDF is an universal standardization function?</i><br />
+For an arbitrary univariant distribution \(q_\phi(\boldsymbol{z})\), the cumulative distribution function (CDF) \(F(z|\phi)\) convert the distribution to a parameter-indpendent uniform distribution:
+$$
+\mathcal{S}_\phi(z)=F(z \mid \phi) \sim \text { Uniform }(0,1)
+$$
+By the way, if the inverse CDF is attractable, that also means you can easily do one-shot batch sampling of the target distribution: first do one-shot sampling with uniform distribution and apply inverse CDF. 
+
+For multivariate case, the distribution transform looks like:
+$$
+\mathcal{S}_{\boldsymbol{\phi}}(\boldsymbol{z})=\left(F\left(z_1 \mid \boldsymbol{\phi}\right), F\left(z_2 \mid z_1, \boldsymbol{\phi}\right), \ldots, F\left(z_D \mid z_1, \ldots, z_{D-1}, \boldsymbol{\phi}\right)\right)=\boldsymbol{\varepsilon}
+$$
+where \(q(\varepsilon)=\prod_{d=1}^D \text { Uniform }\left(\varepsilon_d \mid 0,1\right)\).
+</p>
+
+<p>However, it is not always practical to find an invertible and tractable standardization function. For example, Rice distribution \(f(x \mid \nu, \sigma)=\frac{x}{\sigma^2} \exp \left(\frac{-\left(x^2+\nu^2\right)}{2 \sigma^2}\right) I_0\left(\frac{x \nu}{\sigma^2}\right)\) is important in scattering and wireless communication field. The CDF is \(1-Q_1\left(\frac{\nu}{\sigma}, \frac{x}{\sigma}\right)\), where \(Q_1\) is the Marcum Q-function. So currently the inverse CDF is not tractable.</p>
+
+<h3 id="implicit-reparameterization-gradients"><i class="contrast">Implicit Reparameterization Gradients</i></h3>
+<p>The authors porposed an alternative way for the raparameterization gradient that avoids the inversion of the standardization function. Start from Equation (4):</p>
+
+\[\nabla_\phi \mathbb{E}_{q_\phi(\boldsymbol{z})}[f(\boldsymbol{z})]=\mathbb{E}_{q(\boldsymbol{\varepsilon})}\left[\nabla_\phi f\left(\underbrace{\mathcal{S}_\phi^{-1}(\boldsymbol{\varepsilon})}_{\color{red}{z}}\right)\right]=\mathbb{E}_{q(\boldsymbol{\varepsilon})}\left[\nabla_{\boldsymbol{z}} f(\boldsymbol{z}) \nabla_{\boldsymbol{\phi}} \boldsymbol{z}\right] \tag{5}\]
+
+<p>Key point is compute \(\nabla_\phi z\) by <em>implicit differentiation</em>. Apply <i class="contrast">total gradient</i> \(\nabla_{\boldsymbol{\phi}}^{\mathrm{TD}}\) to the equality \(\mathcal{S}_\phi(\boldsymbol{z})=\boldsymbol{\varepsilon}\), you got:</p>
+
+\[\nabla_{\boldsymbol{z}} \mathcal{S}_{\boldsymbol{\phi}}(\boldsymbol{z}) \nabla_{\boldsymbol{\phi}} \boldsymbol{z}+\nabla_{\boldsymbol{\phi}} \mathcal{S}_{\boldsymbol{\phi}}(\boldsymbol{z})=\mathbf{0} \rightarrow \nabla_{\boldsymbol{\phi}} \boldsymbol{z}=-\left(\nabla_{\boldsymbol{z}} \mathcal{S}_{\boldsymbol{\phi}}(\boldsymbol{z})\right)^{-1} \nabla_\phi \mathcal{S}_{\boldsymbol{\phi}}(\boldsymbol{z}) \tag{6}\]
+
+<p>Now the gradient only requires differentiating the standardization function and not inverting it. Say if we use the CDF as an universal standardization function for an arbitrary distribution \(q_{\phi}(z)\), we have:</p>
+
+\[\nabla_\phi z=-\frac{\nabla_\phi F(z \mid \phi)}{q_\phi(z)} \tag{7}\]
+
+<p class="bluebox">
+<i class="contrast">Algorithm</i><br />
+$$
+\begin{array}{lll}
+\hline &amp; \text { Explicit reparameterization } &amp; \text { Implicit reparameterization } \\
+\hline \text { Forward pass } &amp; \begin{aligned} &amp;\text { Sample } \boldsymbol{\varepsilon} \sim q(\boldsymbol{\varepsilon}) \\
+&amp;\text { Set } \boldsymbol{z} \leftarrow \mathcal{S}_{\boldsymbol{\phi}}^{-1}(\boldsymbol{\varepsilon}) \end{aligned} &amp; \text { Sample } \boldsymbol{z} \sim q_{\boldsymbol{\phi}}(\boldsymbol{z}) \\
+\hline \text { Backward pass } &amp; \begin{aligned} &amp;\text { Set } \nabla_{\boldsymbol{\phi}} \boldsymbol{z} \leftarrow \nabla_\phi \mathcal{S}_{\boldsymbol{\phi}}^{-1}(\boldsymbol{\varepsilon}) \\
+&amp;\text { Set } \nabla_{\boldsymbol{\phi}} f(\boldsymbol{z}) \leftarrow \nabla_{\boldsymbol{z}} f(\boldsymbol{z}) \nabla_{\boldsymbol{\phi}} \boldsymbol{z} \end{aligned} &amp; \begin{aligned} &amp;\text { Set } \nabla_{\boldsymbol{\phi}} \boldsymbol{z} \leftarrow-\left(\nabla_{\boldsymbol{z}} \mathcal{S}_{\boldsymbol{\phi}}(\boldsymbol{z})\right)^{-1} \nabla_\phi \mathcal{S}_{\boldsymbol{\phi}}(\boldsymbol{z}) \\
+&amp;\text { Set } \nabla_{\boldsymbol{\phi}} f(\boldsymbol{z}) \leftarrow \nabla_{\boldsymbol{z}} f(\boldsymbol{z}) \nabla_{\boldsymbol{\phi}} \boldsymbol{z} \end{aligned} \\
+\hline
+\end{array}
+$$
+</p>
+
+<p><i class="contrast">Pytorch Implementation Example</i></p>
+
+<p>The following demonstrates the implementation of implicit reparameterization using a Gaussian distribution. It serves as a framework example, considering that Gaussian distribution already possesses a clearly established explicit reparameterization technique. To apply implicit reparameterization sampling to other distributions, you require three key components: a differentiable cumulative distribution function (CDF), various methods for sampling from the distribution, and a probability density function (PDF).</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">NormalIRSample</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">autograd</span><span class="p">.</span><span class="n">Function</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">dFdmu</span><span class="p">,</span> <span class="n">dFdsig</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="n">dzdmu</span> <span class="o">=</span> <span class="o">-</span><span class="n">dFdmu</span><span class="o">/</span><span class="n">q</span>
+        <span class="n">dzdsig</span> <span class="o">=</span> <span class="o">-</span><span class="n">dFdsig</span><span class="o">/</span><span class="n">q</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="nf">save_for_backward</span><span class="p">(</span><span class="n">dzdmu</span><span class="p">,</span> <span class="n">dzdsig</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">samples</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">grad_output</span><span class="p">):</span>
+        <span class="n">dzdmu</span><span class="p">,</span> <span class="n">dzdsig</span><span class="p">,</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">saved_tensors</span>
+        <span class="k">return</span> <span class="n">grad_output</span> <span class="o">*</span> <span class="n">dzdmu</span><span class="p">,</span> <span class="n">grad_output</span> <span class="o">*</span> <span class="n">dzdsig</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+<span class="k">class</span> <span class="nc">IRNormal</span><span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="n">distributions</span><span class="p">.</span><span class="n">Normal</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nf">super</span><span class="p">(</span><span class="n">IRNormal</span><span class="p">,</span> <span class="n">self</span><span class="p">).</span><span class="nf">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">_irsample</span> <span class="o">=</span> <span class="nc">NormalIRSample</span><span class="p">().</span><span class="nb">apply</span>
+
+    <span class="k">def</span> <span class="nf">pdf</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="p">.</span><span class="nf">exp</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="nf">log_prob</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">irsample</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">sample_shape</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="nc">Size</span><span class="p">()):</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">sample</span><span class="p">(</span><span class="n">sample_shape</span><span class="p">)</span> <span class="c1"># sample without grad
+</span>        <span class="n">F</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">cdf</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">pdf</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+        <span class="n">dFdmu</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">autograd</span><span class="p">.</span><span class="nf">grad</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">loc</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dFdsig</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">autograd</span><span class="p">.</span><span class="nf">grad</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">scale</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">samples</span><span class="p">.</span><span class="nf">requires_grad_</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="nf">_irsample</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">loc</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">scale</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">dFdmu</span><span class="p">,</span> <span class="n">dFdsig</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>And it works as:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> mu <span class="o">=</span> torch.tensor<span class="o">(</span>1.0, <span class="nv">requires_grad</span><span class="o">=</span>True<span class="o">)</span>
+<span class="o">&gt;&gt;&gt;</span> sig <span class="o">=</span> torch.tensor<span class="o">(</span>2.0, <span class="nv">requires_grad</span><span class="o">=</span>True<span class="o">)</span>
+<span class="o">&gt;&gt;&gt;</span> dista <span class="o">=</span> IRNormal<span class="o">(</span>mu, sig<span class="o">)</span>
+<span class="o">&gt;&gt;&gt;</span> z <span class="o">=</span> dista.irsample<span class="o">()</span>
+<span class="o">&gt;&gt;&gt;</span> z
+tensor<span class="o">(</span>1.9856, <span class="nv">grad_fn</span><span class="o">=</span>&lt;NormalIRSampleBackward&gt;<span class="o">)</span>
+<span class="o">&gt;&gt;&gt;</span> z.backward<span class="o">()</span>
+<span class="o">&gt;&gt;&gt;</span> mu.grad
+tensor<span class="o">(</span>1.0000<span class="o">)</span>
+<span class="o">&gt;&gt;&gt;</span> sig.grad
+tensor<span class="o">(</span>0.4928<span class="o">)</span>
+</code></pre></div></div>
+
+<h3 id="accuracy-and-speed-of-reparameterization-gradient-estimators"><i class="contrast">Accuracy and speed of reparameterization gradient estimators</i></h3>
+
+<p>In this paper, the author compared the implicit reparameterization estimator with two alternatives, Automatic differentiation with implicit reparameterization achieves the lowest error and the highest speed.</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20230918181100.png" alt="Figure1" width="90%" />
+</figure>
+</center>]]></content><author><name></name></author><category term="AI&amp;Physics" /><summary type="html"><![CDATA[This note delves into a paper recommended by Kevin, which focuses on the challenges of obtaining low-variance gradients for continuous random variables, particularly those pesky distributions we often encounter (yes, the Rice distribution). Key takeaway, you can have unbiased estimators for pathwise gradients of continuous distributions with numerically tractable CDFs, like gamma, truncated, or mixtures.]]></summary></entry><entry><title type="html">An obscure reason of GPU memory leak in pytorch</title><link href="https://minhuanli.github.io/blog/2023/PytorchMemoryLeak/" rel="alternate" type="text/html" title="An obscure reason of GPU memory leak in pytorch" /><published>2023-05-08T00:00:00+00:00</published><updated>2023-05-08T00:00:00+00:00</updated><id>https://minhuanli.github.io/blog/2023/PytorchMemoryLeak</id><content type="html" xml:base="https://minhuanli.github.io/blog/2023/PytorchMemoryLeak/"><![CDATA[<p>Recently I am transfering some of my prvious tensorflow and jax codes into pytorch. About the comparison between the three frameworks, we could have another 10 blogs to argue, but that is not what I want to share today.</p>
+
+<p>During the testing of my torch codes, I noticed the allocated cuda memory kept increasing as the training loop went. And apparently I didn’t make any obvious mistakes like appending my loss term to the log before itemizing it.</p>
+
+<p>So driven by my curiosity and perfectionism, I decided to debug my codes line by line, and finally find this largely unnoticed issue:</p>
+
+<p>If <code class="language-plaintext highlighter-rouge">x</code> is a non-leaf tensor, e.g. <code class="language-plaintext highlighter-rouge">x</code> is the output of a linear layer, in-place operations like</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">x</span> <span class="o">/=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">norm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>will cause the memory leak issue and keep increasing the memory every time you call this line.</p>
+
+<h3 id="how-to-solve"><i class="contrast">How to solve?</i></h3>
+
+<p>Changing the line to</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">/</span> <span class="n">torch</span><span class="p">.</span><span class="nf">norm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>will totally solve the issue.</p>
+
+<p>The above issue is super easy to reproduce in both <code class="language-plaintext highlighter-rouge">1.13</code> and <code class="language-plaintext highlighter-rouge">2.0</code>, as shown in the following picture:</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20230508232046.png" alt="Figure1" width="100%" />
+</figure>
+</center>
+
+<p>So, the takeaway is: avoid in-place operations in your pytorch computing graph.</p>]]></content><author><name></name></author><category term="tech" /><summary type="html"><![CDATA[A short debug note on why I kept getting "CUDA out of memory" error in my codes. Main takeaway is, don't use in-place operations in your computing graph unless necessary. If you are applying it to non-leaf tensors, change it even it seems necessary. I tested on both 1.13 and 2.0, with cuda version 11.6 and 11.7.]]></summary></entry><entry><title type="html">Configure A macOS with M1 chip From Scratch</title><link href="https://minhuanli.github.io/blog/2022/ConfigureMacosFromScratch_M1/" rel="alternate" type="text/html" title="Configure A macOS with M1 chip From Scratch" /><published>2022-07-12T00:00:00+00:00</published><updated>2022-07-12T00:00:00+00:00</updated><id>https://minhuanli.github.io/blog/2022/ConfigureMacosFromScratch_M1</id><content type="html" xml:base="https://minhuanli.github.io/blog/2022/ConfigureMacosFromScratch_M1/"><![CDATA[<p>Finally I have saved some money to replace my loyal but old MBP with a new one with M1 pro chip. Here is how I configure it to my comfortable working environment.</p>
+
+<p>My system version is macOS 12.4, with M1 pro chip.</p>
+
+<ul id="markdown-toc">
+  <li><a href="#1-command-line-tools-and-homebrew" id="markdown-toc-1-command-line-tools-and-homebrew">1. Command Line Tools and Homebrew</a></li>
+  <li><a href="#2-set-up-git-token-for-password-free-interaction" id="markdown-toc-2-set-up-git-token-for-password-free-interaction">2. Set up Git token for password-free interaction</a></li>
+  <li><a href="#3-install-mambaforge" id="markdown-toc-3-install-mambaforge">3. Install Mambaforge</a></li>
+  <li><a href="#4-install-oh-my-zsh-theme-and-useful-plugins" id="markdown-toc-4-install-oh-my-zsh-theme-and-useful-plugins">4. Install Oh-my-zsh, theme and useful plugins</a>    <ul>
+      <li><a href="#41-easy-set-plugins-git-sublime-web-search-osx-vi-mode" id="markdown-toc-41-easy-set-plugins-git-sublime-web-search-osx-vi-mode">4.1 Easy-set plugins: <em>git</em>, <em>sublime</em>, <em>web-search</em>, <em>osx</em>, <em>vi-mode</em></a></li>
+      <li><a href="#42-have-to-install-plugins-zsh-autosuggestions-zsh-syntax-highlighting-autojump" id="markdown-toc-42-have-to-install-plugins-zsh-autosuggestions-zsh-syntax-highlighting-autojump">4.2 Have-to-install plugins: <em>zsh-autosuggestions</em>, <em>zsh-syntax-highlighting</em>, <em>autojump</em></a></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="1-command-line-tools-and-homebrew">1. Command Line Tools and Homebrew</h3>
+
+<p>On a brand new system, first install the basic command line tool and <a href="https://brew.sh/">Homebrew</a> package manager.</p>
+
+<p>Run following codes in the Terminal, it should prompt an installation GUI to get you through, just follow their instructions.</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xcode-select <span class="nt">--install</span>
+</code></pre></div></div>
+<blockquote>
+  <p>It is possible that you have installed command line tools before.
+If that is the case, you will see some words like “xcode-select: error: command line tools are already installed”.
+It is totally Ok, just move to the Homebrew installation.</p>
+</blockquote>
+
+<p>Then install Homebrew with:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/bin/bash <span class="nt">-c</span> <span class="s2">"</span><span class="si">$(</span>curl <span class="nt">-fsSL</span> https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="si">)</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<p>According to this <a href="https://mac.install.guide/homebrew/3.html">tutorial</a>:</p>
+<blockquote>
+  <p>On Apple Silicon machines, there’s one more step. Homebrew files are installed into the <code class="language-plaintext highlighter-rouge">/opt/homebrew</code> folder. But the folder is not part of the default <code class="language-plaintext highlighter-rouge">$PATH</code>. Follow Homebrew’s advice and create a <code class="language-plaintext highlighter-rouge">~/.zprofile</code> file which contains a command which sets up Homebrew.</p>
+</blockquote>
+
+<p>So we have to do</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s1">'eval "$(/opt/homebrew/bin/brew shellenv)"'</span> <span class="o">&gt;&gt;</span> ~/.zprofile
+<span class="nb">eval</span> <span class="s2">"</span><span class="si">$(</span>/opt/homebrew/bin/brew shellenv<span class="si">)</span><span class="s2">"</span>
+</code></pre></div></div>
+
+<p>After the installation, run <code class="language-plaintext highlighter-rouge">brew</code> in the Terminal, if you see some brew tutorial words as “Example usage…”, you are ok with the step.</p>
+
+<h3 id="2-set-up-git-token-for-password-free-interaction">2. Set up Git token for password-free interaction</h3>
+<p>Then set up Git config and Github token on the computer, you can interact (push and pull) with Github repos in a password-free manner. You should have a github account before this step, you can <a href="https://github.com/">register</a> for free if you haven’t.</p>
+
+<p>First install the newest <code class="language-plaintext highlighter-rouge">git</code> with homebrew to replace the default one:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew <span class="nb">install </span>git
+</code></pre></div></div>
+
+<p>Then quit and reopen the terminal, check the git, you should see</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> which git
+/opt/homebrew/bin/git
+</code></pre></div></div>
+
+<p>Then Config your github username and email in global parameters, s.t. Github serve will know who you are:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Remove the quotation marks and replace the words inside with your account info</span>
+git config <span class="nt">--global</span> user.name <span class="s2">"user-name"</span>
+git config <span class="nt">--global</span> user.email <span class="s2">"user-email"</span>
+</code></pre></div></div>
+<p>Check all configs:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git config <span class="nt">--list</span>
+</code></pre></div></div>
+
+<p>For a convenient password-free interaction manner, first setup a personal token accroding on the github <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">website</a>.</p>
+
+<p>Then clone any repo to your local space with the token in the password place. Once this is completed, the new token will be cached in your Keychain Access and you can do password-free access in the future, see <a href="https://docs.github.com/en/github/using-git/updating-credentials-from-the-macos-keychain">this</a> for details</p>
+
+<h3 id="3-install-mambaforge">3. Install Mambaforge</h3>
+<p>Now we have the a new python environment manager, <a href="https://github.com/conda-forge/miniforge#mambaforge">Mambaforge</a>, which supports nearly all common comamnds in <code class="language-plaintext highlighter-rouge">conda</code> but much lighter than even miniconda,</p>
+
+<p>Do the following:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-MacOSX-arm64.sh
+bash Mambaforge-MacOSX-arm64.sh
+</code></pre></div></div>
+
+<p>And follow the instructions during installation, you will be all set.</p>
+
+<h3 id="4-install-oh-my-zsh-theme-and-useful-plugins">4. Install Oh-my-zsh, theme and useful plugins</h3>
+<p>This is my favorite part. I use <code class="language-plaintext highlighter-rouge">zsh</code> instead of <code class="language-plaintext highlighter-rouge">bash</code> as my local shell because <code class="language-plaintext highlighter-rouge">zsh</code> has pretty themes as well as powerful plugins, and <code class="language-plaintext highlighter-rouge">Oh-my-zsh</code> provides an elegant way to manager them. 
+Here is how to install them.</p>
+
+<p>First, change your shell to <code class="language-plaintext highlighter-rouge">zsh</code>. macOS has <code class="language-plaintext highlighter-rouge">zsh</code> as its default shell, but you can check and change shell with the following codes:<br /></p>
+<ul>
+  <li>List all available shells<br />
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> /etc/shells
+</code></pre></div>    </div>
+  </li>
+  <li>Check current shell<br />
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="nv">$SHELL</span>
+</code></pre></div>    </div>
+  </li>
+  <li>Change shell to zsh<br />
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>chsh <span class="nt">-s</span> /bin/zsh
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>Then, according to their <a href="https://ohmyz.sh/#install">documentation</a>, install <code class="language-plaintext highlighter-rouge">oh-my-zsh</code> with:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sh <span class="nt">-c</span> <span class="s2">"</span><span class="si">$(</span>curl <span class="nt">-fsSL</span> https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh<span class="si">)</span><span class="s2">"</span>
+</code></pre></div></div>
+<p>There will be a <code class="language-plaintext highlighter-rouge">.zshrc</code> text file in your home directory. 
+You can easily change words inside and <code class="language-plaintext highlighter-rouge">source ~/.zshrc</code> to make a new configuration happen.
+I have uploaded my configuration files, theme (I modify the af-magic theme) and Terminal color scheme in this <a href="https://github.com/minhuanli/personal_env_setting">repo</a>. 
+Here is how my prompt looks like:</p>
+<center><img src="/assets/img/posts/prompt_look_like.png" alt="prompt look like" width="500" /></center>
+
+<p>You can explore your favorite themes <a href="https://github.com/ohmyzsh/ohmyzsh/wiki/Themes">here</a>. 
+Another (or main) highlight of <code class="language-plaintext highlighter-rouge">oh-my-zsh</code> is its convenient management of abundant powerful plugins, which will make the working process much more productive and enjoyable.
+I list my favourite plugins here, there are more than 200 plugins you can explore <a href="(https://github.com/ohmyzsh/ohmyzsh/wiki/Plugins)">here</a></p>
+<h4 id="41-easy-set-plugins-git-sublime-web-search-osx-vi-mode">4.1 Easy-set plugins: <em>git</em>, <em>sublime</em>, <em>web-search</em>, <em>osx</em>, <em>vi-mode</em></h4>
+<p>Easy-set plugins are really “easy to set”, you simply add the plugin name in to the <code class="language-plaintext highlighter-rouge">plugins</code> line in <code class="language-plaintext highlighter-rouge">~/.zshrc</code> and source the file, like:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">plugins</span><span class="o">=(</span>git sublime web-search macos vi-mode<span class="o">)</span>
+</code></pre></div></div>
+<ul>
+  <li><a href="https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/git"><em>git</em></a>:<br />
+provide useful alias regarding git commands, like <code class="language-plaintext highlighter-rouge">gst = git status</code></li>
+  <li><a href="https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/sublime"><em>sublime</em></a><br />
+open file by sublime text with <code class="language-plaintext highlighter-rouge">st "file-name"</code>, you should have sublime installed first.</li>
+  <li><a href="https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/web-search"><em>web-search</em></a><br />
+Enable you to search through many engines in command line, like <code class="language-plaintext highlighter-rouge">google "something"</code></li>
+  <li><a href="https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/osx"><em>macos</em></a><br />
+An extremely useful tools with a few utilities in macOS. Like you can open the current directory in finder by <code class="language-plaintext highlighter-rouge">ofd</code>, let the spotify play a music with <code class="language-plaintext highlighter-rouge">spotify play</code>.</li>
+</ul>
+
+<h4 id="42-have-to-install-plugins-zsh-autosuggestions-zsh-syntax-highlighting-autojump">4.2 Have-to-install plugins: <em>zsh-autosuggestions</em>, <em>zsh-syntax-highlighting</em>, <em>autojump</em></h4>
+<p>These plugins are not included in a standard <code class="language-plaintext highlighter-rouge">oh-my-zsh</code> distribution, but you can still easily install them by one more line</p>
+<ul>
+  <li><a href="https://github.com/zsh-users/zsh-autosuggestions"><em>zsh-autosuggestions</em></a><br />
+A very useful tool to suggest commands as you type based on history and completions.<br /> 
+You can install by:<br />
+clone this repository into <code class="language-plaintext highlighter-rouge">$ZSH_CUSTOM/plugins</code> (by default <code class="language-plaintext highlighter-rouge">~/.oh-my-zsh/custom/plugins</code>)
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/zsh-users/zsh-autosuggestions <span class="k">${</span><span class="nv">ZSH_CUSTOM</span><span class="k">:-</span><span class="p">~/.oh-my-zsh/custom</span><span class="k">}</span>/plugins/zsh-autosuggestions
+</code></pre></div>    </div>
+    <p>add the plugin name into <code class="language-plaintext highlighter-rouge">~/.zshrc</code> and source the file</p>
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">plugins</span><span class="o">=(</span>... zsh-autosuggestions<span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li><a href="https://github.com/zsh-users/zsh-syntax-highlighting"><em>zsh-syntax-highlighting</em></a><br />
+This package provides syntax highlighting for the shell zsh. It enables highlighting of commands whilst they are typed at a zsh prompt into an interactive terminal. This helps in reviewing commands before running them, particularly in catching syntax errors.<br />
+You can install by:<br />
+clone this repository in oh-my-zsh’s plugins directory:
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/zsh-users/zsh-syntax-highlighting.git <span class="k">${</span><span class="nv">ZSH_CUSTOM</span><span class="k">:-</span><span class="p">~/.oh-my-zsh/custom</span><span class="k">}</span>/plugins/zsh-syntax-highlighting
+</code></pre></div>    </div>
+    <p>add the plugin name into <code class="language-plaintext highlighter-rouge">~/.zshrc</code> and source the file</p>
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">plugins</span><span class="o">=(</span>... zsh-syntax-highlighting<span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+  <li><a href="https://github.com/wting/autojump">autojump</a><br />
+autojump is a faster way to navigate your filesystem. It works by maintaining a database of the directories you use the most from the command line.
+You can install by:<br />
+install <em>autojump</em> by Homebrew
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew <span class="nb">install </span>autojump
+</code></pre></div>    </div>
+    <p>add the plugin name into <code class="language-plaintext highlighter-rouge">~/.zshrc</code> and source the file</p>
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">plugins</span><span class="o">=(</span>... autojump<span class="o">)</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p><strong>References</strong></p>
+<ul>
+  <li><a href="https://brew.sh/">https://brew.sh/</a></li>
+  <li><a href="https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github">https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github</a></li>
+  <li><a href="https://ohmyz.sh/">https://ohmyz.sh/</a></li>
+  <li><a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/macos.html">https://docs.conda.io/projects/conda/en/latest/user-guide/install/macos.html</a></li>
+</ul>]]></content><author><name></name></author><category term="tech" /><summary type="html"><![CDATA[A walk-through note on how to configure my familiar working system from a brand new macOS system with M1 chip, including Git token, Homebrew, Terminal color theme, Oh-my-zsh plugins, and conda. Compared to the previous post for an Intel chip, the difference mainly lies in the Homebrew PATH. I also use mambaforge to replace miniconda for python environment management.]]></summary></entry><entry><title type="html">Early Implementation of Attention Mechanism</title><link href="https://minhuanli.github.io/blog/2021/Attention1NMT/" rel="alternate" type="text/html" title="Early Implementation of Attention Mechanism" /><published>2021-12-27T00:00:00+00:00</published><updated>2021-12-27T00:00:00+00:00</updated><id>https://minhuanli.github.io/blog/2021/Attention1NMT</id><content type="html" xml:base="https://minhuanli.github.io/blog/2021/Attention1NMT/"><![CDATA[<p>We are witnessing the popularity and fast development of the Attention Mechanism in the deep learning community in recent years. It serves as the pivotal parts in most state-of-the-art models in NLP tasks, and continues to be a rapid evolving research topics in CV field. Besides, in recent AI-related scientific breakthroughs, like AlphaFold 2, the Attention Mechanism looks like an omnipresent component in the models. That is why we (Kevin and I) decided to start a journal club to read and discuss seminal papers about how attention was introduced and further developed. We hope this discussion could bring us more intuition about this fancy name, such that we could apply it to problems we are interested in with more confidence.</p>
+
+<p>This blog is a note of the first discussion, about the paper <a href="https://arxiv.org/abs/1409.0473"><em>Bahdanau, et al. (2014) Neural machine translation by jointly learning to align and translate</em></a><sup id="fnref:0"><a href="#fn:0" class="footnote" rel="footnote" role="doc-noteref">1</a></sup>. As an early (or first) implementation of “Attention Mechanism” in the translation task, it helps a lot, at least for me, to understand what is attention, although the attention here is a little different from that in the following Transformer model. <!--more--></p>
+
+<ol id="markdown-toc">
+  <li><a href="#translation-task-and-previous-seq2seq-model" id="markdown-toc-translation-task-and-previous-seq2seq-model"><i class="contrast">Translation Task and Previous Seq2Seq Model</i></a>    <ol>
+      <li><a href="#rnn-encoder" id="markdown-toc-rnn-encoder"><i class="contrast">RNN Encoder</i></a></li>
+      <li><a href="#rnn-decoder" id="markdown-toc-rnn-decoder"><i class="contrast">RNN Decoder</i></a></li>
+      <li><a href="#beam-search" id="markdown-toc-beam-search"><i class="contrast">Beam Search</i></a></li>
+      <li><a href="#problem-of-the-seq2seq-model" id="markdown-toc-problem-of-the-seq2seq-model"><i class="contrast">Problem of the Seq2Seq Model</i></a></li>
+    </ol>
+  </li>
+  <li><a href="#introduce-attention-to-the-model" id="markdown-toc-introduce-attention-to-the-model"><i class="contrast">Introduce Attention to the model</i></a>    <ol>
+      <li><a href="#modify-the-context-vector-c-in-decoder" id="markdown-toc-modify-the-context-vector-c-in-decoder"><i class="contrast">Modify the context vector \(c\) in Decoder</i></a></li>
+      <li><a href="#bi-directional-rnn-as-the-encoder" id="markdown-toc-bi-directional-rnn-as-the-encoder"><i class="contrast">Bi-Directional RNN as the Encoder</i></a></li>
+      <li><a href="#results" id="markdown-toc-results"><i class="contrast">Results</i></a></li>
+    </ol>
+  </li>
+  <li><a href="#discussion" id="markdown-toc-discussion"><i class="contrast">Discussion</i></a></li>
+  <li><a href="#references" id="markdown-toc-references"><i class="contrast">References</i></a></li>
+</ol>
+
+<h3 id="translation-task-and-previous-seq2seq-model"><i class="contrast">Translation Task and Previous Seq2Seq Model</i></h3>
+
+<p>People are trying to translate natural languages with machines. There are two major approaches in machine translation tasks: Traditional phrase-based translation system consists of many small sub-components that are tuned separately; Neural machine translation aims at building a single neural network that can be jointly tuned to maximize the translation performance.</p>
+
+<p>Before the publication of this attention mechanism paper, Seq2Seq model<sup id="fnref:1"><a href="#fn:1" class="footnote" rel="footnote" role="doc-noteref">2</a></sup> achieved the best results in neural translation tasks. And in fact, the attention mechanism is only a tiny but profound modification to the Seq2Seq model. So we will first review the Seq2Seq Model’s architecture and limitations, then the introduction of the “attention” would be intuitive.</p>
+
+<p>Seq2Seq Model belongs to a family of encoder-decoders in the neural machine translation approach. They typically encode a source sentence into a fixed-length vector, from which a decoder generates a translation.</p>
+
+<h4 id="rnn-encoder"><i class="contrast">RNN Encoder</i></h4>
+
+<p>Say we have the source sentence \(\mathbf{x}\) and the output sentence \(\mathbf{y}\):</p>
+
+\[\mathbf{x}=\left(x_{1}, \ldots, x_{T_{x}}\right), x_{i} \in \mathbb{R}^{K_{x}} \\
+\mathbf{y}=\left(y_{1}, \ldots, y_{T_{y}}\right), y_{i} \in \mathbb{R}^{K_{y}} \tag{1}\]
+
+<p class="bluebox">
+Each natural language sentence will first be tokenized (usually includes an ending signal), and each word or token into fixed length vectors. But apparently, different sentences could have different lengths \(T_x\) and \(T_y\)
+</p>
+
+<p>The encoder reads input sequence \(\mathbf{x}=\left(x_{1}, \ldots, x_{T_{x}}\right), x_{i}\), and pass through a RNN (Recurrent Neural Network) like:</p>
+
+\[h_{t}= \begin{cases}f\left(x_{t}, h_{t-1}\right) &amp; , \text { if } t&gt;0 \\ 0 &amp; , \text { if } t=0\end{cases} \tag{2}\]
+
+<p>where \(h_t \in \mathbb{R}^n\) is a hidden state at time \(t\) and \(f\) are non linear functions. This iterative path will output a series of hidden states:</p>
+
+\[H=\left(h_{1}, \cdots, h_{T_{x}}\right), h_{i} \in \mathbb{R}^{n}\]
+
+<p>Generally, a <strong>context vector</strong> \(c\) will be generated from the hidden states with another nonlinear function \(q\), as shown in figure 1<sup id="fnref:2"><a href="#fn:2" class="footnote" rel="footnote" role="doc-noteref">3</a></sup>:</p>
+
+\[c= q(\{h_1,\dots,h_{T_x}\}) = h_T\tag{3}\]
+
+<p>Usually they use the LSTM as the \(f\).</p>
+
+<p class="redbox">
+It is intuitive to choose \(c=h_T\) at the moment, as \(h_T\) is the only hidden state which could possibly contain all information in the source sentence. But this is not a perfect choice of course, as we all know now RNN would concentrate more on the information around the node.
+</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20211231000239.png" alt="Figure1" width="50%" />
+<figcaption align="left"><b>Fig.1 - An illustration of the RNN Encoder–Decoder in previous Seq2Seq Model. The choice to construct the context vector c, red circled, is the limitation of the model.</b></figcaption>
+</figure>
+</center>
+
+<h4 id="rnn-decoder"><i class="contrast">RNN Decoder</i></h4>
+
+<p>The decoder is often trained to predict the next word \(y_{i}\) given the context vector \(c\) and previously predicted words \(\{y_1, \dots, y_{i-1}\}\).</p>
+
+<p>Again, as this is a RNN, hidden states also exist in the decoder part, generated from the previous hidden state, previous predicted word and the context vector:</p>
+
+\[s_{i}=f\left(s_{i-1}, y_{i-1}, c\right) \tag{4}\]
+
+<p>Then the conditional probability predict of the next word will be:</p>
+
+\[p\left(y_{i} \mid y_{1}, \ldots, y_{i-1}, \mathbf{x}\right)=g\left(y_i \mid y_{i-1}, s_{i}, c\right)
+\tag{5}\]
+
+<p class="bluebox">
+During the training process, loss function is constructed to maximize the likelihood of the true next word. Once the model is trained, they usually use algorithms like beam search that approximately maximizes the conditional probability to predict the output sentences.
+</p>
+
+<h4 id="beam-search"><i class="contrast">Beam Search</i></h4>
+
+<p>This is not related to attention, but I found it an interesting and common algorithm in machine translation tasks. Once the model is trained, at each time step of the decoder, they keep the \(s\) candidates with the highest log-probability, where \(s\) is the beam-width. During the beam-search, they exclude any hypothesis that includes an unknown word. For each end-of-sequence symbol that is selected among the highest scoring candidates the beam-width is reduced by one, until the beam-width reaches zero.<sup id="fnref:3"><a href="#fn:3" class="footnote" rel="footnote" role="doc-noteref">4</a></sup></p>
+
+<h4 id="problem-of-the-seq2seq-model"><i class="contrast">Problem of the Seq2Seq Model</i></h4>
+<p>As indicated by the equation (4) and (5), a single context vector \(c\) is used in prediction for all \(s_i\) and \(y_i\). That means, the RNN encoder needs to compress all the necessary information of the source sentence into a single fixed-length vector. It is not surprising that the Seq2Seq model can hardly cope with long sentences, as shown in figure 2<sup id="fnref:3:1"><a href="#fn:3" class="footnote" rel="footnote" role="doc-noteref">4</a></sup>. Fixing this issue is the motivation of the paper.</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20220103120204.png" alt="Figure2" width="60%" />
+<figcaption align="left"><b>Fig.2 - The BLEU scores achieved by Seq2Seq Model. The performance decreases rapidly when the sentence length grows.</b></figcaption>
+</figure>
+</center>
+
+<h3 id="introduce-attention-to-the-model"><i class="contrast">Introduce Attention to the model</i></h3>
+
+<h4 id="modify-the-context-vector-c-in-decoder"><i class="contrast">Modify the context vector \(c\) in Decoder</i></h4>
+<p>As the bottleneck for the previous Seq2Seq Model is the single context vector \(c\) for all \(y_i\) and \(s_i\) prediction, it is intuitive to modify the above equation (3) into:</p>
+
+\[c_{i}=\sum_{j=1}^{T_{x}} \alpha_{i j} h_{j} \tag{6}\]
+
+<p>This is just a weighted sum of the hidden states.</p>
+
+<p class="bluebox">
+The weights \(\alpha_{ij}\) is constructed as following:
+$$
+\alpha_{i j}=\frac{\exp \left(e_{i j}\right)}{\sum_{k=1}^{T_{x}} \exp \left(e_{i k}\right)} \\[2ex]
+e_{i j}=v_{a}^{\top} \tanh \left(W_{a} s_{i-1}+U_{a} h_{j}\right)
+$$
+where \(v_{a} \in \mathbb{R}^{n^{\prime}}, W_{a} \in \mathbb{R}^{n^{\prime} \times n}\) and \(U_{a} \in \mathbb{R}^{n^{\prime} \times 2 n}\) are trainable weight matrices. 
+
+Here the \(s_{i-1}\) and \(h_j\), as defined previously, are (i-1)-th and j-th elements in the hidden states of input and output.<br />
+
+So the weights \(\alpha_{ij}\) can be understood as an alignment between the input j and output i. That's why the title of the paper is "jointly learning to align and translate".
+
+</p>
+
+<p>And accordingly change the equation (4) and (5) into:</p>
+
+\[\begin{aligned}
+s_{i}&amp;=f\left(s_{i-1}, y_{i-1}, c_{i}\right) \\
+p\left(y_{i} \mid y_{1}, \ldots, y_{i-1}, \mathbf{x}\right)&amp;=g\left(y_{i-1}, s_{i}, c_{i}\right)
+\end{aligned} \tag{7}\]
+
+<p>The above modification means, <strong>now for each output \(y_i\), we have a separate context vector \(c_i\)</strong>, which comes from a weighted sum of all hidden states.</p>
+
+<p>In this paper, they call this weighted sum (6) as “attention”, which is not surprising as different output \(y_i\) would probably focus on different parts of the inputs controlled by the trainable weights:</p>
+
+<blockquote>
+  <p>The probability \(\alpha_{i j}\), or its associated energy \(e_{i j}\), reflects the importance of the annotation \(h_{j}\) with respect to the previous hidden state \(s_{i-1}\) in deciding the next state \(s_{i}\) and generating \(y_{i}\). Intuitively, this implements a <strong>mechanism of attention</strong> in the decoder. The decoder decides parts of the source sentence to pay <strong>attention</strong> to. By letting the decoder have an <strong>attention mechanism</strong>, we relieve the encoder from the burden of having to encode all information in the source sentence into a fixed-length vector. With this new approach the information can be spread throughout the sequence of annotations, which can be selectively retrieved by the decoder accordingly.</p>
+</blockquote>
+
+<h4 id="bi-directional-rnn-as-the-encoder"><i class="contrast">Bi-Directional RNN as the Encoder</i></h4>
+
+<p>Another trick serves as a complement to the above attention mechanism: Bi-Directional RNN. Think about the motivation of equation (6), we hope that the \(\alpha_{ij}\) could be more like a correlation between input \(j\) and output \(i\). But in the previous RNN Encoder, as shown in equation (2) and Figure 1, different hidden states \(h_j\) <strong>does not</strong> contain same amount of information. For example, \(h_j\) only contains information from input \(x_1\) to \(x_{j-1}\). They are not fair bases to define a weighted sum, as of course the last \(h_{Tx}\) contains the most knowledge. The desideratum here is that, each \(h_j\) has similar amount of information, and with a focus on the input \(x_j\).</p>
+
+<p>Bi-Directional RNN is a natural way to make this happen. The math now works as the following with a forward and backward RNN:</p>
+
+\[\vec{h}_{t}= \begin{cases}f\left(x_{t}, \vec{h}_{t-1}\right) &amp; , \text { if } t&gt;0 \\ 0 &amp; , \text { if } t=0\end{cases} \quad \quad \overleftarrow{h}_{t}= \begin{cases}f\left(x_{t}, \overleftarrow{h}_{t+1}\right) &amp; , \text { if } t&lt;T_{x} \\ 0 &amp; , \text { if } t=T_{x}\end{cases} \tag{8}\]
+
+<p>And they concatenate the above two to construct the hidden state:</p>
+
+\[h_{j}=\left[\vec{h}_{j}^{\top} ; \overleftarrow{h}_{j}^{\top}\right] \tag{9}\]
+
+<p>Now, theoretically, \(h_j\) should include information about from \(x_1\) to \(x_{Tx}\) with a focus on the \(x_j\), which is what we want. The overall modified Seq2Seq model is shown in Figure 3<sup id="fnref:0:1"><a href="#fn:0" class="footnote" rel="footnote" role="doc-noteref">1</a></sup>:</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20220104113340.png" alt="Figure3" width="40%" />
+<figcaption align="left"><b>Fig.3 - The graphical illustration of the proposed model with attention mechanism and Bi-Directional RNN Encoder.</b></figcaption>
+</figure>
+</center>
+
+<h4 id="results"><i class="contrast">Results</i></h4>
+
+<p>With the above two modifications, the new model works much better on longer sentences, as shown in Figure 4<sup id="fnref:0:2"><a href="#fn:0" class="footnote" rel="footnote" role="doc-noteref">1</a></sup></p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20220104114020.png" alt="Figure4" width="60%" />
+<figcaption align="left"><b>Fig.4 - The BLEU scores of the generated translations on the test set with respect to the lengths of the sentences. The new model is more robust to the length of the sentences.</b></figcaption>
+</figure>
+</center>
+
+<p>Besides the visualizaion of weights \(\alpha_{ij}\) in the attention equation (6) makes the model more interpretable, as the alignment between the input and output appears exactly as it should be in Figure 5<sup id="fnref:0:3"><a href="#fn:0" class="footnote" rel="footnote" role="doc-noteref">1</a></sup>:</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20220104114401.png" alt="Figure1" width="50%" />
+<figcaption align="left"><b>Fig.5 - Alignments found by RNNsearch-50. The x-axis and y-axis of each plot correspond to the words in the source sentence (English) and the generated translation (French), respectively. The non-diagonal strong weight in red circle correctly align "zone" with "area". </b></figcaption>
+</figure>
+</center>
+
+<h3 id="discussion"><i class="contrast">Discussion</i></h3>
+
+<p>Given the above discussion, let’s come back to the question: What is attention? Why it is powerful? Clearly for me, from the equation (6), attention is more like <strong>explicily</strong> writing out and optimize the correlation weights you are interested in. Here we want the correlation (alignment) between the input and output words, so the format like equation (6) did the job. Theoretically, DNN itself could capture the correlation with its abundant weights, but explicitly writing out and optimizing the specific correlations you are interested in seems important. From my point of view, the reason why attention is useful is similar to that why CNN works better on CV tasks than naive MLPs.</p>
+
+<p>In this paper, we write out the correlation between the input and output, but we are still using RNN to capture the correlation between sequential elements in input. It is very natural to move one step further: <strong>what if we replace the RNN with the “attention” idea?</strong> Just explicitly write out the correlation between order elements and optimize them? Could it work better than RNN? This is the primary motivation of “self-attention” and the transformer model. We will cover this topic in a future blog.</p>
+
+<h3 id="references"><i class="contrast">References</i></h3>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:0">
+      <p>Bahdanau, Dzmitry, Kyunghyun Cho, and Yoshua Bengio. “Neural machine translation by jointly learning to align and translate.” arXiv preprint arXiv:1409.0473 (2014). <a href="#fnref:0" class="reversefootnote" role="doc-backlink">&#8617;</a> <a href="#fnref:0:1" class="reversefootnote" role="doc-backlink">&#8617;<sup>2</sup></a> <a href="#fnref:0:2" class="reversefootnote" role="doc-backlink">&#8617;<sup>3</sup></a> <a href="#fnref:0:3" class="reversefootnote" role="doc-backlink">&#8617;<sup>4</sup></a></p>
+    </li>
+    <li id="fn:1">
+      <p>Sutskever, Ilya, Oriol Vinyals, and Quoc V. Le. “Sequence to sequence learning with neural networks.” Advances in neural information processing systems. 2014. <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:2">
+      <p>Cho, Kyunghyun, et al. “Learning phrase representations using RNN encoder-decoder for statistical machine translation.” arXiv preprint arXiv:1406.1078 (2014). <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:3">
+      <p>Cho, Kyunghyun, et al. “On the properties of neural machine translation: Encoder-decoder approaches.” arXiv preprint arXiv:1409.1259 (2014). <a href="#fnref:3" class="reversefootnote" role="doc-backlink">&#8617;</a> <a href="#fnref:3:1" class="reversefootnote" role="doc-backlink">&#8617;<sup>2</sup></a></p>
+    </li>
+  </ol>
+</div>]]></content><author><name></name></author><category term="AI&amp;Physics" /><category term="Attention" /><summary type="html"><![CDATA[We are witnessing the popularity and fast development of the Attention Mechanism in the deep learning community in recent years. It serves as the pivotal parts in most state-of-the-art models in NLP tasks, and continues to be a rapid evolving research topics in CV field. Besides, in recent AI-related scientific breakthroughs, like AlphaFold 2, the Attention Mechanism looks like an omnipresent component in the models. That is why we (Kevin and I) decided to start a journal club to read and discuss seminal papers about how attention was introduced and further developed. We hope this discussion could bring us more intuition about this fancy name, such that we could apply it to problems we are interested in with more confidence.]]></summary></entry><entry><title type="html">Spectral Bias and Positional Encoding</title><link href="https://minhuanli.github.io/blog/2021/SpectralBiasPostionalEncoding/" rel="alternate" type="text/html" title="Spectral Bias and Positional Encoding" /><published>2021-07-26T00:00:00+00:00</published><updated>2021-07-26T00:00:00+00:00</updated><id>https://minhuanli.github.io/blog/2021/SpectralBiasPostionalEncoding</id><content type="html" xml:base="https://minhuanli.github.io/blog/2021/SpectralBiasPostionalEncoding/"><![CDATA[<p>Recent days (maybe it is already out of date when you read this blog), we see a “renaissance” of classic multilayer perceptron (MLP) models in machine learning field. The logic behind this trend is heuristic for researches to see that, by understanding how a complex black box works, we can naturally add some reasonably modifications to make it better, instead of shotting with blind eyes. The majority of the blog is based on paper <a href="https://arxiv.org/abs/2006.10739"><em>Tancik, Matthew, et al. (2020) Fourier features let networks learn high frequency functions in low dimensional domains</em></a>.</p>
+
+<p>The basic take-away is, a standard MLP model fails to learn high frequencies both in theory and in practice, which is called Spectral Bias. Based on this findings, with a simple Fourier feature mapping (Positional Encoding), the performance of MLPs can be greatly improved, especially for low-dimensional regression tasks, like your inputs are atom coordinates. <!--more--></p>
+
+<ul id="markdown-toc">
+  <li><a href="#neural-tangent-kernel" id="markdown-toc-neural-tangent-kernel"><i class="contrast">Neural Tangent Kernel</i></a></li>
+  <li><a href="#spectral-bias-during-training" id="markdown-toc-spectral-bias-during-training"><i class="contrast">Spectral Bias during training</i></a></li>
+  <li><a href="#fourier-feature-and-encoding-methods" id="markdown-toc-fourier-feature-and-encoding-methods"><i class="contrast">Fourier Feature and Encoding methods</i></a></li>
+  <li><a href="#real-applications" id="markdown-toc-real-applications"><i class="contrast">Real Applications</i></a></li>
+</ul>
+
+<h3 id="neural-tangent-kernel"><i class="contrast">Neural Tangent Kernel</i></h3>
+
+<p><i class="contrast">Kernel Regression</i></p>
+
+<p>Kernel regression is a classic nonlinear regression algorithm. Given a training dataset \((\mathbf{X}, \mathbf{y})=\left\{\left(\mathbf{x}_{i}, y_{i}\right)\right\}_{i=1}^{n}\), where \(\mathbf{x}_{i}\) are input points and \(y_{i}=f\left(\mathbf{x}_{i}\right)\) are the corresponding scalar output labels, kernel regression constructs an estimate \(\hat{f}\) of the underlying function at any point \(\mathbf{x}\) as:</p>
+
+\[\hat{f}(\mathbf{x})=\sum_{i=1}^{n}\left(\mathbf{K}^{-1} \mathbf{y}\right)_{i} k\left(\mathbf{x}_{i}, \mathbf{x}\right)\tag{1}\]
+
+<p>where \(\mathbf{K}\) is an \(n \times n\) kernel (Gram) matrix with entries \(\mathbf{K}_{i j}=k\left(\mathbf{x}_{i}, \mathbf{x}_{j}\right)\) and \(k\) is a <em>symmetric positive semidefinite (PSD)</em> kernel function which represents the “similarity” between two input vectors.</p>
+
+<p class="bluebox">
+Intuitively, the kernel regression estimate at any point \(\mathbf{x}\) can be thought of as a weighted sum of training labels \(y_{i}\) using the similarity between the corresponding \(\mathbf{x}_{i}\) and \(\mathbf{x}\).
+</p>
+
+<p><i class="contrast">Approximate deep networks with kernel regression</i></p>
+
+<p>Let \(f\) be a fully-connected nonlinear deep network with weights \(\theta\) initialized from a Gaussian distribution \(\mathcal{N}\). Theory proposed in <a href="https://papers.nips.cc/paper/2018/hash/5a4be1fa34e62bb8a6ec6b91d2462f5a-Abstract.html">Ref1</a> shows that when the width of the layers in \(f\) tends to infinity and the learning rate for SGD tends to zero, the function \(f(\mathbf{x};\theta)\) converges over the course of training to the kernel regression solution using the <em>neural tangent kernel</em> (NTK), defeined as:</p>
+
+\[k_{\mathrm{NTK}}\left(\mathbf{x}_{i}, \mathbf{x}_{j}\right)=\mathbb{E}_{\theta \sim \mathcal{N}}\left\langle\frac{\partial f\left(\mathbf{x}_{i} ; \theta\right)}{\partial \theta}, \frac{\partial f\left(\mathbf{x}_{j} ; \theta\right)}{\partial \theta}\right\rangle \tag{2}\]
+
+<p class="bluebox">
+As the width becomes large, the neural network can be effectively replaced by its first-order Taylor expansion with
+respect to its parameters at initialization. For this linear model, the dynamics of gradient descent
+become analytically tractable. 
+</p>
+
+<p>An NTK linear system model can be used to approximate the dynamics of a deep network during training. Consider a network trained with L2 loss and a learin rate \(\eta\), where the network’s weights are initialized such taht the output of the network at initialization is close to zero. Under asymptotic conditions stated in <a href="https://arxiv.org/abs/1902.06720">Ref2</a>, the output for any data \(\mathbf{X}_{\text{test}}\) after \(t\) training iterations can be approximated as:</p>
+
+\[\hat{\mathbf{y}}^{(t)} \approx \mathbf{K}_{\text {test }} \mathbf{K}^{-1}\left(\mathbf{I}-e^{-\eta \mathbf{K} t}\right) \mathbf{y} \tag{3}\]
+
+<p>where \(\hat{\mathbf{y}}^{(t)}=f\left(\mathbf{X}_{\text {test }} ; \theta\right)\) are the network’s predictions on input points \(\mathbf{X}_{\text {test }}\) at training iteration \(t\), \(\mathbf{K}\) is the NTK matrix between all pairs of training points in \(\mathbf{X}\), and \(\mathbf{K}_{\text {test }}\) is the NTK matrix between all points in \(\mathbf{X}_{\text {test }}\) and all points in the training dataset \(\mathbf{X}\).</p>
+
+<h3 id="spectral-bias-during-training"><i class="contrast">Spectral Bias during training</i></h3>
+
+<p>Let us consider the training error \(\hat{\mathbf{y}}_{\text {train }}^{(t)}-\mathbf{y}\), where \(\hat{\mathbf{y}}_{\text {train }}^{(t)}\) are the network’s predictions on the training dataset at iteration \(t\). Since the NTK matrix \(\mathbf{K}\) must be PSD, we can take its eigendecomposition \(\mathbf{K}=\mathbf{Q} \mathbf{\Lambda} \mathbf{Q}^{\mathrm{T}}\), where \(\mathbf{Q}\) is orthogonal and \(\mathbf{\Lambda}\) is a diagonal matrix whose entries are the eigenvalues \(\lambda_{i} \geq 0\) of \(\mathbf{K}\). Then, take \(e^{-\eta \mathbf{K} t}=\mathbf{Q} e^{-\eta \Lambda t} \mathbf{Q}^{\mathrm{T}}\) into equation 3:</p>
+
+\[\mathbf{Q}^{\mathrm{T}}\left(\hat{\mathbf{y}}_{\text {train }}^{(t)}-\mathbf{y}\right) \approx \mathbf{Q}^{\mathrm{T}}\left(\left(\mathbf{I}-e^{-\eta \mathbf{K} t}\right) \mathbf{y}-\mathbf{y}\right)=-e^{-\eta \boldsymbol{\Lambda} t} \mathbf{Q}^{\mathrm{T}} \mathbf{y} \tag{4}\]
+
+<p>This means that if we consider training convergence in the eigenbasis of the NTK, the \(i^{\text {th }}\) component of the absolute error \(\left \vert \mathbf{Q}^{\mathrm{T}}\left(\hat{\mathbf{y}}_{\text {train }}^{(t)}-\mathbf{y}\right)\right \vert _{i}\) will <em>decay approximately exponentially</em> at the rate \(\eta \lambda_{i}\).</p>
+
+<p class="bluebox">
+In other words, components of the target function that correspond to kernel eigenvectors with larger eigenvalues (larger wavelength, lower frequency) will be learned faster.
+</p>
+
+<p>For a conventional MLP, the eigenvalues of the NTK decay rapidly (very low bandwidth). This results in extremely slow convergence to the high frequency components of the target function, to the point where standard MLPs are effectively unable to learn these components, as shown in the following figure (from <a href="https://arxiv.org/abs/2006.10739">Main Ref</a> Figure 1).</p>
+
+<center><img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20210726194920.png" alt="Figure1" width="90%" /></center>
+
+<h3 id="fourier-feature-and-encoding-methods"><i class="contrast">Fourier Feature and Encoding methods</i></h3>
+
+<p>The solution to the above spectral bias issue is mapping the input points into a fourier feature space with tunable bandwidth, before passing to the MLP. Say we have input points \(\mathbf{v} \in [0,1)^d\), we can map them to a higher dimensional fourier feature space with function \(\gamma\):</p>
+
+\[\gamma(\mathbf{v})=\left[a_{1} \cos \left(2 \pi \mathbf{b}_{1}^{\mathrm{T}} \mathbf{v}\right), a_{1} \sin \left(2 \pi \mathbf{b}_{1}^{\mathrm{T}} \mathbf{v}\right), \ldots, a_{m} \cos \left(2 \pi \mathbf{b}_{m}^{\mathrm{T}} \mathbf{v}\right), a_{m} \sin \left(2 \pi \mathbf{b}_{m}^{\mathrm{T}} \mathbf{v}\right)\right]^{\mathrm{T}} \tag{5}\]
+
+<p>where \(\mathbf{b}_j\) are the Fourier basis frequencies, and \(a_j\) are the Fourier series coefficients. Then the MLP becomes \(f(\gamma(\mathbf{v});\theta)\).</p>
+
+<p class="bluebox">
+Of course the number of terms in the Fourier feature, or the number of non-zero \(a_j\) determines the bandwidth.
+</p>
+
+<p><i class="contrast">Effect of Fourier Features in 1D toy system</i></p>
+
+<p>To visualize how the Fourier feature affect the model performance, we first look at a 1D toy system. Say input \(v\) is a scalar, we can then set \(b_j=j\) (as a full Fourier basis in 1D) and \(a_j = 1/j^p\) for \(j=1,\dots,n/2\) in equation 5. Apparently the adjustable parameter \(p\) determined the bandwidth of the Fourier Feature.</p>
+
+<p class="bluebox">
+Smaller \(p\) means more terms in equation (5) has non-negligible coefficients (wider bandwidth), larger \(p\) means narrower bandwidth. Specially, \(p=\infty\) means the mapping \(\gamma(v) = [\cos 2\pi v, \sin 2\pi v]^T\).
+</p>
+
+<p>The experiments in this 1D system shows that (as in the below figure, from <a href="https://arxiv.org/abs/2006.10739">Main Ref</a> Figure 3): <strong>Choosing \(p\) is a tradeoff between expressiveness and overfitting</strong>, a lower \(p\) will include more high frequency features but will also give rise to overfitting. Here \(p=1\) is the optimal choice (smallest test loss).</p>
+
+<center><img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20210726204813.png" alt="Figure 2" width="90%" /></center>
+
+<p><i class="contrast">Generalized Positional Encoding</i></p>
+
+<p>For higher dimensional inputs, the Fourier Feature mapping can be approached by \(\gamma(\mathbf{v})=\left[\ldots, \cos \left(2 \pi \sigma^{j / m} \mathbf{v}\right), \sin \left(2 \pi \sigma^{j / m} \mathbf{v}\right), \ldots\right]^{\mathrm{T}}\), for \(j = 0, \dots, m-1\). Use log-linear spaced frequencies for each dimension. And the scale \(\sigma\) is chosen by hyperparameter sweep.</p>
+
+<p class="bluebox">
+Note that this mapping is deterministic and only contains on-axis frequencies, making it naturally biased towards data that has more frequency content along the axes.
+</p>
+
+<p class="bluebox">
+A similar mapping is used in the popular Transformer architecture, where it is also referred to as a positional encoding. However, Transformers use it for a different goal of providing the discrete positions of tokens in a sequence as input to an architecture that does not contain any notion of order. In contrast, we use these functions to map continuous input coordinates into a higher dimensional space to enable our MLP to more easily approximate a higher frequency function.
+</p>
+
+<p><i class="contrast">Gaussian Encoding</i></p>
+
+<p>Another, and better, mapping method for higher dimensional inputs is Gaussian Encoding: \(\gamma(\mathbf{v})=[\cos (2 \pi \mathbf{B} \mathbf{v}), \sin (2 \pi \mathbf{B} \mathbf{v})]^{\mathrm{T}}\), where each entry in \(\mathbf{B}\ in \mathbb{R}^{m \times d}\) is sampled from \(\mathcal{N}(0,\sigma^2)\). The scale \(\sigma\) is chosen by hyperparameter sweep, again a tradeoff like the \(p\) above, see the figure below (From from <a href="https://arxiv.org/abs/2006.10739">Main Ref</a> Figure 10).</p>
+
+<center><img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/20210726210320.png" alt="Figure 4" width="90%" /></center>
+
+<h3 id="real-applications"><i class="contrast">Real Applications</i></h3>
+
+<p>Here are some real application projects showing the power of positional encodings:</p>
+
+<ol>
+  <li>
+    <p><a href="https://arxiv.org/abs/2003.08934">NeRF</a>, novel view synthesis from 2D images.</p>
+  </li>
+  <li>
+    <p><a href="https://www.nature.com/articles/s41592-020-01049-4">CryoDRGN</a>, reconstruction of heterogeneous protein structures from cryo-electron micrographs.</p>
+  </li>
+</ol>]]></content><author><name></name></author><category term="AI&amp;Physics" /><summary type="html"><![CDATA[Recent days (maybe it is already out of date when you read this blog), we see a “renaissance” of classic multilayer perceptron (MLP) models in machine learning field. The logic behind this trend is heuristic for researches to see that, by understanding how a complex black box works, we can naturally add some reasonably modifications to make it better, instead of shotting with blind eyes. The majority of the blog is based on paper Tancik, Matthew, et al. (2020) Fourier features let networks learn high frequency functions in low dimensional domains.]]></summary></entry><entry><title type="html">Bayesian Inference with Probabilisitc Pupulation Codes</title><link href="https://minhuanli.github.io/blog/2021/ProbablisticPopulationCodes/" rel="alternate" type="text/html" title="Bayesian Inference with Probabilisitc Pupulation Codes" /><published>2021-04-23T00:00:00+00:00</published><updated>2021-04-23T00:00:00+00:00</updated><id>https://minhuanli.github.io/blog/2021/ProbablisticPopulationCodes</id><content type="html" xml:base="https://minhuanli.github.io/blog/2021/ProbablisticPopulationCodes/"><![CDATA[<p>This is a summary about paper <a href="https://www.nature.com/articles/nn1790"><em>Ma, Wei Ji, et al. (2006) Bayesian inference with probabilistic population codes. Nature neuroscience</em></a> and <a href="https://www.annualreviews.org/doi/abs/10.1146/annurev-neuro-071013-014017?casa_token=sQF4rgWvNSIAAAAA:6UDQKWnO4qCGX-HT2zcE-mfnZulYEp_c9S9tE3pobG2w3VRB3-4lgMD445mbKDIHeFcRie_YTjdZdA"><em>Ma, Wei Ji, et al. (2014) Neural Coding of Uncertainty and Probability. Annual Review of Neuroscience.</em></a> The authors presented a model, with some physiological evidence, about neural realization of bayesian probabilitic computation in human brains: probabilistic population codes. This report borrows a lot from Yafah’s presentation.<!--more--></p>
+
+<p>So what does it mean by bayesian inference in Human brain? For example, visual signals are degraded in the dark, other individuals’ internal states are not directly accessible, and the amount of food available in food sources may vary depending on many unknown factors. So generally speaking, when making decisions, humans have to take into account various information and uncertainty to make guesses and adjust confidences. This can be described formally through Bayesian Inference, that is, given some event \(s\) and evidence \(r\):</p>
+
+\[p(s | \mathbf{r}) \propto p(\mathbf{r} | s) p(s)\]
+
+<p>It turns out humans perform such Bayesian Inference correctly (successfully get the optimal way) and optimally perform at certain tasks such as integrating visual and haptic feedback to estimate height. But this observation seems contradictory to the neural variablility from the experiments: Neurons have highly variable responses: the behavior of neurons changes dramatically from trial to trial in tests; This unpredictability would seem to lend itself badly to implementing near optimal bayesian inference, which would intuitively require stable and deterministic behavior. This paper attempted to resolve that paradox and show that actually there are natrual and elegant ways to implement and view bayesian inference with neurons.</p>
+
+<p>The first idea is: <strong>distribution instead of values</strong>, which means the activity of populations of neurons in encoding a probability distributions instead of values of different variables.  Such ways of using populations of neurons allows us to use the variability of individual neurons to our advantage. They called it Probabilisitc Population Codes(PPC). As shown in the following picture, the response of a population of neurons to a single stimuli can encode a full distribution:</p>
+
+<center><img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/image-20210402131842390.png" alt="RGM" width="80%" /></center>
+
+<p>Such reformation also provides a possibility to interprete with Bayes theorem. So how can we apply such framework in Bayesian Inference?</p>
+
+<p>The authors adopted the idea of “Cue Combination”: In a cue combination task, one’s goal is to take as input two cues and use this to make an inference about a stimulus. For instance, one study cited by the paper did this with visual and haptic feedback for height. It turns out humans can perform nearly optimally at this. Theoretically, Given observations of \(c_{1}\) and \(c_{2},\) and under the assumption that these quantities are independent given \(s\), the posterior over \(s\) is obtained via Bayes’ rule, \(p(s \vert c_{1}, c_{2}) \propto p(c_{1} \vert s) p(c_{2} \vert s)p(s)\).</p>
+
+<p>When the prior is flat and the likelihood functions, \(p(c_{1} \vert s)\) and \(p(c_{2} \vert s)\), are Gaussian with respect to \(s\) with means \(\mu_{1}\) and \(\mu_{2}\) and variances \(\sigma_{1}^{2}\) and \(\sigma_{2}^{2}\), respectively, the mean and variance of the posterior, \(\mu_{3}\) and \(\sigma_{3}^{2},\) are given by the following equations:</p>
+
+\[\mu_{3}=\frac{\sigma_{2}^{2}}{\sigma_{1}^{2}+\sigma_{2}^{2}} \mu_{1}+\frac{\sigma_{1}^{2}}{\sigma_{1}^{2}+\sigma_{2}^{2}} \mu_{2} \\[2ex]
+\frac{1}{\sigma_{3}^{2}}=\frac{1}{\sigma_{1}^{2}}+\frac{1}{\sigma_{2}^{2}}\]
+
+<p>The important result is: when the prior is flat \((p(s)=\) constant), <strong>taking the sum of the two population codes, \(\mathbf{r}_{1}\) and \(\mathbf{r}_{2}\), is equivalent to optimal Bayesian inference</strong>. By taking the sum, we mean that we construct a third population, \(\mathbf{r}_{3}=\mathbf{r}_{1}+\mathbf{r}_{2},\) which is the sum of \(\mathbf{r}_{1}\) and \(\mathbf{r}_{2}\) on a neuronby-neuron basis: \(r_{3 i}=r_{1 i}+r_{2 i} .\) The authors also  extended this idea to more generalized exponential family of distributions other than just Guassian. A general take-way is that:</p>
+
+<blockquote>
+  <p><strong>The linear combination of PPC is how human brains do Beayesian inference</strong></p>
+</blockquote>]]></content><author><name></name></author><category term="BiologicalComplexity" /><summary type="html"><![CDATA[This is a summary about paper Ma, Wei Ji, et al. (2006) Bayesian inference with probabilistic population codes. Nature neuroscience and Ma, Wei Ji, et al. (2014) Neural Coding of Uncertainty and Probability. Annual Review of Neuroscience. The authors presented a model, with some physiological evidence, about neural realization of bayesian probabilitic computation in human brains: probabilistic population codes. This report borrows a lot from Yafah’s presentation.]]></summary></entry><entry><title type="html">Temporal Difference Methods in Machine Learning</title><link href="https://minhuanli.github.io/blog/2021/TemporalDifference/" rel="alternate" type="text/html" title="Temporal Difference Methods in Machine Learning" /><published>2021-04-20T00:00:00+00:00</published><updated>2021-04-20T00:00:00+00:00</updated><id>https://minhuanli.github.io/blog/2021/TemporalDifference</id><content type="html" xml:base="https://minhuanli.github.io/blog/2021/TemporalDifference/"><![CDATA[<p>This is a summary about paper <a href="https://link.springer.com/article/10.1023/A:1022633531479"><em>Sutton, et al. 1988. Learning to predict by the methods of temporal differences</em></a>. This paper provided a complete discussion about the temporal difference methods in the learning to predict task, which takes observations and try to predict outcomes from those observations like classification problem. This summary borrowed a lot of ideas from Tasha’s presentation and centers around the comparision with the supervised learning method.<!--more--></p>
+
+<p>First is a clarification about what is temporal difference methods and what is the difference between temporal difference and supervised learning. One main difference, and also the benefit of temporal difference, is that, supervised learning can not update the prediction at each time step until the very end when it knows the actual outcome, while temporal difference can sort of update the prediction once it reaches the next step. So the temporal difference method is beneficial for the amount of computation and the storage space. Note that besides the differences we mentions above, we can show the results of temporal difference methods and supervised learning methods are generally the same with specific constuctions.</p>
+
+<p>Here are some necessary notations and formalizations. Say we have multi-step prediction problems with observation-outcome sequence \(x_{1}, x_{2}, \ldots, x_{m}, z\) where \(x_{t}\) is a vector of observations available at time \(t\) and scalar \(z\) is the outcome. The learner produces a sequence of predictions estimating \(Z\): \(P_{1}, P_{2}, \ldots, P_{m}\) where \(P_{t} \stackrel{\text { def }}{=} P\left(x_{t}, w\right)\) and \(w\) is a vector of modifiable weights. The goal of learning is to correctly update \(w\) by determining \(\Delta w_{t},\) an increment to \(w\) from each observation:</p>
+
+\[w \leftarrow w+\sum_{t=1}^{m} \Delta w_{t} \tag{1}\]
+
+<p>Generally speaking, in supervised learning, the update will be :</p>
+
+\[\Delta w_{t}=\alpha\left(z-P_{t}\right) \nabla_{w} P_{t} \tag{2}\]
+
+<p>where \(\nabla_{w} P_{t}\) is the vector of partial derivatives of \(P_{t}\) with respect to each component of \(w\).</p>
+
+<p>And if we concentrate on a special case where \(P_t\) is a linear function of \(x_t\) and \(w\) (Widrow-Hoff procedure):</p>
+
+\[\Delta w_{t}=\alpha\left(z-w^{T} x_{t}\right) x_{t}\]
+
+<p>Note here, for <strong>the supervised learning method, all updates update on z</strong>.</p>
+
+<p>But the results are the same for the two methods; The key is to represent the error \(z-P_t\) as a sum of changes in predictions:</p>
+
+\[z-P_{t}=\sum_{k=t}^{m}\left(P_{k+1}-P_{k}\right) \quad \text { where } \quad P_{m+1} \stackrel{\text { def }}{=} z\]
+
+<p>Using this, equations (1) and (2) can be combined as:</p>
+
+\[\begin{aligned} w \leftarrow w+\sum_{t=1}^{m} \alpha\left(z-P_{t}\right) \nabla_{w} P_{t} &amp;=w+\sum_{t=1}^{m} \alpha \sum_{k=t}^{m}\left(P_{k+1}-P_{k}\right) \nabla_{w} P_{t} \\ &amp;=w+\sum_{k=1}^{m} \alpha \sum_{t=1}^{k}\left(P_{k+1}-P_{k}\right) \nabla_{w} P_{t} \\ &amp;=w+\sum_{t=1}^{m} \alpha\left(P_{t+1}-P_{t}\right) \sum_{k=1}^{t} \nabla_{w} P_{k} . \end{aligned}\]
+
+<p>So:</p>
+
+\[\Delta w_{t}=\alpha\left(P_{t+1}-P_{t}\right) \sum_{k=1}^{t} \nabla_{w} P_{k} \tag{3}\]
+
+<p>we <strong>have an update independent of z.</strong></p>
+
+<p>The hallmark of temporal-difference methods is their sensitivity to changes in successive predictions rather than to overall error between predictions and the final outcome, so we modified the above equation (3) and get the following:</p>
+
+\[\Delta w_{t}=\alpha\left(P_{t+1}-P_{t}\right) \sum_{k=1}^{t} \lambda^{t-k} \nabla_{w} P_{k}\]
+
+<p>This is called TD\((\lambda)\) model. If we set \(\lambda =1\) then the temporal diffenrce method is just the same as supervised learning.</p>]]></content><author><name></name></author><category term="BiologicalComplexity" /><summary type="html"><![CDATA[This is a summary about paper Sutton, et al. 1988. Learning to predict by the methods of temporal differences. This paper provided a complete discussion about the temporal difference methods in the learning to predict task, which takes observations and try to predict outcomes from those observations like classification problem. This summary borrowed a lot of ideas from Tasha’s presentation and centers around the comparision with the supervised learning method.]]></summary></entry><entry><title type="html">Stability of Memory Allocation with Neuroidal Model</title><link href="https://minhuanli.github.io/blog/2021/StabilityRGM/" rel="alternate" type="text/html" title="Stability of Memory Allocation with Neuroidal Model" /><published>2021-04-11T00:00:00+00:00</published><updated>2021-04-11T00:00:00+00:00</updated><id>https://minhuanli.github.io/blog/2021/StabilityRGM</id><content type="html" xml:base="https://minhuanli.github.io/blog/2021/StabilityRGM/"><![CDATA[<p>This is a summary about paper <a href="https://ieeexplore.ieee.org/abstract/document/4640826?casa_token=G6Ufr0TVch8AAAAA:oZU2xZSmTuraOtdRhq8hs9iuJS4eBmANFQY-MEJt0cET3TuG5Rh6g4Tqt23LJZXFEZiV15SDsw"><em>Jacob Beal and Thomas F. Knight, Jr. (2008) Analyzing Composability in a Sparse Encoding Model of Memorization and Association</em></a>, which is again a follow-up work of paper <a href="https://ieeexplore.ieee.org/abstract/document/6788545"><em>L. Valiant (2005) Memorization and association on a realistic neural model</em></a> The two papers talked about a random graph model to understand the basic cognitive tasks like memorization and association in brains. <!--more--></p>
+
+<p>The question is complicated given following experimental facts:</p>
+
+<ol>
+  <li>Neurons appear to be sparsely connected. There are \(1.6\times 10^7\) neurons in mouse cortex, but only around 7800 connections. Human cortex has around \(10^{10}\) neurons but only 24000-80000 connections.</li>
+  <li>Most synapses (connections) are quite weak, contributing 0.003 to 0.2 of the firing threshold.</li>
+</ol>
+
+<p>In his 2005 paper mentioned above (see my other <a href="https://minhuanli.github.io/2021/04/10/NeuroidalModel/">blog</a>), Prof. Valiant gave a random graph model consistent with the above parameters to explain memorization and association. As shown in the following figure: Vertices represents neurons and the sparse directed edges are synapses, where each edge has a weight representing its synaptic strength and each node fires when the incoming edges from firing nodes sum to a high enough weight.</p>
+
+<center><img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/image-20210311234642497.png" alt="RGM" width="50%" /></center>
+
+<p>Here are several assumptions:</p>
+
+<ol>
+  <li>A sparsely firing neuron pattern represents one item</li>
+  <li>When large percentage of the pattern’s neurons fire, say it is recognition.</li>
+</ol>
+
+<p>Memorization and association are abstracted as JOIN and LINK functions separately:</p>
+
+<ol>
+  <li>Memorization is the joining of two items, A and B, to create a new item C, such that C is recognized if and only if both and A and B are recognized. In one-step JOIN, A and B are triggered to fire simultaneously and C is the nodes they stimulate to fire. In Two-step JOIN, using twice the edge weight, first triggers A, moving nodes that would fire to an intermediate state, then triggers B to fire and C is the intermediate-state nodes that fire.</li>
+  <li>Association is the linking of two items, D and E, such that whenever D is recognized, E is recognized also. D is triggered to fire and the firing is propagated for two steps. In the first step, all edges have weight \(1/k_a\), and in the second step all edges initially have weight 0. <strong>LINK works by raising the second-step weight to \(1/k_a\) on edges that arrive at E</strong> from firing nodes.</li>
+</ol>
+
+<p>The above model is good that they don’t want to accomplish Join and Link by modifying the graph model more than needed. But fatal weakness still exists. The author of the 2008 paper proposed a property called “composability”, which is to ensure nothing deleterious happens when you chain multiple JOIN LINK operations on top of each other. This kind of stability falls into two parts:</p>
+
+<ol>
+  <li>Size stability during repeated JOIN memorization. If we keep doing memorizations, we don’t want the new item size get too large or too small. However, it is no case with the current JOIN function, see the following figure: we see that small variations in the size of the initial items are greatly amplified in the size of the item created by the JOIN. The high sensitivity of JOIN to the size of the initial items means that chaining together even a small number of JOIN operations is unstable, and that even a few iterations leads to representations that contain either zero nodes or nearly the entire graph.</li>
+</ol>
+
+<center><img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/image-20210312000540324.png" alt="SizeStability" width="50%" /></center>
+
+<ol>
+  <li>Noise sensitivity again in JOIN function. The authors used transfer curves to determine the composability of signals: if appropriate noise margins can be chosen, then signals will be restored as they pass through circuits and noise poses no limit on composability (flat bottom, flat top); Otherwise, the circuits are sensitive to noise and signals can be expected to degrade, perhaps rapidly, as they pass through circuits. And the current JOIN function gives the bad result, as shown in the following figure, no upper noise margin can be established, so even minimal noise will result in significant signal degradation.</li>
+</ol>
+
+<center><img src="https://raw.githubusercontent.com/minhuanli/imagehost/master/img/image-20210312001112211.png" alt="NoiseSensitivity" width="50%" /></center>
+
+<p>Given the above two weaknesses, the author provided two modifications:</p>
+
+<ol>
+  <li>Add an association stage to the end of a memorization circuit. This removes the size instability problem and steepens the slope of the transfer curve.</li>
+  <li>Lower the firing thresholds km and ka slightly, shifting the transfer curve to provide an adequate noise threshold for firing items.</li>
+</ol>
+
+<p>The author call this JOIN-LINK algorithm, which is simply a composition of the one-step JOIN and LINK algorithms. The new algorithm provides both stable encoding size and good noise margins, allowing unlimited composition with respect to construction and signal propagation.</p>]]></content><author><name></name></author><category term="BiologicalComplexity" /><summary type="html"><![CDATA[This is a summary about paper Jacob Beal and Thomas F. Knight, Jr. (2008) Analyzing Composability in a Sparse Encoding Model of Memorization and Association, which is again a follow-up work of paper L. Valiant (2005) Memorization and association on a realistic neural model The two papers talked about a random graph model to understand the basic cognitive tasks like memorization and association in brains.]]></summary></entry></feed>
