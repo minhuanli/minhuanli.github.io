@@ -32,6 +32,6 @@ In this framework, Data represents the raw experimental observables (e.g., cryo-
 
 **Prior → Model.** Steering pretrained foundation models with experimental likelihoods at inference time — without retraining — so they serve as principled priors for the inverse problem above.
 
-**Data → Prior.** Training biological foundation models on heterogeneous, context-rich data — integrating sequence, structure, surface chemistry, evolutionary signals, and experimental readouts — so the model learns to condition on the full biological context rather than any single modality alone.
+**Data/Model → Prior.** Training biological foundation models on heterogeneous, context-rich data — integrating sequence, structure, surface chemistry, evolutionary signals, and experimental readouts — so the model learns to condition on the full biological context rather than any single modality alone.
 
 **Prior → Data.** Closing the loop: using the neural prior's uncertainty to guide experimental design and enable efficient, AI-centric data collection. This is the frontier I aim to develop alongside experimental collaborators.
