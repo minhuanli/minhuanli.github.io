@@ -3,9 +3,8 @@ layout: about
 title: about
 permalink: /
 subtitle: >
-  Flatiron Research Fellow &middot;
-  <a href="https://www.simonsfoundation.org/flatiron/center-for-computational-mathematics/" target="_blank">Center for Computational Mathematics</a>,
-  Flatiron Institute
+  Research Scientist &middot;
+  <a href="https://biohub.org/" target="_blank">Biohub</a>
 
 profile:
   align: right
@@ -20,18 +19,18 @@ selected_papers: true
 social: true
 ---
 
-I am a Flatiron Research Fellow at the [Center for Computational Mathematics](https://www.simonsfoundation.org/flatiron/center-for-computational-mathematics/), Flatiron Institute. I received my PhD in [Applied Physics](https://seas.harvard.edu/applied-physics) from Harvard University in January 2025, advised by [Doeke Hekstra](https://hekstralab.fas.harvard.edu/). I also hold a S.M. in [Computational Science & Engineering](https://seas.harvard.edu/masters-computational-science-and-engineering) from Harvard, and an undergraduate degree in Physics from [Fudan University](https://www.fudan.edu.cn/en/).
+I am a Research Scientist in the AI research organization at [Biohub](https://biohub.org/). Previously, I was a Flatiron Research Fellow at the [Center for Computational Mathematics](https://www.simonsfoundation.org/flatiron/center-for-computational-mathematics/), Flatiron Institute. I received my PhD in [Applied Physics](https://seas.harvard.edu/applied-physics) from Harvard University in January 2025, advised by [Doeke Hekstra](https://hekstralab.fas.harvard.edu/). I also hold a S.M. in [Computational Science & Engineering](https://seas.harvard.edu/masters-computational-science-and-engineering) from Harvard, and an undergraduate degree in Physics from [Fudan University](https://www.fudan.edu.cn/en/).
 
 During my PhD, I was a Fellow at the [Eric and Wendy Schmidt Center](https://www.ericandwendyschmidtcenter.org/) at the Broad Institute of MIT and Harvard, and interned at [D.E. Shaw Research](https://www.deshawresearch.com/), where I worked on jointly fitting a family of QM/ML force field models to quantum mechanical and experimental data. I am also a core member of [Reciprocal Space Station](https://rs-station.github.io/), an open-source consortium for structural biology software. I care deeply about contributing to the scientific community through both computational tools and shared infrastructure.
 
-My research builds scalable, mathematically principled methods for biomolecular dynamics. I approach this by designing an interacting ecosystem of **Data, Models, and Neural Priors**, drawing heavily on the biophysical principles underlying experiments such as X-ray crystallography and cryo-EM, generative modeling, and statistical-physics-inspired sampling.
+My research asks how pretrained models and experimental measurements can interact in a robust, high-bandwidth way: models supply priors over plausible states, while measurements supply the sample-specific evidence. I approach this as an interacting ecosystem of **Data, Models, and Neural Priors**, with structural biology (X-ray crystallography and cryo-EM) as my main testbed, though many of the ideas generalize more broadly.
 
-In this framework, Data represents the raw experimental observables (e.g., cryo-EM micrographs, X-ray scattering patterns); Models are the unified parameterizations of the molecule (e.g., atomic coordinates); and Neural Priors are the foundation models (e.g., AlphaFold) that capture the statistical rules of biology.
+In this framework, **Data** are the raw measurements (e.g., cryo-EM micrographs, diffraction patterns, sequencing-based readouts); **Models** are explicit parameterizations of the biological state (e.g., atomic coordinates); and **Neural Priors** are pretrained foundation models (e.g., AlphaFold) that capture the statistical regularities of biology.
 
-**Data → Model.** The core inverse problem, and where I spend most of my time. I develop differentiable forward models that faithfully map molecular structures to experimental observables, robust objective functions that remain well-behaved under noise and sparsity, and efficient samplers for high-dimensional, multimodal conformational landscapes.
+**Data → Model.** The core inverse problem: inferring the state behind a measurement. I build differentiable forward models from states to observables, objectives in measurement space with better geometry that stay well-behaved under noise and sparsity, and samplers for high-dimensional, multimodal state spaces.
 
-**Prior → Model.** Steering pretrained foundation models with experimental likelihoods at inference time — without retraining — so they serve as principled priors for the inverse problem above.
+**Prior → Model.** Using pretrained models as a biologically meaningful state space to search in, steered by experimental likelihoods at inference time without retraining. This makes inverse problems more efficient and scalable, and can recover information that conventional summaries compress away.
 
-**Data/Model → Prior.** Training biological foundation models on heterogeneous, context-rich data — integrating sequence, structure, surface chemistry, evolutionary signals, and experimental readouts — so the model learns to condition on the full biological context rather than any single modality alone. Besides, in area where physics-based prior is missing or less informative, data-driven prior can be useful.
+**Data/Model → Prior.** Making raw measurements first-class training signals rather than only inference targets, so foundation models learn from heterogeneous, context-rich data (sequence, structure, chemistry, evolution, and experimental readouts) instead of curated summaries alone.
 
-**Prior → Data.** Closing the loop: using the neural prior's uncertainty to guide experimental design and enable efficient, AI-centric data collection. This is the frontier I aim to develop alongside experimental collaborators.
+**Prior → Data.** Closing the loop: using the prior's uncertainty to guide experimental design and AI-centric data collection. This is the frontier I aim to develop alongside experimental collaborators.

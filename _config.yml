@@ -6,10 +6,10 @@ title: blank # the website title (if blank, full name will be used instead)
 first_name: Minhuan
 middle_name:
 last_name: Li
-email: minhuanli@flatironinstitute.org
+email: mli@biohub.org
 chinese_name: 李黾奂
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
-  Flatiron Research Fellow at the Center for Computational Mathematics, Simons Foundation.
+  Research Scientist at Biohub.
   Working at the intersection of statistical physics, machine learning, and structural biology.
 footer_text: >
   Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
