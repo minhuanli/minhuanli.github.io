@@ -20,7 +20,7 @@
   
 </title>
 <meta name="author" content="Minhuan Li">
-<meta name="description" content="Flatiron Research Fellow at the Center for Computational Mathematics, Simons Foundation. Working at the intersection of statistical physics, machine learning, and structural biology.
+<meta name="description" content="Research Scientist at Biohub. Working at the intersection of statistical physics, machine learning, and structural biology.
 ">
 
   <meta name="keywords" content="computational biology, machine learning, statistical physics, protein dynamics, generative models">
@@ -95,7 +95,7 @@
       
         <!-- Social Icons -->
         <div class="navbar-brand social">
-  <a href="mailto:%6D%69%6E%68%75%61%6E%6C%69@%66%6C%61%74%69%72%6F%6E%69%6E%73%74%69%74%75%74%65.%6F%72%67" title="email"><i class="fa-solid fa-envelope"></i></a>
+  <a href="mailto:%6D%6C%69@%62%69%6F%68%75%62.%6F%72%67" title="email"><i class="fa-solid fa-envelope"></i></a>
 
 
 
@@ -302,7 +302,7 @@
         <span class="profile-name-en"><span class="font-weight-bold">Minhuan  Li</span></span><span class="profile-name-zh">(李黾奂)</span>
       
     </h1>
-    <p class="desc">Flatiron Research Fellow · <a href="https://www.simonsfoundation.org/flatiron/center-for-computational-mathematics/" target="_blank" rel="external nofollow noopener">Center for Computational Mathematics</a>, Flatiron Institute
+    <p class="desc">Research Scientist · <a href="https://biohub.org/" target="_blank" rel="external nofollow noopener">Biohub</a>
 </p>
   </header>
 
@@ -337,21 +337,21 @@
     
 
     <div class="clearfix">
-<p>I am a Flatiron Research Fellow at the <a href="https://www.simonsfoundation.org/flatiron/center-for-computational-mathematics/" rel="external nofollow noopener" target="_blank">Center for Computational Mathematics</a>, Flatiron Institute. I received my PhD in <a href="https://seas.harvard.edu/applied-physics" rel="external nofollow noopener" target="_blank">Applied Physics</a> from Harvard University in January 2025, advised by <a href="https://hekstralab.fas.harvard.edu/" rel="external nofollow noopener" target="_blank">Doeke Hekstra</a>. I also hold a S.M. in <a href="https://seas.harvard.edu/masters-computational-science-and-engineering" rel="external nofollow noopener" target="_blank">Computational Science &amp; Engineering</a> from Harvard, and an undergraduate degree in Physics from <a href="https://www.fudan.edu.cn/en/" rel="external nofollow noopener" target="_blank">Fudan University</a>.</p>
+<p>I am a Research Scientist in the AI research organization at <a href="https://biohub.org/" rel="external nofollow noopener" target="_blank">Biohub</a>. Previously, I was a Flatiron Research Fellow at the <a href="https://www.simonsfoundation.org/flatiron/center-for-computational-mathematics/" rel="external nofollow noopener" target="_blank">Center for Computational Mathematics</a>, Flatiron Institute. I received my PhD in <a href="https://seas.harvard.edu/applied-physics" rel="external nofollow noopener" target="_blank">Applied Physics</a> from Harvard University in January 2025, advised by <a href="https://hekstralab.fas.harvard.edu/" rel="external nofollow noopener" target="_blank">Doeke Hekstra</a>. I also hold a S.M. in <a href="https://seas.harvard.edu/masters-computational-science-and-engineering" rel="external nofollow noopener" target="_blank">Computational Science &amp; Engineering</a> from Harvard, and an undergraduate degree in Physics from <a href="https://www.fudan.edu.cn/en/" rel="external nofollow noopener" target="_blank">Fudan University</a>.</p>
 
 <p>During my PhD, I was a Fellow at the <a href="https://www.ericandwendyschmidtcenter.org/" rel="external nofollow noopener" target="_blank">Eric and Wendy Schmidt Center</a> at the Broad Institute of MIT and Harvard, and interned at <a href="https://www.deshawresearch.com/" rel="external nofollow noopener" target="_blank">D.E. Shaw Research</a>, where I worked on jointly fitting a family of QM/ML force field models to quantum mechanical and experimental data. I am also a core member of <a href="https://rs-station.github.io/" rel="external nofollow noopener" target="_blank">Reciprocal Space Station</a>, an open-source consortium for structural biology software. I care deeply about contributing to the scientific community through both computational tools and shared infrastructure.</p>
 
-<p>My research builds scalable, mathematically principled methods for biomolecular dynamics. I approach this by designing an interacting ecosystem of <strong>Data, Models, and Neural Priors</strong>, drawing heavily on the biophysical principles underlying experiments such as X-ray crystallography and cryo-EM, generative modeling, and statistical-physics-inspired sampling.</p>
+<p>My research asks how pretrained models and experimental measurements can interact in a robust, high-bandwidth way: models supply priors over plausible states, while measurements supply the sample-specific evidence. I approach this as an interacting ecosystem of <strong>Data, Models, and Neural Priors</strong>, with structural biology (X-ray crystallography and cryo-EM) as my main testbed, though many of the ideas generalize more broadly.</p>
 
-<p>In this framework, Data represents the raw experimental observables (e.g., cryo-EM micrographs, X-ray scattering patterns); Models are the unified parameterizations of the molecule (e.g., atomic coordinates); and Neural Priors are the foundation models (e.g., AlphaFold) that capture the statistical rules of biology.</p>
+<p>In this framework, <strong>Data</strong> are the raw measurements (e.g., cryo-EM micrographs, diffraction patterns, sequencing-based readouts); <strong>Models</strong> are explicit parameterizations of the biological state (e.g., atomic coordinates); and <strong>Neural Priors</strong> are pretrained foundation models (e.g., AlphaFold) that capture the statistical regularities of biology.</p>
 
-<p><strong>Data → Model.</strong> The core inverse problem, and where I spend most of my time. I develop differentiable forward models that faithfully map molecular structures to experimental observables, robust objective functions that remain well-behaved under noise and sparsity, and efficient samplers for high-dimensional, multimodal conformational landscapes.</p>
+<p><strong>Data → Model.</strong> The core inverse problem: inferring the state behind a measurement. I build differentiable forward models from states to observables, objectives in measurement space with better geometry that stay well-behaved under noise and sparsity, and samplers for high-dimensional, multimodal state spaces.</p>
 
-<p><strong>Prior → Model.</strong> Steering pretrained foundation models with experimental likelihoods at inference time — without retraining — so they serve as principled priors for the inverse problem above.</p>
+<p><strong>Prior → Model.</strong> Using pretrained models as a biologically meaningful state space to search in, steered by experimental likelihoods at inference time without retraining. This makes inverse problems more efficient and scalable, and can recover information that conventional summaries compress away.</p>
 
-<p><strong>Data/Model → Prior.</strong> Training biological foundation models on heterogeneous, context-rich data — integrating sequence, structure, surface chemistry, evolutionary signals, and experimental readouts — so the model learns to condition on the full biological context rather than any single modality alone. Besides, in area where physics-based prior is missing or less informative, data-driven prior can be useful.</p>
+<p><strong>Data/Model → Prior.</strong> Making raw measurements first-class training signals rather than only inference targets, so foundation models learn from heterogeneous, context-rich data (sequence, structure, chemistry, evolution, and experimental readouts) instead of curated summaries alone.</p>
 
-<p><strong>Prior → Data.</strong> Closing the loop: using the neural prior’s uncertainty to guide experimental design and enable efficient, AI-centric data collection. This is the frontier I aim to develop alongside experimental collaborators.</p>
+<p><strong>Prior → Data.</strong> Closing the loop: using the prior’s uncertainty to guide experimental design and AI-centric data collection. This is the frontier I aim to develop alongside experimental collaborators.</p>
 </div>
 
     <!-- News -->
@@ -368,50 +368,50 @@
         
         
           <tr>
-            <th scope="row" style="width: 20%">Apr 28, 2026</th>
+            <th scope="row" style="width: 20%">Nov 01, 2026</th>
             <td>
               
-                Preprint out: <a href="https://arxiv.org/abs/2604.24506" rel="external nofollow noopener" target="_blank">MIMIC</a> — a large collaboration with <a href="https://polymathic-ai.org/" rel="external nofollow noopener" target="_blank">Polymathic AI</a>. MIMIC is a multimodal biomolecular foundation model trained on diverse aligned data spanning sequences, structures, and exciting modalities like RNA transcriptome-wide chemical probing. Check out the <a href="https://polymathic-ai.org/blog/mimic/" rel="external nofollow noopener" target="_blank">blog post</a> for an overview.
+                Started as a Research Scientist in the AI research organization at <a href="https://biohub.org/" rel="external nofollow noopener" target="_blank">Biohub</a>.
 
               
             </td>
           </tr>
         
           <tr>
-            <th scope="row" style="width: 20%">Apr 27, 2026</th>
+            <th scope="row" style="width: 20%">Oct 13, 2026</th>
             <td>
               
-                Released the codebase for <a href="https://github.com/rs-station/embedopt" rel="external nofollow noopener" target="_blank">embedopt</a>, including a <a href="https://github.com/rs-station/embedopt/tree/main/examples/real_map_tutorial" rel="external nofollow noopener" target="_blank">tutorial</a> for running it on real cryoEM map data.
+                Preprint out: <a href="https://www.biorxiv.org/content/10.64898/2026.10.11.758367v1" rel="external nofollow noopener" target="_blank"><em>Quantifying RNA Folding Equilibria from Unclassified Cryo-EM Particle Images</em></a> — ensemble inference methodology validated on new RNA cryo-EM data.
 
               
             </td>
           </tr>
         
           <tr>
-            <th scope="row" style="width: 20%">Apr 01, 2026</th>
+            <th scope="row" style="width: 20%">Oct 07, 2026</th>
             <td>
               
-                Our paper on <a href="https://www.nature.com/articles/s41592-026-03047-4" rel="external nofollow noopener" target="_blank">ROCKET</a> — using AlphaFold as a prior for experimental structure determination — is published in <em>Nature Methods</em>.
+                Gave a talk at the <a href="https://cryoem.world/" rel="external nofollow noopener" target="_blank">One World Cryo-EM Seminar</a>: <a href="https://cryoem.world/talks/2026-10-07-minhuan-li/" rel="external nofollow noopener" target="_blank"><em>From Prediction to Scientific Inference: Grounding Generative Models in Biological Experiments</em></a>.
 
               
             </td>
           </tr>
         
           <tr>
-            <th scope="row" style="width: 20%">Feb 10, 2026</th>
+            <th scope="row" style="width: 20%">Sep 25, 2026</th>
             <td>
               
-                Preprint out: <a href="https://arxiv.org/abs/2602.05285" rel="external nofollow noopener" target="_blank">embedopt</a>, a new framework for robust inference-time steering of protein diffusion models via embedding optimization.
+                <a href="https://arxiv.org/abs/2602.05285" rel="external nofollow noopener" target="_blank">embedopt</a> is accepted at NeurIPS 2026! See you in Atlanta.
 
               
             </td>
           </tr>
         
           <tr>
-            <th scope="row" style="width: 20%">Jan 01, 2026</th>
+            <th scope="row" style="width: 20%">Aug 31, 2026</th>
             <td>
               
-                Preprint out: <a href="https://www.biorxiv.org/content/10.64898/2025.12.23.696001v1" rel="external nofollow noopener" target="_blank">GOTO</a>, a robust differentiable sliced Wasserstein loss for image-based inverse problems, with applications to cryo-EM.
+                New blog post with Pilar and Emil on the <a href="https://rs-station.org/" rel="external nofollow noopener" target="_blank">Reciprocal Space Station</a> blog: <a href="https://rs-station.org/2026/08/31/are-we-capturing-the-ensemble.html" rel="external nofollow noopener" target="_blank">Are we capturing the ensemble?</a> — on how conformational ensembles can be recovered from experimental data.
 
               
             </td>
@@ -431,6 +431,127 @@
       </h2>
       <div class="publications">
   <ol class="bibliography">
+<li>
+<div class="row">
+  
+    <div class="col col-sm-2 abbr">
+          <abbr class="badge rounded w-100">bioRxiv</abbr>
+        
+      
+      
+    </div>
+  
+
+  <!-- Entry bib key -->
+  <div id="maji2026rna" class="col-sm-8">
+    <!-- Title -->
+    <div class="title">Quantifying RNA Folding Equilibria from Unclassified Cryo-EM Particle Images</div>
+    <!-- Author -->
+    <div class="author">
+      
+
+      
+      Debanjana
+            Maji, Lars
+            Dingeldein, <em>Minhuan
+            Li</em>, and
+        <span class="more-authors" title="click to view 9 more authors" onclick="
+              var element = $(this);
+              element.attr('title', '');
+              var more_authors_text = element.text() == '9 more authors' ? 'Miro A. Astore, Luke Evans, Wai Shing Tang, Jutta Rogal, Aaditya Rangan, Roberto Covino, Alex Marco, Steve L. Bonilla&lt;sup&gt;†&lt;/sup&gt;, Pilar Cossio&lt;sup&gt;†&lt;/sup&gt;' : '9 more authors';
+              var cursorPosition = 0;
+              var textAdder = setInterval(function(){
+                element.html(more_authors_text.substring(0, cursorPosition + 1));
+                if (++cursorPosition == more_authors_text.length){
+                  clearInterval(textAdder);
+                }
+            }, '10');
+          ">9 more authors</span>
+      
+      
+        <i class="fa-solid fa-circle-info ml-1" data-toggle="popover" data-placement="top" data-html="true" data-content="† Corresponding authors">
+        </i>
+      
+    </div>
+
+    <!-- Journal/Book title and date -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="periodical">
+      <em>bioRxiv</em>,  2026
+    </div>
+    <div class="periodical">
+      
+    </div>
+
+    <!-- Links/Buttons -->
+    <div class="links">
+      
+      
+      
+      
+      
+        <a class="bibtex btn btn-sm z-depth-0" role="button">Bib</a>
+      
+      
+        
+          <a href="https://www.biorxiv.org/content/10.64898/2026.10.11.758367v1" class="btn btn-sm z-depth-0" role="button" rel="external nofollow noopener" target="_blank">HTML</a>
+        
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    </div>
+    
+      
+      
+
+      
+      
+
+      
+      
+
+      
+      
+      
+    
+
+    
+
+    
+
+    
+      <!-- Hidden bibtex block -->
+      <div class="bibtex hidden">
+        <figure class="highlight"><pre><code class="language-bibtex" data-lang="bibtex"><span class="nc">@article</span><span class="p">{</span><span class="nl">maji2026rna</span><span class="p">,</span>
+  <span class="na">title</span> <span class="p">=</span> <span class="s">{Quantifying RNA Folding Equilibria from Unclassified Cryo-EM Particle Images}</span><span class="p">,</span>
+  <span class="na">author</span> <span class="p">=</span> <span class="s">{Maji, Debanjana and Dingeldein, Lars and Li, Minhuan and Astore, Miro A. and Evans, Luke and Tang, Wai Shing and Rogal, Jutta and Rangan, Aaditya and Covino, Roberto and de Marco, Alex and Bonilla, Steve L. and Cossio, Pilar}</span><span class="p">,</span>
+  <span class="na">journal</span> <span class="p">=</span> <span class="s">{bioRxiv}</span><span class="p">,</span>
+  <span class="na">year</span> <span class="p">=</span> <span class="s">{2026}</span><span class="p">,</span>
+  <span class="na">publisher</span> <span class="p">=</span> <span class="s">{Cold Spring Harbor Laboratory}</span><span class="p">,</span>
+  <span class="na">show_authors</span> <span class="p">=</span> <span class="s">{3}</span><span class="p">,</span>
+<span class="p">}</span></code></pre></figure>
+      </div>
+    
+
+    
+  </div>
+</div>
+</li>
 <li>
 <div class="row">
   
@@ -682,7 +803,7 @@
 <div class="row">
   
     <div class="col col-sm-2 abbr">
-          <abbr class="badge rounded w-100">arXiv</abbr>
+          <abbr class="badge rounded w-100">NeurIPS</abbr>
         
       
       
@@ -721,7 +842,7 @@
     
     
     <div class="periodical">
-      <em>arXiv preprint arXiv:2602.05285</em>,  2026
+      <em>In Advances in Neural Information Processing Systems (NeurIPS)</em>,  2026
     </div>
     <div class="periodical">
       
@@ -774,10 +895,10 @@
     
       <!-- Hidden bibtex block -->
       <div class="bibtex hidden">
-        <figure class="highlight"><pre><code class="language-bibtex" data-lang="bibtex"><span class="nc">@article</span><span class="p">{</span><span class="nl">li2026robust</span><span class="p">,</span>
+        <figure class="highlight"><pre><code class="language-bibtex" data-lang="bibtex"><span class="nc">@inproceedings</span><span class="p">{</span><span class="nl">li2026robust</span><span class="p">,</span>
   <span class="na">title</span> <span class="p">=</span> <span class="s">{Robust Inference-Time Steering of Protein Diffusion Models via Embedding Optimization}</span><span class="p">,</span>
   <span class="na">author</span> <span class="p">=</span> <span class="s">{Li, Minhuan and Han, Jiequn and Cossio, Pilar and Wu, Luhuan}</span><span class="p">,</span>
-  <span class="na">journal</span> <span class="p">=</span> <span class="s">{arXiv preprint arXiv:2602.05285}</span><span class="p">,</span>
+  <span class="na">booktitle</span> <span class="p">=</span> <span class="s">{Advances in Neural Information Processing Systems (NeurIPS)}</span><span class="p">,</span>
   <span class="na">year</span> <span class="p">=</span> <span class="s">{2026}</span><span class="p">,</span>
   <span class="na">show_authors</span> <span class="p">=</span> <span class="s">{4}</span><span class="p">,</span>
 <span class="p">}</span></code></pre></figure>
@@ -1320,7 +1441,7 @@
     
       <div class="social">
         <div class="contact-icons">
-  <a href="mailto:%6D%69%6E%68%75%61%6E%6C%69@%66%6C%61%74%69%72%6F%6E%69%6E%73%74%69%74%75%74%65.%6F%72%67" title="email"><i class="fa-solid fa-envelope"></i></a>
+  <a href="mailto:%6D%6C%69@%62%69%6F%68%75%62.%6F%72%67" title="email"><i class="fa-solid fa-envelope"></i></a>
 
 
 
@@ -1904,12 +2025,27 @@
               section: "News",},{id: "news-preprint-out-mimic-a-large-collaboration-with-polymathic-ai-mimic-is-a-multimodal-biomolecular-foundation-model-trained-on-diverse-aligned-data-spanning-sequences-structures-and-exciting-modalities-like-rna-transcriptome-wide-chemical-probing-check-out-the-blog-post-for-an-overview",
               title: 'Preprint out: MIMIC — a large collaboration with Polymathic AI. MIMIC is a...',
               description: "",
+              section: "News",},{id: "news-new-blog-post-with-pilar-and-emil-on-the-reciprocal-space-station-blog-are-we-capturing-the-ensemble-on-how-conformational-ensembles-can-be-recovered-from-experimental-data",
+              title: 'New blog post with Pilar and Emil on the Reciprocal Space Station blog:...',
+              description: "",
+              section: "News",},{id: "news-embedopt-is-accepted-at-neurips-2026-see-you-in-atlanta",
+              title: 'embedopt is accepted at NeurIPS 2026! See you in Atlanta.',
+              description: "",
+              section: "News",},{id: "news-gave-a-talk-at-the-one-world-cryo-em-seminar-from-prediction-to-scientific-inference-grounding-generative-models-in-biological-experiments",
+              title: 'Gave a talk at the One World Cryo-EM Seminar: From Prediction to Scientific...',
+              description: "",
+              section: "News",},{id: "news-preprint-out-quantifying-rna-folding-equilibria-from-unclassified-cryo-em-particle-images-ensemble-inference-methodology-validated-on-new-rna-cryo-em-data",
+              title: 'Preprint out: Quantifying RNA Folding Equilibria from Unclassified Cryo-EM Particle Images — ensemble...',
+              description: "",
+              section: "News",},{id: "news-started-as-a-research-scientist-in-the-ai-research-organization-at-biohub",
+              title: 'Started as a Research Scientist in the AI research organization at Biohub.',
+              description: "",
               section: "News",},{
             id: 'socials-email',
             title: 'Send email',
             section: 'Socials',
             handler: () => {
-              window.open("mailto:%6D%69%6E%68%75%61%6E%6C%69@%66%6C%61%74%69%72%6F%6E%69%6E%73%74%69%74%75%74%65.%6F%72%67", "_blank");
+              window.open("mailto:%6D%6C%69@%62%69%6F%68%75%62.%6F%72%67", "_blank");
             },
           },{
             id: 'socials-google-scholar',
