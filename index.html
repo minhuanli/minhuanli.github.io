@@ -337,21 +337,22 @@
     
 
     <div class="clearfix">
-<p>I am a Research Scientist in the AI research organization at <a href="https://biohub.org/" rel="external nofollow noopener" target="_blank">Biohub</a>. Previously, I was a Flatiron Research Fellow at the <a href="https://www.simonsfoundation.org/flatiron/center-for-computational-mathematics/" rel="external nofollow noopener" target="_blank">Center for Computational Mathematics</a>, Flatiron Institute. I received my PhD in <a href="https://seas.harvard.edu/applied-physics" rel="external nofollow noopener" target="_blank">Applied Physics</a> from Harvard University in January 2025, advised by <a href="https://hekstralab.fas.harvard.edu/" rel="external nofollow noopener" target="_blank">Doeke Hekstra</a>. I also hold a S.M. in <a href="https://seas.harvard.edu/masters-computational-science-and-engineering" rel="external nofollow noopener" target="_blank">Computational Science &amp; Engineering</a> from Harvard, and an undergraduate degree in Physics from <a href="https://www.fudan.edu.cn/en/" rel="external nofollow noopener" target="_blank">Fudan University</a>.</p>
+<p>I am a Research Scientist in the AI research organization at <a href="https://biohub.org/" rel="external nofollow noopener" target="_blank">Biohub</a>. Previously, I was a Flatiron Research Fellow at the <a href="https://www.simonsfoundation.org/flatiron/center-for-computational-mathematics/" rel="external nofollow noopener" target="_blank">Center for Computational Mathematics</a>, Flatiron Institute, and received my PhD in Applied Physics from Harvard, advised by <a href="https://hekstralab.fas.harvard.edu/" rel="external nofollow noopener" target="_blank">Doeke Hekstra</a>.</p>
 
-<p>During my PhD, I was a Fellow at the <a href="https://www.ericandwendyschmidtcenter.org/" rel="external nofollow noopener" target="_blank">Eric and Wendy Schmidt Center</a> at the Broad Institute of MIT and Harvard, and interned at <a href="https://www.deshawresearch.com/" rel="external nofollow noopener" target="_blank">D.E. Shaw Research</a>, where I worked on jointly fitting a family of QM/ML force field models to quantum mechanical and experimental data. I am also a core member of <a href="https://rs-station.github.io/" rel="external nofollow noopener" target="_blank">Reciprocal Space Station</a>, an open-source consortium for structural biology software. I care deeply about contributing to the scientific community through both computational tools and shared infrastructure.</p>
+<p>I am also a core member of <a href="https://rs-station.github.io/" rel="external nofollow noopener" target="_blank">Reciprocal Space Station</a>, an open-source consortium for structural biology software. During my PhD, I was a Fellow at the <a href="https://www.ericandwendyschmidtcenter.org/" rel="external nofollow noopener" target="_blank">Eric and Wendy Schmidt Center</a> at the Broad Institute and interned at <a href="https://www.deshawresearch.com/" rel="external nofollow noopener" target="_blank">D.E. Shaw Research</a>.</p>
 
-<p>My research asks how pretrained models and experimental measurements can interact in a robust, high-bandwidth way: models supply priors over plausible states, while measurements supply the sample-specific evidence. I approach this as an interacting ecosystem of <strong>Data, Models, and Neural Priors</strong>, with structural biology (X-ray crystallography and cryo-EM) as my main testbed, though many of the ideas generalize more broadly.</p>
+<p>My research asks how pretrained models and experimental measurements can interact in a robust, high-bandwidth way. I approach this as an interacting ecosystem of <strong>Data</strong> (raw measurements), <strong>Models</strong> (explicit parameterizations of biological state), and <strong>Neural Priors</strong> (pretrained foundation models), with structural biology as the main testbed:</p>
 
-<p>In this framework, <strong>Data</strong> are the raw measurements (e.g., cryo-EM micrographs, diffraction patterns, sequencing-based readouts); <strong>Models</strong> are explicit parameterizations of the biological state (e.g., atomic coordinates); and <strong>Neural Priors</strong> are pretrained foundation models (e.g., AlphaFold) that capture the statistical regularities of biology.</p>
-
-<p><strong>Data → Model.</strong> The core inverse problem: inferring the state behind a measurement. I build differentiable forward models from states to observables, objectives in measurement space with better geometry that stay well-behaved under noise and sparsity, and samplers for high-dimensional, multimodal state spaces.</p>
-
-<p><strong>Prior → Model.</strong> Using pretrained models as a biologically meaningful state space to search in, steered by experimental likelihoods at inference time without retraining. This makes inverse problems more efficient and scalable, and can recover information that conventional summaries compress away.</p>
-
-<p><strong>Data/Model → Prior.</strong> Making raw measurements first-class training signals rather than only inference targets, so foundation models learn from heterogeneous, context-rich data (sequence, structure, chemistry, evolution, and experimental readouts) instead of curated summaries alone.</p>
-
-<p><strong>Prior → Data.</strong> Closing the loop: using the prior’s uncertainty to guide experimental design and AI-centric data collection. This is the frontier I aim to develop alongside experimental collaborators.</p>
+<ul>
+  <li>
+<strong>Data → Model.</strong> Differentiable forward models, better-behaved objectives in measurement space, and samplers for multimodal state spaces.</li>
+  <li>
+<strong>Prior → Model.</strong> Pretrained models as a biologically meaningful search space, steered by experimental likelihoods at inference time.</li>
+  <li>
+<strong>Data/Model → Prior.</strong> Raw measurements as first-class training signals, not only inference targets.</li>
+  <li>
+<strong>Prior → Data.</strong> Using the prior’s uncertainty to guide experimental design and data collection.</li>
+</ul>
 </div>
 
     <!-- News -->
